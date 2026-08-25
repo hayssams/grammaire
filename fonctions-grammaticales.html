@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Les fonctions grammaticales, en contexte</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F5F6F1;
+  --paper-2:#FCFCFA;
+  --rule:#BFD3E4;
+  --rule-soft:#DDE7F0;
+  --marge:#DE5B4A;
+  --ink:#16233B;
+  --ink-soft:#5E6E85;
+  --sujet:#1D4E89;
+  --cod:#BE2F28;
+  --coi:#C0631A;
+  --attribut:#1B6F55;
+  --cc:#0E6F80;
+  --epithete:#654AA3;
+  --cdn:#9C3670;
+  --apposition:#7C6320;
+  --agent:#4F6B2E;
+  --serif:"Instrument Serif", Georgia, "Times New Roman", serif;
+  --sans:"Karla", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:16px;
+  line-height:1.5;
+  min-height:100vh;
+  padding:0 0 40px;
+}
+.wrap{max-width:560px;margin:0 auto;padding:0 14px}
+
+/* ---------- en-tete ---------- */
+header{padding:26px 0 14px}
+.eyebrow{
+  font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-soft);font-weight:700;margin:0 0 6px
+}
+h1{
+  font-family:var(--serif);font-weight:400;font-size:34px;line-height:1.05;
+  margin:0 0 4px;letter-spacing:-.01em
+}
+h1 em{font-style:italic;color:var(--nom)}
+.sub{margin:0;color:var(--ink-soft);font-size:14px}
+
+/* ---------- onglets ---------- */
+nav{display:flex;gap:6px;margin:18px 0 0;align-items:flex-end}
+.tab{
+  flex:1;border:1px solid var(--rule);border-bottom:none;
+  background:#EDEFE9;color:var(--ink-soft);
+  font-family:var(--sans);font-size:12.5px;font-weight:700;
+  padding:11px 3px 10px;border-radius:9px 9px 0 0;cursor:pointer;
+  letter-spacing:.01em;transition:background .15s,color .15s,transform .15s
+}
+.tab:hover{color:var(--ink)}
+.tab[aria-selected="true"]{background:var(--paper-2);color:var(--ink);transform:translateY(1px);box-shadow:0 -2px 0 var(--nom) inset}
+
+/* ---------- feuille ---------- */
+.sheet{
+  position:relative;background:var(--paper-2);
+  border:1px solid var(--rule);border-radius:0 0 10px 10px;
+  padding:22px 16px 20px 30px;overflow:hidden;
+  background-image:repeating-linear-gradient(to bottom,transparent 0 31px,var(--rule-soft) 31px 32px);
+  background-position:0 8px;
+}
+.sheet::before{
+  content:"";position:absolute;top:0;bottom:0;left:20px;width:1px;background:var(--marge);opacity:.5
+}
+.panel{display:none}
+.panel.on{display:block}
+
+/* ---------- barre d'etat ---------- */
+.status{
+  display:flex;align-items:center;gap:12px;
+  font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--ink-soft);margin-bottom:14px
+}
+.status .grow{flex:1}
+.status b{color:var(--ink);font-size:14px;letter-spacing:0}
+.chrono{
+  height:4px;background:var(--rule-soft);border-radius:2px;overflow:hidden;margin-bottom:20px
+}
+.chrono span{display:block;height:100%;width:100%;background:var(--nom);transition:width .1s linear}
+.chrono.warn span{background:var(--marge)}
+
+/* ---------- phrase ---------- */
+.phrase{
+  font-family:var(--serif);font-size:26px;line-height:1.45;margin:0 0 6px;letter-spacing:.005em
+}
+.target{
+  color:var(--ink);white-space:nowrap;
+  text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:5px;
+  text-decoration-color:var(--ink);
+  transition:color .3s ease,text-decoration-color .3s ease
+}
+.revealed .target{color:var(--hl,var(--ink));text-decoration-color:var(--hl,var(--ink));text-decoration-thickness:3px}
+.annot{
+  font-family:var(--sans);font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-soft);transition:color .3s ease;
+  margin:0 0 4px
+}
+.revealed .annot{color:var(--hl,var(--ink-soft))}
+.why{
+  font-size:14px;color:var(--ink-soft);margin:8px 0 0;min-height:42px;
+  opacity:0;transition:opacity .3s .3s
+}
+.revealed .why{opacity:1}
+.why em{font-style:normal;color:var(--ink);font-weight:700}
+
+/* ---------- choix ---------- */
+.choices{display:grid;grid-template-columns:repeat(auto-fit,minmax(94px,1fr));gap:7px;margin:18px 0 0}
+.choice{
+  border:1px solid var(--rule);background:var(--paper-2);color:var(--ink);
+  font-family:var(--sans);font-size:13px;font-weight:700;
+  padding:11px 4px;border-radius:7px;cursor:pointer;
+  transition:background .12s,border-color .12s,color .12s,opacity .2s
+}
+.choice:hover:not(:disabled){border-color:var(--ink);background:#F1F3EE}
+.choice:disabled{cursor:default}
+.choice.dim{opacity:.32}
+.choice.good{background:var(--c);border-color:var(--c);color:#fff;opacity:1}
+.choice.bad{background:transparent;border-color:var(--marge);color:var(--marge);opacity:1;text-decoration:line-through}
+
+/* ---------- boutons ---------- */
+.btn{
+  display:inline-block;border:1px solid var(--ink);background:var(--ink);color:var(--paper-2);
+  font-family:var(--sans);font-size:15px;font-weight:700;padding:12px 22px;border-radius:8px;cursor:pointer;
+  transition:opacity .15s
+}
+.btn:hover{opacity:.86}
+.btn.ghost{background:transparent;color:var(--ink)}
+.row-end{display:flex;justify-content:flex-end;gap:8px;margin-top:18px;min-height:46px;align-items:center}
+.hidden{display:none !important}
+
+/* ---------- accueil de manche ---------- */
+.intro{padding:6px 0 4px}
+.intro h2{font-family:var(--serif);font-weight:400;font-size:27px;margin:0 0 8px;line-height:1.15}
+.intro p{margin:0 0 18px;color:var(--ink-soft);font-size:15px;max-width:44ch}
+
+/* ---------- bilan ---------- */
+.bilan h2{font-family:var(--serif);font-weight:400;font-size:30px;margin:0 0 2px}
+.bigscore{font-family:var(--serif);font-size:56px;line-height:1;margin:10px 0 2px}
+.bilan .meta{color:var(--ink-soft);font-size:14px;margin:0 0 18px}
+.errlist{border-top:1px solid var(--rule-soft);margin:14px 0 0;padding:0;list-style:none}
+.errlist li{border-bottom:1px solid var(--rule-soft);padding:11px 0}
+.errlist .ph{font-family:var(--serif);font-size:18px;line-height:1.35}
+.errlist .tags{font-size:12px;font-weight:700;letter-spacing:.04em;margin-top:3px}
+.errlist .tags .ko{color:var(--marge);text-decoration:line-through;margin-right:8px}
+.errlist .tags .ok{color:var(--c)}
+.section-title{
+  font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);
+  margin:22px 0 0
+}
+
+/* ---------- cameleons ---------- */
+.word-card{
+  border:1px solid var(--rule);border-radius:9px;background:#F1F4F8;
+  padding:12px 14px;margin:0 0 18px;display:flex;align-items:baseline;gap:10px
+}
+.word-card .lbl{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft)}
+.word-card .w{font-family:var(--serif);font-style:italic;font-size:30px;line-height:1}
+.duo{margin:0;padding:0;list-style:none}
+.duo li{padding:14px 0;border-top:1px solid var(--rule-soft)}
+.duo .ph{font-family:var(--serif);font-size:21px;line-height:1.4}
+.duo .cls{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--c);margin-top:4px}
+.verdict{font-family:var(--serif);font-size:23px;line-height:1.3;margin:16px 0 0}
+
+/* ---------- memo ---------- */
+.board{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:6px}
+.card{
+  position:relative;aspect-ratio:3/4;border:0;padding:0;background:transparent;cursor:pointer;
+  perspective:700px;font-family:var(--sans)
+}
+.card .inner{
+  position:absolute;inset:0;transition:transform .42s cubic-bezier(.4,0,.2,1);
+  transform-style:preserve-3d
+}
+.card.up .inner,.card.done .inner{transform:rotateY(180deg)}
+.face{
+  position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  border-radius:8px;display:flex;align-items:center;justify-content:center;
+  padding:7px;text-align:center;border:1px solid var(--rule)
+}
+.face.back{
+  background:#EAF0F6;
+  background-image:repeating-linear-gradient(to bottom,transparent 0 9px,var(--rule-soft) 9px 10px),
+                   repeating-linear-gradient(to right,transparent 0 9px,var(--rule-soft) 9px 10px)
+}
+.face.front{transform:rotateY(180deg);background:var(--paper-2);flex-direction:column;gap:3px}
+.face.front .ph{font-family:var(--serif);font-size:15px;line-height:1.25}
+.face.front .ph .hl{color:var(--c);border-bottom:2px solid var(--c)}
+.face.front .cls{
+  font-size:12px;font-weight:700;letter-spacing:.05em;color:#fff;
+  background:var(--c);border-radius:5px;padding:5px 7px;line-height:1.15
+}
+.card.done .face{border-color:var(--c);opacity:.55}
+.card.done{cursor:default}
+
+/* ---------- cartes ---------- */
+.boxes{display:flex;gap:5px;margin-bottom:16px}
+.box{flex:1;border:1px solid var(--rule);border-radius:7px;padding:6px 3px;text-align:center;background:#F1F3EE;transition:border-color .2s,background .2s}
+.box.hot{border-color:var(--ink);background:var(--paper-2)}
+.box .n{font-family:var(--serif);font-size:21px;line-height:1.05}
+.box .l{font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-soft)}
+.flash{perspective:1100px;margin-bottom:14px}
+.flash-inner{position:relative;min-height:250px;transform-style:preserve-3d;transition:transform .5s cubic-bezier(.4,0,.2,1)}
+.flash.turned .flash-inner{transform:rotateY(180deg)}
+.flash-face{
+  position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  border:1px solid var(--rule);border-radius:11px;background:var(--paper-2);
+  padding:20px 18px;display:flex;flex-direction:column;justify-content:center;overflow:auto
+}
+.flash-face.verso{transform:rotateY(180deg);border-color:var(--c);border-width:2px}
+.flash .phrase{font-size:24px;margin:0}
+.flash .rep{font-family:var(--serif);font-size:34px;line-height:1.1;color:var(--c);margin:0 0 10px}
+.flash .rep-why{font-size:15px;color:var(--ink-soft);margin:0}
+.flash .rep-ph{font-family:var(--serif);font-size:17px;color:var(--ink);margin:12px 0 0;padding-top:10px;border-top:1px solid var(--rule-soft)}
+.consigne{font-size:13px;color:var(--ink-soft);text-align:center;margin:0 0 14px}
+.judge{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.judge .btn{width:100%;text-align:center}
+.judge .no{background:transparent;color:var(--marge);border-color:var(--marge)}
+
+@media (max-width:360px){
+  .phrase{font-size:23px}
+  .face.front .ph{font-size:13px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition-duration:.01ms !important;animation-duration:.01ms !important}
+}
+:focus-visible{outline:2px solid var(--nom);outline-offset:2px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <p class="eyebrow">Français, 3<sup>e</sup></p>
+    <h1>La fonction ne dépend pas du mot, <em>mais du verbe</em></h1>
+    <p class="sub">Quatre entraînements. La nature d'un mot ne change pas, sa fonction change à chaque phrase.</p>
+    <nav role="tablist">
+      <button class="tab" role="tab" aria-selected="true" data-panel="quiz">En contexte</button>
+      <button class="tab" role="tab" aria-selected="false" data-panel="cam">Déplacements</button>
+      <button class="tab" role="tab" aria-selected="false" data-panel="memo">Mémo</button>
+      <button class="tab" role="tab" aria-selected="false" data-panel="cartes">Cartes</button>
+    </nav>
+  </header>
+
+  <div class="sheet">
+    <section class="panel on" id="quiz"></section>
+    <section class="panel" id="cam"></section>
+    <section class="panel" id="memo"></section>
+    <section class="panel" id="cartes"></section>
+  </div>
+</div>
+
+<script>
+/* ============ donnees ============ */
+const CLASSES = {
+  sujet:{label:"Sujet", v:"--sujet"},
+  cod:{label:"COD", v:"--cod"},
+  coi:{label:"COI", v:"--coi"},
+  attribut:{label:"Attribut", v:"--attribut"},
+  cc:{label:"Circonstanciel", v:"--cc"},
+  epithete:{label:"Épithète", v:"--epithete"},
+  cdn:{label:"C. du nom", v:"--cdn"},
+  apposition:{label:"Apposition", v:"--apposition"},
+  agent:{label:"C. d'agent", v:"--agent"}
+};
+const ORDER = ["sujet","cod","coi","attribut","cc","epithete","cdn","apposition","agent"];
+const col = id => `var(${CLASSES[id].v})`;
+
+const QUIZ = [
+  {s:"[[Les élèves]] écoutent attentivement.", c:"sujet", w:"Sujet du verbe écoutent. Test : ce sont les élèves qui écoutent."},
+  {s:"Dans la cour jouent [[des enfants]].", c:"sujet", w:"Sujet inversé de jouent. Le sujet n'est pas toujours devant le verbe."},
+  {s:"[[Courir]] le matin lui plaît.", c:"sujet", w:"Sujet du verbe plaît : un infinitif peut être sujet."},
+  {s:"[[Ce que tu dis]] m'étonne.", c:"sujet", w:"Sujet du verbe étonne : ici, c'est une proposition entière."},
+  {s:"[[Le vent d'automne]] a fait tomber les feuilles.", c:"sujet", w:"Sujet de a fait : tout le groupe nominal, pas seulement vent."},
+  {s:"Hier soir, [[ma sœur]] est rentrée tard.", c:"sujet", w:"Sujet de est rentrée. Le groupe déplaçable en tête est un circonstanciel, pas le sujet."},
+  {s:"Il lit [[un roman policier]].", c:"cod", w:"Il lit quoi ? Complément d'objet direct : aucune préposition ne l'introduit."},
+  {s:"Nous avons rencontré [[ton frère]] hier.", c:"cod", w:"Nous avons rencontré qui ? COD, directement relié au verbe."},
+  {s:"Je [[le]] connais bien.", c:"cod", w:"COD placé avant le verbe : le pronom remplace un nom complément."},
+  {s:"Elle aime [[nager]].", c:"cod", w:"Elle aime quoi ? Un infinitif peut être COD."},
+  {s:"Le professeur a corrigé [[nos copies]].", c:"cod", w:"Il a corrigé quoi ? COD du verbe a corrigé."},
+  {s:"Je crois [[qu'il a raison]].", c:"cod", w:"COD du verbe crois : une proposition subordonnée peut être COD."},
+  {s:"Il parle [[à sa sœur]].", c:"coi", w:"Il parle à qui ? Complément d'objet indirect, introduit par à."},
+  {s:"Nous pensons [[à nos vacances]].", c:"coi", w:"On pense à quelque chose : le verbe impose la préposition, donc COI."},
+  {s:"Elle a répondu [[au professeur]].", c:"coi", w:"COI introduit par au, contraction de à le."},
+  {s:"Je me souviens [[de cette journée]].", c:"coi", w:"Se souvenir de quelque chose : COI."},
+  {s:"Il [[lui]] parle doucement.", c:"coi", w:"COI placé avant le verbe : lui remplace à quelqu'un."},
+  {s:"Elle ressemble [[à sa mère]].", c:"coi", w:"Ressembler à quelqu'un : la préposition est exigée par le verbe."},
+  {s:"Il est [[médecin]].", c:"attribut", w:"Attribut du sujet il, relié par le verbe d'état être."},
+  {s:"Cette histoire semble [[invraisemblable]].", c:"attribut", w:"Attribut du sujet après sembler, verbe d'état."},
+  {s:"Elle est devenue [[la meilleure de la classe]].", c:"attribut", w:"Attribut du sujet après devenir."},
+  {s:"Le ciel paraît [[menaçant]].", c:"attribut", w:"Attribut du sujet ciel : on ne peut pas le supprimer."},
+  {s:"Il reste [[silencieux]].", c:"attribut", w:"Rester est un verbe d'état : ce qui suit est attribut du sujet."},
+  {s:"Nous partirons [[demain matin]].", c:"cc", w:"Complément circonstanciel de temps : quand ? Il est déplaçable et supprimable."},
+  {s:"Il travaille [[dans sa chambre]].", c:"cc", w:"Complément circonstanciel de lieu : où ?"},
+  {s:"Elle répondit [[avec calme]].", c:"cc", w:"Complément circonstanciel de manière : comment ?"},
+  {s:"[[Malgré la pluie]], le match a eu lieu.", c:"cc", w:"Complément circonstanciel d'opposition, détaché en tête de phrase."},
+  {s:"Il est absent [[parce qu'il est malade]].", c:"cc", w:"Complément circonstanciel de cause : pourquoi ?"},
+  {s:"Nous marchions [[le long de la rivière]].", c:"cc", w:"Complément circonstanciel de lieu, supprimable."},
+  {s:"[[Chaque été]], nous retournons là-bas.", c:"cc", w:"Complément circonstanciel de temps : on peut le déplacer à la fin."},
+  {s:"Une [[longue]] file attendait.", c:"epithete", w:"Épithète du nom file : l'adjectif est collé au nom, sans verbe d'état."},
+  {s:"Il portait des chaussures [[neuves]].", c:"epithete", w:"Épithète du nom chaussures, placée après lui."},
+  {s:"Un ciel [[bleu]] annonçait l'été.", c:"epithete", w:"Épithète : elle appartient au groupe nominal."},
+  {s:"Elle a acheté une robe [[rouge]].", c:"epithete", w:"Épithète du nom robe. Dans la robe est rouge, ce serait un attribut."},
+  {s:"Un vent [[glacial]] soufflait.", c:"epithete", w:"Épithète du nom vent."},
+  {s:"Le livre [[de mon frère]] a disparu.", c:"cdn", w:"Complément du nom livre : il complète un nom, pas un verbe."},
+  {s:"Une tasse [[de thé]] fumait.", c:"cdn", w:"Complément du nom tasse, introduit par de."},
+  {s:"La porte [[du garage]] grince.", c:"cdn", w:"Complément du nom porte."},
+  {s:"Un homme [[sans scrupules]] dirigeait l'entreprise.", c:"cdn", w:"Complément du nom homme, introduit par sans."},
+  {s:"La maison [[en pierre]] date du siècle dernier.", c:"cdn", w:"Complément du nom maison."},
+  {s:"Paris, [[capitale de la France]], attire les touristes.", c:"apposition", w:"Apposition au nom Paris : entre virgules, elle désigne la même réalité."},
+  {s:"Mon frère, [[médecin à Lyon]], arrive ce soir.", c:"apposition", w:"Apposition : elle donne une autre désignation du même être."},
+  {s:"[[Épuisée]], elle s'est endormie.", c:"apposition", w:"Adjectif apposé au sujet elle, détaché par la virgule."},
+  {s:"Nous avons visité Rome, [[la ville éternelle]].", c:"apposition", w:"Apposition au nom Rome."},
+  {s:"La maison a été construite [[par mon grand-père]].", c:"agent", w:"Complément d'agent : à la voix passive, il désigne qui fait l'action."},
+  {s:"Le tableau fut peint [[par un élève de Rubens]].", c:"agent", w:"Complément d'agent, introduit par par."},
+  {s:"Elle est respectée [[de tous]].", c:"agent", w:"Complément d'agent introduit par de, plus rare que par."},
+  {s:"Ce roman a été traduit [[par une équipe de spécialistes]].", c:"agent", w:"Complément d'agent : à la voix active, ce groupe deviendrait le sujet."}
+];
+
+const CAM = [
+  {w:"le chat", a:{s:"[[Le chat]] dort sur le canapé.", c:"sujet"}, b:{s:"Je nourris [[le chat]] le matin.", c:"cod"},
+   t:"Même groupe nominal, deux fonctions. Ce n'est pas le groupe qui décide, c'est sa place autour du verbe."},
+  {w:"ton frère", a:{s:"[[Ton frère]] a téléphoné.", c:"sujet"}, b:{s:"J'ai vu [[ton frère]] au marché.", c:"cod"},
+   t:"Devant le verbe et commandant l'accord : sujet. Après le verbe et répondant à qui ? : COD."},
+  {w:"à Paris", a:{s:"Je pense souvent [[à Paris]].", c:"coi"}, b:{s:"Nous vivons [[à Paris]] depuis deux ans.", c:"cc"},
+   t:"Penser à est exigé par le verbe : COI. Le lieu où l'on vit peut se déplacer et se supprimer : circonstanciel."},
+  {w:"malade", a:{s:"Cet enfant est [[malade]].", c:"attribut"}, b:{s:"Un enfant [[malade]] pleurait.", c:"epithete"},
+   t:"Après un verbe d'état, l'adjectif est attribut. Collé au nom, il est épithète."},
+  {w:"heureux", a:{s:"Il semble [[heureux]].", c:"attribut"}, b:{s:"Un homme [[heureux]] chantait.", c:"epithete"},
+   t:"Le verbe d'état est le seul indice qui compte ici."},
+  {w:"de mon frère", a:{s:"Le vélo [[de mon frère]] est cassé.", c:"cdn"}, b:{s:"Je me souviens [[de mon frère]] enfant.", c:"coi"},
+   t:"S'il complète un nom, c'est un complément du nom. S'il complète le verbe, c'est un COI."},
+  {w:"professeur", a:{s:"Mon oncle est [[professeur]].", c:"attribut"}, b:{s:"Mon oncle, [[professeur à Lyon]], arrive demain.", c:"apposition"},
+   t:"Relié par le verbe être : attribut. Détaché par des virgules : apposition."},
+  {w:"une lettre", a:{s:"[[Une lettre]] est arrivée ce matin.", c:"sujet"}, b:{s:"Il écrit [[une lettre]] à sa grand-mère.", c:"cod"},
+   t:"Le test de l'accord tranche : une lettre est arrivée, le verbe s'accorde avec le sujet."}
+];
+
+const MEMO = [
+  {s:"[[Le vent]] souffle", c:"sujet"},
+  {s:"Il lit [[un roman]]", c:"cod"},
+  {s:"Elle pense [[à toi]]", c:"coi"},
+  {s:"Il est [[médecin]]", c:"attribut"},
+  {s:"Nous partons [[demain]]", c:"cc"},
+  {s:"Un ciel [[bleu]]", c:"epithete"},
+  {s:"La porte [[du garage]]", c:"cdn"},
+  {s:"Rome, [[ville éternelle]]", c:"apposition"},
+  {s:"Abattu [[par le vent]]", c:"agent"}
+];
+
+/* ============ outils ============ */
+const $ = (sel,root=document)=>root.querySelector(sel);
+const shuffle = a => {const c=[...a];for(let i=c.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[c[i],c[j]]=[c[j],c[i]];}return c;};
+const pick = (a,n) => shuffle(a).slice(0,n);
+const esc = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;");
+function phraseHTML(s,cls){
+  return esc(s).replace(/\[\[(.+?)\]\]/,(m,w)=>`<span class="target">${w}</span>`);
+}
+function plainWord(s){const m=s.match(/\[\[(.+?)\]\]/);return m?m[1]:"";}
+function chrono(sec){return sec<60?sec+" s":Math.floor(sec/60)+" min "+String(sec%60).padStart(2,"0");}
+
+/* onglets */
+document.querySelectorAll(".tab").forEach(t=>{
+  t.addEventListener("click",()=>{
+    document.querySelectorAll(".tab").forEach(x=>x.setAttribute("aria-selected",x===t));
+    document.querySelectorAll(".panel").forEach(p=>p.classList.toggle("on",p.id===t.dataset.panel));
+    if(t.dataset.panel==="quiz")quizIntro();
+    if(t.dataset.panel==="cam")camIntro();
+    if(t.dataset.panel==="memo")memoIntro();
+    if(t.dataset.panel==="cartes")cardsIntro();
+    window.scrollTo({top:0,behavior:"smooth"});
+  });
+});
+
+function choicesHTML(){
+  return `<div class="choices">${ORDER.map(id=>
+    `<button class="choice" data-c="${id}" style="--c:${col(id)}">${CLASSES[id].label}</button>`).join("")}</div>`;
+}
+function markChoices(root,correct,chosen){
+  root.querySelectorAll(".choice").forEach(b=>{
+    b.disabled=true;
+    if(b.dataset.c===correct)b.classList.add("good");
+    else if(b.dataset.c===chosen)b.classList.add("bad");
+    else b.classList.add("dim");
+  });
+}
+
+/* ============ 1. en contexte ============ */
+const Q = {list:[],i:0,score:0,errs:[],t0:0,raf:null,limit:15};
+const qp = $("#quiz");
+
+function quizIntro(){
+  clearInterval(Q.raf);
+  qp.innerHTML = `<div class="intro">
+    <h2>Le groupe souligné, sa fonction.</h2>
+    <p>Dix phrases, quinze secondes chacune. Plus tu réponds vite, plus tu marques de points. Les erreurs sont reprises à la fin.</p>
+    <button class="btn" id="qgo">Commencer la manche</button>
+  </div>`;
+  $("#qgo").onclick=()=>{Q.list=pick(QUIZ,10);Q.i=0;Q.score=0;Q.errs=[];Q.t0=Date.now();quizStep();};
+}
+function quizStep(){
+  if(Q.i>=Q.list.length)return quizEnd();
+  const q=Q.list[Q.i];
+  qp.innerHTML=`
+    <div class="status"><span>Phrase <b>${Q.i+1}</b>/${Q.list.length}</span><span class="grow"></span><span>Points <b id="qsc">${Q.score}</b></span></div>
+    <div class="chrono" id="qbar"><span></span></div>
+    <div id="qcard">
+      <p class="annot" id="qan">Fonction de « ${plainWord(q.s)} » ?</p>
+      <p class="phrase">${phraseHTML(q.s)}</p>
+      <p class="why" id="qwhy"></p>
+    </div>
+    ${choicesHTML()}
+    <div class="row-end"><button class="btn hidden" id="qnext">Suivante</button></div>`;
+  const start=performance.now(), bar=$("#qbar"), fill=$("#qbar span");
+  function tick(now){
+    const left=Math.max(0,Q.limit-(now-start)/1000);
+    fill.style.width=(left/Q.limit*100)+"%";
+    bar.classList.toggle("warn",left<5);
+    if(left<=0){reveal(null,0);return;}
+    Q.raf=requestAnimationFrame(tick);
+  }
+  Q.raf=requestAnimationFrame(tick);
+
+  qp.querySelectorAll(".choice").forEach(b=>{
+    b.onclick=()=>{
+      const left=Math.max(0,Q.limit-(performance.now()-start)/1000);
+      reveal(b.dataset.c,left);
+    };
+  });
+
+  function reveal(chosen,left){
+    cancelAnimationFrame(Q.raf);
+    const ok=chosen===q.c;
+    if(ok)Q.score+=10+Math.round(left);
+    else Q.errs.push({...q,chosen});
+    const card=$("#qcard");
+    card.style.setProperty("--hl",col(q.c));
+    card.classList.add("revealed");
+    $("#qan").textContent=CLASSES[q.c].label;
+    $("#qwhy").innerHTML=(ok?"":"<em>"+(chosen?"Non. ":"Temps écoulé. ")+"</em>")+esc(q.w);
+    $("#qsc").textContent=Q.score;
+    markChoices(qp,q.c,chosen);
+    const n=$("#qnext");n.classList.remove("hidden");
+    n.textContent=Q.i===Q.list.length-1?"Voir le bilan":"Suivante";
+    n.onclick=()=>{Q.i++;quizStep();};
+    n.focus({preventScroll:true});
+  }
+}
+function quizEnd(){
+  const secs=Math.round((Date.now()-Q.t0)/1000), good=Q.list.length-Q.errs.length;
+  qp.innerHTML=`<div class="bilan">
+    <h2>Bilan de la manche</h2>
+    <p class="bigscore">${Q.score}</p>
+    <p class="meta">${good} bonnes réponses sur ${Q.list.length}, en ${chrono(secs)}.</p>
+    ${Q.errs.length?`<p class="section-title">À revoir</p><ul class="errlist">${Q.errs.map(e=>`
+      <li style="--c:${col(e.c)}">
+        <div class="ph">${phraseHTML(e.s)}</div>
+        <div class="tags"><span class="ko">${e.chosen?CLASSES[e.chosen].label:"Pas de réponse"}</span><span class="ok">${CLASSES[e.c].label}</span></div>
+        <div class="why" style="opacity:1;min-height:0">${esc(e.w)}</div>
+      </li>`).join("")}</ul>`
+    :`<p class="section-title">Sans faute</p><p style="margin-top:8px">Rien à revoir. Passe aux déplacements, c'est là que ça se complique.</p>`}
+    <div class="row-end"><button class="btn ghost" id="qagain">Nouvelle manche</button></div>
+  </div>`;
+  qp.querySelectorAll(".errlist .ph .target").forEach(t=>{t.parentElement.parentElement.classList.add("revealed")});
+  qp.querySelectorAll(".errlist li").forEach(li=>{li.style.setProperty("--hl",li.style.getPropertyValue("--c"));li.classList.add("revealed")});
+  $("#qagain").onclick=()=>{Q.list=pick(QUIZ,10);Q.i=0;Q.score=0;Q.errs=[];Q.t0=Date.now();quizStep();};
+}
+
+/* ============ 2. cameleons ============ */
+const C = {list:[],i:0,step:0,good:0,total:0};
+const cp = $("#cam");
+
+function camIntro(){
+  cp.innerHTML=`<div class="intro">
+    <h2>Un groupe, deux fonctions.</h2>
+    <p>Le même groupe revient dans deux phrases. Sa fonction change d'une phrase à l'autre : à toi de dire laquelle, deux fois.</p>
+    <button class="btn" id="cgo">Commencer</button>
+  </div>`;
+  $("#cgo").onclick=()=>{C.list=pick(CAM,6);C.i=0;C.step=0;C.good=0;C.total=0;camStep();};
+}
+function camStep(){
+  if(C.i>=C.list.length)return camEnd();
+  const p=C.list[C.i], part=C.step===0?p.a:p.b;
+  cp.innerHTML=`
+    <div class="status"><span>Mot <b>${C.i+1}</b>/${C.list.length}</span><span class="grow"></span><span>Emploi <b>${C.step+1}</b>/2</span></div>
+    <div class="word-card"><span class="lbl">Le mot</span><span class="w">${esc(p.w)}</span></div>
+    <div id="ccard">
+      <p class="annot" id="can">Fonction de « ${plainWord(part.s)} » ?</p>
+      <p class="phrase">${phraseHTML(part.s)}</p>
+      <p class="why" id="cwhy"></p>
+    </div>
+    ${choicesHTML()}
+    <div class="row-end"><button class="btn hidden" id="cnext">Continuer</button></div>`;
+  cp.querySelectorAll(".choice").forEach(b=>{
+    b.onclick=()=>{
+      const ok=b.dataset.c===part.c;
+      C.total++; if(ok)C.good++;
+      const card=$("#ccard");
+      card.style.setProperty("--hl",col(part.c));
+      card.classList.add("revealed");
+      $("#can").textContent=CLASSES[part.c].label;
+      $("#cwhy").innerHTML=ok?"Exact.":"<em>Non.</em> Ici, c'est "+CLASSES[part.c].label.toLowerCase()+".";
+      markChoices(cp,part.c,b.dataset.c);
+      const n=$("#cnext");n.classList.remove("hidden");
+      n.textContent=C.step===0?"Deuxième emploi":"Comparer les deux";
+      n.onclick=()=>{ if(C.step===0){C.step=1;camStep();} else camCompare(p); };
+      n.focus({preventScroll:true});
+    };
+  });
+}
+function camCompare(p){
+  cp.innerHTML=`
+    <div class="word-card"><span class="lbl">Le même mot</span><span class="w">${esc(p.w)}</span></div>
+    <ul class="duo">
+      <li style="--c:${col(p.a.c)};--hl:${col(p.a.c)}" class="revealed"><div class="ph">${phraseHTML(p.a.s)}</div><div class="cls">${CLASSES[p.a.c].label}</div></li>
+      <li style="--c:${col(p.b.c)};--hl:${col(p.b.c)}" class="revealed"><div class="ph">${phraseHTML(p.b.s)}</div><div class="cls">${CLASSES[p.b.c].label}</div></li>
+    </ul>
+    <p class="verdict">${esc(p.t)}</p>
+    <div class="row-end"><button class="btn" id="cnext2">${C.i===C.list.length-1?"Voir le bilan":"Mot suivant"}</button></div>`;
+  $("#cnext2").onclick=()=>{C.i++;C.step=0;camStep();};
+}
+function camEnd(){
+  cp.innerHTML=`<div class="bilan">
+    <h2>Fin de la série</h2>
+    <p class="bigscore">${C.good}<span style="font-size:24px;color:var(--ink-soft)"> / ${C.total}</span></p>
+    <p class="meta">Six groupes déplacés, douze fonctions analysées.</p>
+    <p>Retiens le réflexe : pour trouver une fonction, on part toujours du verbe, jamais du mot.</p>
+    <div class="row-end"><button class="btn ghost" id="cagain">Nouvelle série</button></div>
+  </div>`;
+  $("#cagain").onclick=()=>{C.list=pick(CAM,6);C.i=0;C.step=0;C.good=0;C.total=0;camStep();};
+}
+
+/* ============ 3. memo ============ */
+const M = {cards:[],open:[],found:0,tries:0,t0:0,lock:false};
+const mp = $("#memo");
+
+function memoIntro(){
+  mp.innerHTML=`<div class="intro">
+    <h2>Six phrases, six fonctions.</h2>
+    <p>Chaque carte-phrase a un groupe souligné. Retrouve la carte-fonction qui lui correspond.</p>
+    <button class="btn" id="mgo">Distribuer</button>
+  </div>`;
+  $("#mgo").onclick=memoStart;
+}
+function memoStart(){
+  const pairs=pick(MEMO,6);
+  M.cards=shuffle(pairs.flatMap((p,k)=>[{k,type:"ph",p},{k,type:"cl",p}]));
+  M.open=[];M.found=0;M.tries=0;M.lock=false;M.t0=Date.now();
+  memoRender();
+}
+function memoRender(){
+  mp.innerHTML=`
+    <div class="status"><span>Paires <b id="mfd">${M.found}</b>/6</span><span class="grow"></span><span>Essais <b id="mtr">${M.tries}</b></span></div>
+    <div class="board" id="mboard">${M.cards.map((c,i)=>`
+      <button class="card" data-i="${i}" style="--c:${col(c.p.c)}" aria-label="Carte ${i+1}">
+        <span class="inner">
+          <span class="face back"></span>
+          <span class="face front">${c.type==="ph"
+            ? `<span class="ph">${esc(c.p.s).replace(/\[\[(.+?)\]\]/,'<span class="hl">$1</span>')}</span>`
+            : `<span class="cls">${CLASSES[c.p.c].label}</span>`}</span>
+        </span>
+      </button>`).join("")}</div>
+    <div class="row-end"><button class="btn ghost" id="mreset">Redistribuer</button></div>`;
+  $("#mreset").onclick=memoStart;
+  mp.querySelectorAll(".card").forEach(btn=>btn.onclick=()=>memoFlip(btn));
+}
+function memoFlip(btn){
+  const i=+btn.dataset.i;
+  if(M.lock||btn.classList.contains("up")||btn.classList.contains("done"))return;
+  btn.classList.add("up");M.open.push(i);
+  if(M.open.length<2)return;
+  M.lock=true;M.tries++;$("#mtr").textContent=M.tries;
+  const [a,b]=M.open, ca=M.cards[a], cb=M.cards[b];
+  const same = ca.k===cb.k && ca.type!==cb.type;
+  setTimeout(()=>{
+    const ea=mp.querySelector(`[data-i="${a}"]`), eb=mp.querySelector(`[data-i="${b}"]`);
+    if(same){
+      ea.classList.add("done");eb.classList.add("done");
+      M.found++;$("#mfd").textContent=M.found;
+      if(M.found===6)setTimeout(memoEnd,450);
+    }else{ea.classList.remove("up");eb.classList.remove("up");}
+    M.open=[];M.lock=false;
+  }, same?420:900);
+}
+function memoEnd(){
+  const secs=Math.round((Date.now()-M.t0)/1000);
+  mp.innerHTML=`<div class="bilan">
+    <h2>Tableau complet</h2>
+    <p class="bigscore">${M.tries}</p>
+    <p class="meta">essais, en ${chrono(secs)}. Le minimum possible est de six.</p>
+    <div class="row-end"><button class="btn ghost" id="magain">Redistribuer</button></div>
+  </div>`;
+  $("#magain").onclick=memoStart;
+}
+
+/* ============ 4. cartes ============ */
+const F = {queue:[],mastered:0,flips:0,ratees:[],t0:0,size:12};
+const fp = $("#cartes");
+
+function cardsIntro(){
+  fp.innerHTML=`<div class="intro">
+    <h2>Répondre sans voir les propositions.</h2>
+    <p>Douze cartes. Tu lis la phrase, tu dis la fonction à voix haute, <em>puis</em> tu retournes. Une carte sue monte d'une boîte, une carte ratée retombe dans la première. La série s'arrête quand les douze ont atteint la boîte 3.</p>
+    <button class="btn" id="fgo">Prendre le paquet</button>
+  </div>`;
+  $("#fgo").onclick=()=>{
+    F.queue=pick(QUIZ,F.size).map(it=>({it,box:1,rate:false}));
+    F.mastered=0;F.flips=0;F.ratees=[];F.t0=Date.now();
+    cardsStep();
+  };
+}
+function cardsStep(){
+  if(!F.queue.length)return cardsEnd();
+  const c=F.queue[0], q=c.it, counts=[1,2,3].map(b=>F.queue.filter(x=>x.box===b).length);
+  fp.innerHTML=`
+    <div class="boxes">
+      ${counts.map((n,k)=>`<div class="box${c.box===k+1?" hot":""}"><div class="n">${n}</div><div class="l">Boîte ${k+1}</div></div>`).join("")}
+      <div class="box"><div class="n">${F.mastered}</div><div class="l">Sues</div></div>
+    </div>
+    <div class="flash" id="fcard" style="--c:${col(q.c)}">
+      <div class="flash-inner">
+        <div class="flash-face recto">
+          <p class="annot">Fonction de « ${plainWord(q.s)} » ?</p>
+          <p class="phrase">${phraseHTML(q.s)}</p>
+        </div>
+        <div class="flash-face verso">
+          <p class="rep">${CLASSES[q.c].label}</p>
+          <p class="rep-why">${esc(q.w)}</p>
+          <p class="rep-ph">${phraseHTML(q.s)}</p>
+        </div>
+      </div>
+    </div>
+    <p class="consigne" id="fhint">Dis la réponse à voix haute avant de retourner.</p>
+    <div id="factions"><button class="btn" id="fturn" style="width:100%">Retourner la carte</button></div>`;
+  $("#fturn").onclick=()=>{
+    F.flips++;
+    const card=$("#fcard"), verso=card.querySelector(".verso");
+    card.classList.add("turned");
+    verso.style.setProperty("--hl",col(q.c));
+    verso.classList.add("revealed");
+    $("#fhint").textContent="Sois honnête : tu l'avais dit, ou tu l'as reconnu en lisant ?";
+    $("#factions").innerHTML=`<div class="judge">
+      <button class="btn no" id="fko">Pas su</button>
+      <button class="btn" id="fok">Je savais</button></div>`;
+    $("#fok").onclick=()=>judge(true);
+    $("#fko").onclick=()=>judge(false);
+  };
+  function judge(ok){
+    F.queue.shift();
+    if(ok){
+      c.box++;
+      if(c.box>3){F.mastered++; if(c.rate)F.ratees.push(q);}
+      else F.queue.splice(Math.min(c.box===2?3:6,F.queue.length),0,c);
+    }else{
+      c.box=1;c.rate=true;
+      F.queue.splice(Math.min(2,F.queue.length),0,c);
+    }
+    cardsStep();
+  }
+}
+function cardsEnd(){
+  const secs=Math.round((Date.now()-F.t0)/1000);
+  const uniques=[...new Map(F.ratees.map(q=>[q.s,q])).values()];
+  fp.innerHTML=`<div class="bilan">
+    <h2>Paquet terminé</h2>
+    <p class="bigscore">${F.flips}</p>
+    <p class="meta">retournements pour ${F.size} cartes, en ${chrono(secs)}. Le minimum est de ${F.size*3}.</p>
+    ${uniques.length?`<p class="section-title">Cartes qui ont résisté</p><ul class="errlist">${uniques.map(q=>`
+      <li class="revealed" style="--c:${col(q.c)};--hl:${col(q.c)}">
+        <div class="ph">${phraseHTML(q.s)}</div>
+        <div class="tags"><span class="ok">${CLASSES[q.c].label}</span></div>
+        <div class="why" style="opacity:1;min-height:0">${esc(q.w)}</div>
+      </li>`).join("")}</ul>`
+    :`<p style="margin-top:10px">Aucune carte n'est retombée dans la boîte 1. Reprends un paquet, il sera tiré ailleurs dans la banque.</p>`}
+    <div class="row-end"><button class="btn ghost" id="fagain">Nouveau paquet</button></div>
+  </div>`;
+  $("#fagain").onclick=()=>{
+    F.queue=pick(QUIZ,F.size).map(it=>({it,box:1,rate:false}));
+    F.mastered=0;F.flips=0;F.ratees=[];F.t0=Date.now();cardsStep();
+  };
+}
+
+/* demarrage */
+quizIntro();camIntro();memoIntro();cardsIntro();
+</script>
+</body>
+</html>
