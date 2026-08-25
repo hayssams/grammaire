@@ -5,6 +5,7 @@ Aucune dépendance, aucun build : il suffit d'ouvrir le fichier dans un navigate
 
 | Page | Sujet |
 | --- | --- |
+| [index.html](index.html) | Page d'accueil, vers les deux carnets |
 | [classes-grammaticales.html](classes-grammaticales.html) | Les classes grammaticales, en contexte |
 | [fonctions-grammaticales.html](fonctions-grammaticales.html) | Les fonctions grammaticales, en contexte |
 
