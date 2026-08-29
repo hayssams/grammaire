@@ -43,6 +43,14 @@ body{
 
 /* ---------- en-tete ---------- */
 header{padding:26px 0 14px}
+.topbar{display:flex;align-items:center;gap:14px;margin:0 0 6px}
+.topbar .eyebrow{margin:0}
+.home{
+  font-family:var(--sans);font-size:13px;font-weight:700;text-decoration:none;color:var(--ink);
+  border:1px solid var(--rule);border-radius:999px;padding:6px 12px;background:var(--paper,transparent);
+  transition:background .2s,transform .2s
+}
+.home:hover{background:var(--rule-soft);transform:translateY(-1px)}
 .eyebrow{
   font-size:11px;letter-spacing:.16em;text-transform:uppercase;
   color:var(--ink-soft);font-weight:700;margin:0 0 6px
@@ -250,7 +258,7 @@ nav{display:flex;gap:6px;margin:18px 0 0;align-items:flex-end}
 <body>
 <div class="wrap">
   <header>
-    <p class="eyebrow">Français, 3<sup>e</sup></p>
+    <div class="topbar"><a class="home" href="index.html">🏠 Accueil</a><p class="eyebrow">Français, 3<sup>e</sup></p></div>
     <h1>La fonction ne dépend pas du mot, <em>mais du verbe</em></h1>
     <p class="sub">Quatre entraînements. La nature d'un mot ne change pas, sa fonction change à chaque phrase.</p>
     <nav role="tablist">
