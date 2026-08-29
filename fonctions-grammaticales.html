@@ -114,13 +114,13 @@ nav{display:flex;gap:6px;margin:18px 0 0;align-items:flex-end}
   margin:0 0 4px
 }
 .revealed .annot{color:var(--hl,var(--ink-soft))}
-.verdict{text-align:center;min-height:78px;margin:0 0 8px;position:relative}
-.verdict .emo{display:inline-block;font-size:48px;line-height:52px;animation:pop .45s cubic-bezier(.2,1.6,.4,1)}
-.verdict .msg{display:block;font-family:var(--sans);font-weight:800;font-size:16px;line-height:22px;letter-spacing:.02em;animation:pop .45s .1s both cubic-bezier(.2,1.6,.4,1)}
-.verdict.yes .msg{color:var(--nom)}
-.verdict.no .msg{color:var(--marge)}
-.verdict.no .emo{animation:shake .5s ease}
-.verdict .streak{display:block;font-family:var(--sans);font-size:12px;font-weight:700;color:var(--ink-soft);margin-top:2px;animation:pop .4s .25s both}
+.react{text-align:center;min-height:78px;margin:0 0 8px;position:relative}
+.react .emo{display:inline-block;font-size:48px;line-height:52px;animation:pop .45s cubic-bezier(.2,1.6,.4,1)}
+.react .msg{display:block;font-family:var(--sans);font-weight:800;font-size:16px;line-height:22px;letter-spacing:.02em;animation:pop .45s .1s both cubic-bezier(.2,1.6,.4,1)}
+.react.yes .msg{color:var(--nom)}
+.react.no .msg{color:var(--marge)}
+.react.no .emo{animation:shake .5s ease}
+.react .streak{display:block;font-family:var(--sans);font-size:12px;font-weight:700;color:var(--ink-soft);margin-top:2px;animation:pop .4s .25s both}
 @keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px) rotate(-8deg)}40%,80%{transform:translateX(8px) rotate(8deg)}}
 .confetti{position:absolute;left:50%;top:26px;width:9px;height:9px;border-radius:2px;pointer-events:none;animation:fly .9s ease-out forwards}
 @keyframes fly{0%{transform:translate(0,0) rotate(0);opacity:1}100%{transform:translate(var(--dx),var(--dy)) rotate(540deg);opacity:0}}
@@ -433,13 +433,13 @@ function confetti(host){
     host.appendChild(p);
   }
 }
-function showVerdict(ok){
-  const v=$("#qv");
-  const [emo,msg]=ok?rnd(CHEERS):rnd(OOPS);
-  Q.streak=ok?Q.streak+1:0;
-  v.className="verdict "+(ok?"yes":"no");
+function showVerdict(ok,sel="#qv",st=Q,cheers=CHEERS,oops=OOPS){
+  const v=$(sel);
+  const [emo,msg]=ok?rnd(cheers):rnd(oops);
+  st.streak=ok?st.streak+1:0;
+  v.className="react "+(ok?"yes":"no");
   v.innerHTML=`<span class="emo" role="img" aria-label="${ok?"Bonne réponse":"Mauvaise réponse"}">${emo}</span><span class="msg">${msg}</span>`+
-    (Q.streak>=3?`<span class="streak">🔥 ${Q.streak} d'affilée !</span>`:"");
+    (st.streak>=3?`<span class="streak">🔥 ${st.streak} d'affilée !</span>`:"");
   if(ok)confetti(v);
 }
 const qp = $("#quiz");
@@ -458,7 +458,7 @@ function quizStep(){
   qp.innerHTML=`
     <div class="status"><span>Phrase <b>${Q.i+1}</b>/${Q.list.length}</span><span class="grow"></span><span>Points <b id="qsc">${Q.score}</b></span></div>
     <div id="qcard">
-      <div class="verdict" id="qv"></div>
+      <div class="react" id="qv"></div>
       <p class="annot" id="qan">Fonction de « ${plainWord(q.s)} » ?</p>
       <p class="phrase">${phraseHTML(q.s)}</p>
       <p class="why" id="qwhy"></p>
@@ -509,16 +509,19 @@ function quizEnd(){
 }
 
 /* ============ 2. cameleons ============ */
-const C = {list:[],i:0,step:0,good:0,total:0};
+const C = {list:[],i:0,step:0,good:0,total:0,streak:0};
+const C_CHEERS=[["🚚","Bien suivi, le groupe a déménagé !"],["🧭","Tu ne perds pas le nord !"],["🎯","Dans le mille !"],["🔍","Bien vu !"],["⭐","Super !"],["🎉","Bravo !"]];
+const C_OOPS=[["🚚","Le groupe a bougé, mais pas sa fonction ?"],["🙈","Pars du verbe, pas du mot."],["🤔","Hmm, il a changé de place..."],["😅","Oups, presque !"]];
+const C_OKWHY=["Exact, il a changé de place mais tu l'as suivi.","Bien vu, le déplacement ne t'a pas perturbé.","Exact ! Rien ne t'échappe."];
 const cp = $("#cam");
 
 function camIntro(){
   cp.innerHTML=`<div class="intro">
-    <h2>Un groupe, deux fonctions.</h2>
-    <p>Le même groupe revient dans deux phrases. Sa fonction change d'une phrase à l'autre : à toi de dire laquelle, deux fois.</p>
+    <h2>🚚 Un groupe, deux fonctions.</h2>
+    <p>Le même groupe de mots déménage d'une phrase à l'autre et change de métier au passage. Sauras-tu le suivre, deux fois de suite ?</p>
     <button class="btn" id="cgo">Commencer</button>
   </div>`;
-  $("#cgo").onclick=()=>{C.list=pick(CAM,6);C.i=0;C.step=0;C.good=0;C.total=0;camStep();};
+  $("#cgo").onclick=()=>{C.list=pick(CAM,6);C.i=0;C.step=0;C.good=0;C.total=0;C.streak=0;camStep();};
 }
 function camStep(){
   if(C.i>=C.list.length)return camEnd();
@@ -527,6 +530,7 @@ function camStep(){
     <div class="status"><span>Mot <b>${C.i+1}</b>/${C.list.length}</span><span class="grow"></span><span>Emploi <b>${C.step+1}</b>/2</span></div>
     <div class="word-card"><span class="lbl">Le mot</span><span class="w">${esc(p.w)}</span></div>
     <div id="ccard">
+      <div class="react" id="cv"></div>
       <p class="annot" id="can">Fonction de « ${plainWord(part.s)} » ?</p>
       <p class="phrase">${phraseHTML(part.s)}</p>
       <p class="why" id="cwhy"></p>
@@ -540,8 +544,9 @@ function camStep(){
       const card=$("#ccard");
       card.style.setProperty("--hl",col(part.c));
       card.classList.add("revealed");
+      showVerdict(ok,"#cv",C,C_CHEERS,C_OOPS);
       $("#can").textContent=CLASSES[part.c].label;
-      $("#cwhy").innerHTML=ok?"Exact.":"<em>Non.</em> Ici, c'est "+CLASSES[part.c].label.toLowerCase()+".";
+      $("#cwhy").innerHTML=ok?rnd(C_OKWHY):"<em>Raté !</em> Ici, c'est "+CLASSES[part.c].label.toLowerCase()+".";
       markChoices(cp,part.c,b.dataset.c);
       const n=$("#cnext");n.classList.remove("hidden");
       n.textContent=C.step===0?"Deuxième emploi":"Comparer les deux";
@@ -563,13 +568,13 @@ function camCompare(p){
 }
 function camEnd(){
   cp.innerHTML=`<div class="bilan">
-    <h2>Fin de la série</h2>
+    <h2>${C.good===C.total?"🚚🏆 Tu as tout suivi, sans faute !":C.good>=9?"🧭 Fin de la série, sacré pisteur !":C.good>=6?"👍 Fin de la série, pas mal !":"💪 Fin de la série, ces groupes bougent vite !"}</h2>
     <p class="bigscore">${C.good}<span style="font-size:24px;color:var(--ink-soft)"> / ${C.total}</span></p>
     <p class="meta">Six groupes déplacés, douze fonctions analysées.</p>
     <p>Retiens le réflexe : pour trouver une fonction, on part toujours du verbe, jamais du mot.</p>
     <div class="row-end"><button class="btn ghost" id="cagain">Nouvelle série</button></div>
   </div>`;
-  $("#cagain").onclick=()=>{C.list=pick(CAM,6);C.i=0;C.step=0;C.good=0;C.total=0;camStep();};
+  $("#cagain").onclick=()=>{C.list=pick(CAM,6);C.i=0;C.step=0;C.good=0;C.total=0;C.streak=0;camStep();};
 }
 
 /* ============ 3. memo ============ */
