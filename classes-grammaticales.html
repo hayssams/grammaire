@@ -88,11 +88,6 @@ nav{display:flex;gap:6px;margin:18px 0 0;align-items:flex-end}
 }
 .status .grow{flex:1}
 .status b{color:var(--ink);font-size:14px;letter-spacing:0}
-.chrono{
-  height:4px;background:var(--rule-soft);border-radius:2px;overflow:hidden;margin-bottom:20px
-}
-.chrono span{display:block;height:100%;width:100%;background:var(--nom);transition:width .1s linear}
-.chrono.warn span{background:var(--marge)}
 
 /* ---------- phrase ---------- */
 .phrase{
@@ -411,14 +406,17 @@ function markChoices(root,correct,chosen){
 }
 
 /* ============ 1. en contexte ============ */
-const Q = {list:[],i:0,score:0,errs:[],t0:0,raf:null,limit:15};
+const SHEET_URL="https://script.google.com/macros/s/AKfycbwB53nfh6Xk_z1Gn4ck_WL8aX0gPxDzQ2MpxWVnpsdunmWR_IKj-tHPHOEVkP614jQJ/exec";
+function logResult(game,score,good,total,secs){
+  try{fetch(SHEET_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({page:"classes",game,score,good,total,secs})});}catch(e){}
+}
+const Q = {list:[],i:0,score:0,errs:[],t0:0};
 const qp = $("#quiz");
 
 function quizIntro(){
-  clearInterval(Q.raf);
   qp.innerHTML = `<div class="intro">
     <h2>Le mot souligné, sa classe.</h2>
-    <p>Dix phrases, quinze secondes chacune. Plus tu réponds vite, plus tu marques de points. Les erreurs sont reprises à la fin.</p>
+    <p>Dix phrases, dix points par bonne réponse. Les erreurs sont reprises à la fin.</p>
     <button class="btn" id="qgo">Commencer la manche</button>
   </div>`;
   $("#qgo").onclick=()=>{Q.list=pick(QUIZ,10);Q.i=0;Q.score=0;Q.errs=[];Q.t0=Date.now();quizStep();};
@@ -428,7 +426,6 @@ function quizStep(){
   const q=Q.list[Q.i];
   qp.innerHTML=`
     <div class="status"><span>Phrase <b>${Q.i+1}</b>/${Q.list.length}</span><span class="grow"></span><span>Points <b id="qsc">${Q.score}</b></span></div>
-    <div class="chrono" id="qbar"><span></span></div>
     <div id="qcard">
       <p class="annot" id="qan">Classe de « ${plainWord(q.s)} » ?</p>
       <p class="phrase">${phraseHTML(q.s)}</p>
@@ -436,33 +433,19 @@ function quizStep(){
     </div>
     ${choicesHTML()}
     <div class="row-end"><button class="btn hidden" id="qnext">Suivante</button></div>`;
-  const start=performance.now(), bar=$("#qbar"), fill=$("#qbar span");
-  function tick(now){
-    const left=Math.max(0,Q.limit-(now-start)/1000);
-    fill.style.width=(left/Q.limit*100)+"%";
-    bar.classList.toggle("warn",left<5);
-    if(left<=0){reveal(null,0);return;}
-    Q.raf=requestAnimationFrame(tick);
-  }
-  Q.raf=requestAnimationFrame(tick);
-
   qp.querySelectorAll(".choice").forEach(b=>{
-    b.onclick=()=>{
-      const left=Math.max(0,Q.limit-(performance.now()-start)/1000);
-      reveal(b.dataset.c,left);
-    };
+    b.onclick=()=>reveal(b.dataset.c);
   });
 
-  function reveal(chosen,left){
-    cancelAnimationFrame(Q.raf);
+  function reveal(chosen){
     const ok=chosen===q.c;
-    if(ok)Q.score+=10+Math.round(left);
+    if(ok)Q.score+=10;
     else Q.errs.push({...q,chosen});
     const card=$("#qcard");
     card.style.setProperty("--hl",col(q.c));
     card.classList.add("revealed");
     $("#qan").textContent=CLASSES[q.c].label;
-    $("#qwhy").innerHTML=(ok?"":"<em>"+(chosen?"Non. ":"Temps écoulé. ")+"</em>")+esc(q.w);
+    $("#qwhy").innerHTML=(ok?"":"<em>Non. </em>")+esc(q.w);
     $("#qsc").textContent=Q.score;
     markChoices(qp,q.c,chosen);
     const n=$("#qnext");n.classList.remove("hidden");
@@ -473,6 +456,7 @@ function quizStep(){
 }
 function quizEnd(){
   const secs=Math.round((Date.now()-Q.t0)/1000), good=Q.list.length-Q.errs.length;
+  logResult("quiz",Q.score,good,Q.list.length,secs);
   qp.innerHTML=`<div class="bilan">
     <h2>Bilan de la manche</h2>
     <p class="bigscore">${Q.score}</p>
@@ -609,6 +593,7 @@ function memoFlip(btn){
 }
 function memoEnd(){
   const secs=Math.round((Date.now()-M.t0)/1000);
+  logResult("memory",M.tries,M.found,6,secs);
   mp.innerHTML=`<div class="bilan">
     <h2>Tableau complet</h2>
     <p class="bigscore">${M.tries}</p>
@@ -685,6 +670,7 @@ function cardsStep(){
 }
 function cardsEnd(){
   const secs=Math.round((Date.now()-F.t0)/1000);
+  logResult("cartes",F.flips,F.size-F.ratees.length,F.size,secs);
   const uniques=[...new Map(F.ratees.map(q=>[q.s,q])).values()];
   fp.innerHTML=`<div class="bilan">
     <h2>Paquet terminé</h2>
