@@ -106,7 +106,8 @@ nav{display:flex;gap:6px;margin:18px 0 0;align-items:flex-end}
   margin:0 0 4px
 }
 .revealed .annot{color:var(--hl,var(--ink-soft))}
-.verdict{display:inline-block;font-size:22px;line-height:1;margin-right:8px;vertical-align:-3px;animation:pop .35s cubic-bezier(.2,1.4,.4,1)}
+.verdict{text-align:center;min-height:52px;margin:0 0 8px;font-size:44px;line-height:52px}
+.verdict span{display:inline-block;animation:pop .35s cubic-bezier(.2,1.4,.4,1)}
 @keyframes pop{from{transform:scale(.3);opacity:0}to{transform:scale(1);opacity:1}}
 .why{
   font-size:14px;color:var(--ink-soft);margin:8px 0 0;min-height:42px;
@@ -429,6 +430,7 @@ function quizStep(){
   qp.innerHTML=`
     <div class="status"><span>Phrase <b>${Q.i+1}</b>/${Q.list.length}</span><span class="grow"></span><span>Points <b id="qsc">${Q.score}</b></span></div>
     <div id="qcard">
+      <div class="verdict" id="qv"></div>
       <p class="annot" id="qan">Classe de « ${plainWord(q.s)} » ?</p>
       <p class="phrase">${phraseHTML(q.s)}</p>
       <p class="why" id="qwhy"></p>
@@ -446,7 +448,8 @@ function quizStep(){
     const card=$("#qcard");
     card.style.setProperty("--hl",col(q.c));
     card.classList.add("revealed");
-    $("#qan").innerHTML=`<span class="verdict ${ok?"yes":"no"}" aria-label="${ok?"Bonne réponse":"Mauvaise réponse"}">${ok?"👍":"👎"}</span>`+esc(CLASSES[q.c].label);
+    $("#qv").innerHTML=`<span role="img" aria-label="${ok?"Bonne réponse":"Mauvaise réponse"}">${ok?"👍":"👎"}</span>`;
+    $("#qan").textContent=CLASSES[q.c].label;
     $("#qwhy").innerHTML=(ok?"":"<em>Non. </em>")+esc(q.w);
     $("#qsc").textContent=Q.score;
     markChoices(qp,q.c,chosen);
