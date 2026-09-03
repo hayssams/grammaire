@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Le théorème de Thalès, sur la figure</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F5F6F1;
+  --paper-2:#FCFCFA;
+  --rule:#BFD3E4;
+  --rule-soft:#DDE7F0;
+  --marge:#DE5B4A;
+  --ink:#16233B;
+  --ink-soft:#5E6E85;
+  --maths:#1B6F55;
+  --serif:"Instrument Serif", Georgia, "Times New Roman", serif;
+  --sans:"Karla", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:16px;
+  line-height:1.5;
+  min-height:100vh;
+  padding:0 0 40px;
+}
+.wrap{max-width:560px;margin:0 auto;padding:0 14px}
+
+/* ---------- en-tete ---------- */
+header{padding:26px 0 14px}
+.topbar{display:flex;align-items:center;gap:14px;margin:0 0 6px}
+.topbar .eyebrow{margin:0}
+.home{
+  font-family:var(--sans);font-size:13px;font-weight:700;text-decoration:none;color:var(--ink);
+  border:1px solid var(--rule);border-radius:999px;padding:6px 12px;background:var(--paper,transparent);
+  transition:background .2s,transform .2s
+}
+.home:hover{background:var(--rule-soft);transform:translateY(-1px)}
+.eyebrow{
+  font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-soft);font-weight:700;margin:0 0 6px
+}
+h1{
+  font-family:var(--serif);font-weight:400;font-size:34px;line-height:1.05;
+  margin:0 0 4px;letter-spacing:-.01em
+}
+h1 em{font-style:italic;color:var(--maths)}
+.sub{margin:0;color:var(--ink-soft);font-size:14px}
+
+/* ---------- onglets ---------- */
+nav{display:flex;gap:6px;margin:18px 0 0;align-items:flex-end}
+.tab{
+  flex:1;border:1px solid var(--rule);border-bottom:none;
+  background:#EDEFE9;color:var(--ink-soft);
+  font-family:var(--sans);font-size:12.5px;font-weight:700;
+  padding:11px 3px 10px;border-radius:9px 9px 0 0;cursor:pointer;
+  letter-spacing:.01em;transition:background .15s,color .15s,transform .15s
+}
+.tab:hover{color:var(--ink)}
+.tab[aria-selected="true"]{background:var(--paper-2);color:var(--ink);transform:translateY(1px);box-shadow:0 -2px 0 var(--maths) inset}
+
+/* ---------- feuille ---------- */
+.sheet{
+  position:relative;background:var(--paper-2);
+  border:1px solid var(--rule);border-radius:0 0 10px 10px;
+  padding:22px 16px 20px 30px;overflow:hidden;
+  background-image:repeating-linear-gradient(to bottom,transparent 0 31px,var(--rule-soft) 31px 32px);
+  background-position:0 8px;
+}
+.sheet::before{
+  content:"";position:absolute;top:0;bottom:0;left:20px;width:1px;background:var(--marge);opacity:.5
+}
+.panel{display:none}
+.panel.on{display:block}
+
+/* ---------- barre d'etat ---------- */
+.status{
+  display:flex;align-items:center;gap:12px;
+  font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--ink-soft);margin-bottom:14px
+}
+.status .grow{flex:1}
+.status b{color:var(--ink);font-size:14px;letter-spacing:0}
+
+/* ---------- figure ---------- */
+.fig{margin:0 0 4px}
+.fig svg{width:100%;height:auto;display:block}
+.fig .tr{stroke:var(--ink);stroke-width:1.6;stroke-linecap:round}
+.fig .par{stroke:var(--maths);stroke-width:2.2;stroke-linecap:round}
+.fig .par.dash{stroke-dasharray:6 5}
+.fig .chev{stroke:var(--maths);stroke-width:1.8;fill:none;stroke-linecap:round}
+.fig .pt{fill:var(--ink)}
+.fig .ptn{font:italic 15px var(--serif);fill:var(--ink);paint-order:stroke;stroke:var(--paper-2);stroke-width:4}
+.fig .len{font:700 12px var(--sans);fill:var(--ink-soft);paint-order:stroke;stroke:var(--paper-2);stroke-width:4}
+.fig .len.unknown{fill:var(--marge);font-size:14px}
+.echelle{font-size:11px;color:var(--ink-soft);text-align:right;margin:0 0 8px}
+.hyp{font-size:14.5px;margin:0 0 6px}
+.hyp em{font-style:normal;font-weight:700}
+.annot{
+  font-family:var(--sans);font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-soft);transition:color .3s ease;margin:0 0 4px
+}
+.revealed .annot{color:var(--maths)}
+
+/* ---------- fractions ---------- */
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 3px;font-family:var(--serif);font-style:italic;line-height:1.2}
+.frac .fn{border-bottom:1.5px solid currentColor;padding:0 5px}
+.frac .fd{padding:0 5px}
+.egal{font-family:var(--serif);margin:0 5px}
+.ratios{font-family:var(--serif);font-size:18px;margin:10px 0 6px;display:grid;gap:8px}
+.ratios b{font-style:normal}
+
+/* ---------- reactions ---------- */
+.react{text-align:center;min-height:78px;margin:0 0 8px;position:relative}
+.react .emo{display:inline-block;font-size:48px;line-height:52px;animation:pop .45s cubic-bezier(.2,1.6,.4,1)}
+.react .msg{display:block;font-family:var(--sans);font-weight:800;font-size:16px;line-height:22px;letter-spacing:.02em;animation:pop .45s .1s both cubic-bezier(.2,1.6,.4,1)}
+.react.yes .msg{color:var(--maths)}
+.react.no .msg{color:var(--marge)}
+.react.no .emo{animation:shake .5s ease}
+.react .streak{display:block;font-family:var(--sans);font-size:12px;font-weight:700;color:var(--ink-soft);margin-top:2px;animation:pop .4s .25s both}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px) rotate(-8deg)}40%,80%{transform:translateX(8px) rotate(8deg)}}
+.confetti{position:absolute;left:50%;top:26px;width:9px;height:9px;border-radius:2px;pointer-events:none;animation:fly .9s ease-out forwards}
+@keyframes fly{0%{transform:translate(0,0) rotate(0);opacity:1}100%{transform:translate(var(--dx),var(--dy)) rotate(540deg);opacity:0}}
+@keyframes pop{from{transform:scale(.3);opacity:0}to{transform:scale(1);opacity:1}}
+.why{font-size:14px;color:var(--ink-soft);margin:8px 0 0;opacity:0;transition:opacity .3s .3s}
+.revealed .why{opacity:1}
+.why em{font-style:normal;color:var(--ink);font-weight:700}
+.why .frac{font-size:15px}
+
+/* ---------- choix ---------- */
+.judge{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px}
+.judge .btn{width:100%;text-align:center}
+.judge .no{background:transparent;color:var(--marge);border-color:var(--marge)}
+.judge .btn.good{background:var(--maths);border-color:var(--maths);color:#fff;opacity:1}
+.judge .btn.bad{background:transparent;border-color:var(--marge);color:var(--marge);text-decoration:line-through;opacity:1}
+.judge .btn.dim{opacity:.35}
+.choices-eq{display:grid;gap:8px;margin-top:16px}
+.choice{
+  border:1px solid var(--rule);background:var(--paper-2);color:var(--ink);
+  font-family:var(--serif);font-size:18px;
+  padding:12px 6px;border-radius:7px;cursor:pointer;text-align:center;
+  transition:background .12s,border-color .12s,color .12s,opacity .2s
+}
+.choice:hover:not(:disabled){border-color:var(--ink);background:#F1F3EE}
+.choice:disabled{cursor:default}
+.choice.dim{opacity:.32}
+.choice.good{background:var(--maths);border-color:var(--maths);color:#fff;opacity:1}
+.choice.bad{background:transparent;border-color:var(--marge);color:var(--marge);opacity:1;text-decoration:line-through}
+
+/* ---------- saisie ---------- */
+.answer{display:flex;gap:8px;align-items:center;margin-top:16px}
+.answer input{
+  flex:1;min-width:0;border:1px solid var(--rule);border-radius:8px;padding:12px;
+  font-family:var(--sans);font-size:18px;background:var(--paper-2);color:var(--ink)
+}
+.answer input:disabled{opacity:.6}
+.answer .unit{font-weight:700;color:var(--ink-soft)}
+
+/* ---------- boutons ---------- */
+.btn{
+  display:inline-block;border:1px solid var(--ink);background:var(--ink);color:var(--paper-2);
+  font-family:var(--sans);font-size:15px;font-weight:700;padding:12px 22px;border-radius:8px;cursor:pointer;
+  transition:opacity .15s
+}
+.btn:hover{opacity:.86}
+.btn:disabled{cursor:default}
+.btn.ghost{background:transparent;color:var(--ink)}
+.row-end{display:flex;justify-content:flex-end;gap:8px;margin-top:18px;min-height:46px;align-items:center}
+.hidden{display:none !important}
+
+/* ---------- accueil de manche ---------- */
+.intro{padding:6px 0 4px}
+.intro h2{font-family:var(--serif);font-weight:400;font-size:27px;margin:0 0 8px;line-height:1.15}
+.intro p{margin:0 0 18px;color:var(--ink-soft);font-size:15px;max-width:44ch}
+
+/* ---------- bilan ---------- */
+.bilan h2{font-family:var(--serif);font-weight:400;font-size:30px;margin:0 0 2px}
+.bigscore{font-family:var(--serif);font-size:56px;line-height:1;margin:10px 0 2px}
+.bilan .meta{color:var(--ink-soft);font-size:14px;margin:0 0 18px}
+.errlist{border-top:1px solid var(--rule-soft);margin:14px 0 0;padding:0;list-style:none}
+.errlist li{border-bottom:1px solid var(--rule-soft);padding:11px 0;font-size:14px;color:var(--ink-soft)}
+.errlist .rep{font-weight:700;color:var(--maths)}
+.section-title{
+  font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);
+  margin:22px 0 0
+}
+
+@media (max-width:360px){
+  .choice{font-size:16px}
+  .ratios{font-size:16px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition-duration:.01ms !important;animation-duration:.01ms !important}
+}
+:focus-visible{outline:2px solid var(--maths);outline-offset:2px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="topbar"><a class="home" href="maths.html">🏠 Maths</a><p class="eyebrow">Maths, 3<sup>e</sup></p></div>
+    <h1>Thalès se lit <em>sur la figure</em></h1>
+    <p class="sub">Quatre entraînements : vérifier les conditions, écrire les rapports, calculer, conclure.</p>
+    <nav role="tablist">
+      <button class="tab" role="tab" aria-selected="true" data-panel="reperer">Repérer</button>
+      <button class="tab" role="tab" aria-selected="false" data-panel="rapports">Les rapports</button>
+      <button class="tab" role="tab" aria-selected="false" data-panel="calculer">Calculer</button>
+      <button class="tab" role="tab" aria-selected="false" data-panel="recip">Réciproque</button>
+    </nav>
+  </header>
+
+  <div class="sheet">
+    <section class="panel on" id="reperer"></section>
+    <section class="panel" id="rapports"></section>
+    <section class="panel" id="calculer"></section>
+    <section class="panel" id="recip"></section>
+  </div>
+</div>
+
+<script>
+/* ============ outils ============ */
+const $ = (sel,root=document)=>root.querySelector(sel);
+const shuffle = a => {const c=[...a];for(let i=c.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[c[i],c[j]]=[c[j],c[i]];}return c;};
+const pick = (a,n) => shuffle(a).slice(0,n);
+const esc = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;");
+function chrono(sec){return sec<60?sec+" s":Math.floor(sec/60)+" min "+String(sec%60).padStart(2,"0");}
+const rnd=a=>a[Math.floor(Math.random()*a.length)];
+function frac(a,b){return `<span class="frac"><span class="fn">${a}</span><span class="fd">${b}</span></span>`;}
+function eq3(p){return p.map(([a,b])=>frac(a,b)).join(`<span class="egal">=</span>`);}
+
+/* ============ figures SVG ============ */
+function figSVG(f){
+  const lerp=(p,q,k)=>({x:p.x+(q.x-p.x)*k,y:p.y+(q.y-p.y)*k});
+  const s=f.type==="papillon"?-1:1;
+  const P={A:f.A,B:f.B,C:f.C};
+  P.M=f.M||lerp(f.A,f.B,s*(f.t??.5));
+  P.N=f.N||lerp(f.A,f.C,s*(f.tN??f.t??.5));
+  const ks=["A","B","C","M","N"];
+  const G={x:ks.reduce((v,k)=>v+P[k].x,0)/5,y:ks.reduce((v,k)=>v+P[k].y,0)/5};
+  const nm=r=>(f.names&&f.names[r])||r;
+  const seg=(p,q,cls)=>`<line x1="${p.x}" y1="${p.y}" x2="${q.x}" y2="${q.y}" class="${cls}"/>`;
+  const norm=v=>{const d=Math.hypot(v.x,v.y)||1;return{x:v.x/d,y:v.y/d};};
+  function chev(p,q){
+    const u=norm({x:q.x-p.x,y:q.y-p.y}),n={x:-u.y,y:u.x},c=lerp(p,q,.5);
+    let out="";
+    [-3,4].forEach(o=>{
+      const tip={x:c.x+u.x*o,y:c.y+u.y*o};
+      out+=`<path class="chev" d="M ${tip.x-u.x*6+n.x*4.5} ${tip.y-u.y*6+n.y*4.5} L ${tip.x} ${tip.y} L ${tip.x-u.x*6-n.x*4.5} ${tip.y-u.y*6-n.y*4.5}"/>`;
+    });
+    return out;
+  }
+  let b="";
+  if(f.type==="papillon"){b+=seg(P.M,P.B,"tr")+seg(P.N,P.C,"tr");}
+  else{b+=seg(P.A,P.B,"tr")+seg(P.A,P.C,"tr");}
+  b+=seg(P.B,P.C,"par"+(f.dash?" dash":""))+seg(P.M,P.N,"par"+(f.dash?" dash":""));
+  if(f.par)b+=chev(P.M,P.N)+chev(P.B,P.C);
+  (f.lens||[]).forEach(L=>{
+    const p=P[L.a],q=P[L.b],mid=lerp(p,q,.5);
+    const u=norm({x:q.x-p.x,y:q.y-p.y});
+    let n={x:-u.y,y:u.x};
+    if((mid.x+n.x*15-G.x)**2+(mid.y+n.y*15-G.y)**2 < (mid.x-n.x*15-G.x)**2+(mid.y-n.y*15-G.y)**2)n={x:-n.x,y:-n.y};
+    const pos={x:mid.x+n.x*(L.d??15),y:mid.y+n.y*(L.d??15)};
+    const unknown=L.v==="?";
+    const txt=unknown?`${nm(L.a)}${nm(L.b)} = ?`:`${nm(L.a)}${nm(L.b)} = ${L.v}`;
+    b+=`<text class="len${unknown?" unknown":""}" x="${pos.x}" y="${pos.y}" text-anchor="middle" dominant-baseline="middle">${txt}</text>`;
+  });
+  ks.forEach(k=>{
+    const p=P[k], d=norm({x:p.x-G.x,y:p.y-G.y});
+    b+=`<circle class="pt" cx="${p.x}" cy="${p.y}" r="2.6"/>`+
+       `<text class="ptn" x="${p.x+d.x*13}" y="${p.y+d.y*13}" text-anchor="middle" dominant-baseline="middle">${nm(k)}</text>`;
+  });
+  return `<svg viewBox="0 0 320 212" role="img" aria-label="Figure de Thalès">${b}</svg>`;
+}
+const TRI={type:"triangle",A:{x:165,y:26},B:{x:38,y:188},C:{x:295,y:188}};
+const TRI2={type:"triangle",A:{x:120,y:30},B:{x:30,y:190},C:{x:300,y:170}};
+const PAP={type:"papillon",A:{x:165,y:100},B:{x:35,y:192},C:{x:300,y:178}};
+const OMB={type:"triangle",A:{x:18,y:188},B:{x:290,y:188},C:{x:290,y:52}};
+
+/* ============ donnees ============ */
+const REPERER=[
+  {f:{...TRI,t:.45,par:true},hyp:"M est sur [AB], N est sur [AC], et <em>(MN) // (BC)</em>.",ok:true,
+   w:"Les points A, M, B et A, N, C sont alignés, et (MN) // (BC) : les deux conditions du théorème sont réunies."},
+  {f:{...TRI,t:.45},hyp:"M est sur [AB], N est sur [AC]. <em>On ne sait rien</em> des droites (MN) et (BC).",ok:false,
+   w:"Sans le parallélisme, pas de Thalès. La figure peut faire illusion : seule une information de l'énoncé (ou un codage) autorise le théorème."},
+  {f:{...PAP,t:.5,par:true},hyp:"Les droites (MB) et (NC) se coupent en A, et <em>(MN) // (BC)</em>.",ok:true,
+   w:"C'est la configuration croisée (le papillon) : M, A, B et N, A, C sont alignés, (MN) // (BC). Thalès s'applique aussi."},
+  {f:{...TRI,t:.4,tN:.68},hyp:"M est sur [AB], N est sur [AC], mais <em>(MN) et (BC) ne sont pas parallèles</em>.",ok:false,
+   w:"Le théorème exige des droites parallèles. Ici (MN) et (BC) se coupent : impossible d'écrire l'égalité des rapports."},
+  {f:{...TRI,M:{x:82,y:70},N:{x:230,y:107},par:true},hyp:"(MN) // (BC), mais <em>M n'est pas sur la droite (AB)</em>.",ok:false,
+   w:"Le parallélisme ne suffit pas : il faut aussi les points alignés. M en dehors de (AB), et le théorème ne dit plus rien."},
+  {f:{...PAP,t:.5},hyp:"Les droites (MB) et (NC) se coupent en A. <em>On ne sait pas</em> si (MN) // (BC).",ok:false,
+   w:"Même en papillon, il faut le parallélisme. Sans lui, aucun rapport à écrire."},
+  {f:{...TRI2,t:.5,par:true,names:{A:"R",B:"S",C:"T",M:"U",N:"V"}},hyp:"U est sur [RS], V est sur [RT], et <em>(UV) // (ST)</em>.",ok:true,
+   w:"Les lettres changent, pas le théorème : R, U, S et R, V, T alignés, (UV) // (ST). Tout est là."},
+  {f:{...TRI,t:.3,par:true},hyp:"M est sur [AB], N est sur [AC], et <em>(MN) // (BC)</em>.",ok:true,
+   w:"Alignements et parallélisme donnés : Thalès s'applique, quel que soit l'endroit où M coupe [AB]."},
+  {f:{...PAP,t:.45,tN:.72},hyp:"Les droites (MB) et (NC) se coupent en A, mais <em>(MN) et (BC) ne sont pas parallèles</em>.",ok:false,
+   w:"Configuration croisée, mais sans parallèles : la contraposée dira même que les rapports ne peuvent pas être égaux."},
+  {f:{...PAP,t:.55,par:true,names:{A:"O",B:"K",C:"L",M:"P",N:"Q"}},hyp:"Les droites (PK) et (QL) se coupent en O, et <em>(PQ) // (KL)</em>.",ok:true,
+   w:"P, O, K et Q, O, L sont alignés, (PQ) // (KL) : les deux conditions sont réunies, en papillon."}
+];
+
+function buildEqs(n){
+  const AM=n.A+n.M,AB=n.A+n.B,AN=n.A+n.N,AC=n.A+n.C,MN=n.M+n.N,BC=n.B+n.C,MB=n.M+n.B,NC=n.N+n.C;
+  return shuffle([
+    {g:1,h:eq3([[AM,AB],[AN,AC],[MN,BC]])},
+    {g:0,h:eq3([[AM,AB],[AN,AC],[BC,MN]])},
+    {g:0,h:eq3([[AM,MB],[AN,NC],[MN,BC]])},
+    {g:0,h:eq3([[AB,AM],[AN,AC],[MN,BC]])}
+  ]);
+}
+const NSTD={A:"A",B:"B",C:"C",M:"M",N:"N"};
+const RAPPORTS=[
+  {f:{...TRI,t:.45,par:true},hyp:"M ∈ [AB], N ∈ [AC], (MN) // (BC). Quelle égalité écrit-on ?",names:NSTD,
+   w:"Petit triangle au numérateur, grand triangle au dénominateur, sans mélanger : AM avec AB, AN avec AC, MN avec BC."},
+  {f:{...PAP,t:.5,par:true},hyp:"(MB) et (NC) se coupent en A, (MN) // (BC). Quelle égalité écrit-on ?",names:NSTD,
+   w:"En papillon, c'est la même égalité : les longueurs partent toutes du point de croisement A."},
+  {f:{...TRI2,t:.55,par:true,names:{A:"R",B:"S",C:"T",M:"U",N:"V"}},hyp:"U ∈ [RS], V ∈ [RT], (UV) // (ST). Quelle égalité écrit-on ?",names:{A:"R",B:"S",C:"T",M:"U",N:"V"},
+   w:"On part du sommet commun R : RU avec RS, RV avec RT, UV avec ST. Jamais de rapport inversé."},
+  {f:{...TRI,t:.35,par:true},hyp:"M ∈ [AB], N ∈ [AC], (MN) // (BC). Quelle égalité écrit-on ?",names:NSTD,
+   w:"Les trois rapports vont du petit vers le grand triangle. AM/MB est un piège : MB n'est pas un côté du triangle ABC."},
+  {f:{...PAP,t:.6,par:true,names:{A:"O",B:"K",C:"L",M:"P",N:"Q"}},hyp:"(PK) et (QL) se coupent en O, (PQ) // (KL). Quelle égalité écrit-on ?",names:{A:"O",B:"K",C:"L",M:"P",N:"Q"},
+   w:"Tout part du point O : OP avec OK, OQ avec OL, PQ avec KL. Le sens du rapport ne s'inverse jamais en route."},
+  {f:{...TRI2,t:.4,par:true},hyp:"M ∈ [AB], N ∈ [AC], (MN) // (BC). Quelle égalité écrit-on ?",names:NSTD,
+   w:"Toujours le même ordre : du sommet A vers le petit point, sur du sommet A vers le grand point."},
+  {f:{...PAP,t:.45,par:true},hyp:"(MB) et (NC) se coupent en A, (MN) // (BC). Quelle égalité écrit-on ?",names:NSTD,
+   w:"AM/AB = AN/AC = MN/BC : le papillon ne change ni l'ordre ni le sens des rapports."},
+  {f:{...TRI,t:.6,par:true,names:{A:"E",B:"F",C:"G",M:"H",N:"I"}},hyp:"H ∈ [EF], I ∈ [EG], (HI) // (FG). Quelle égalité écrit-on ?",names:{A:"E",B:"F",C:"G",M:"H",N:"I"},
+   w:"EH avec EF, EI avec EG, HI avec FG : le sommet commun E ouvre chaque rapport."}
+];
+
+const CALCULER=[
+  {f:{...TRI,t:.4,par:true,lens:[{a:"A",b:"M",v:"3"},{a:"A",b:"B",v:"6",d:26},{a:"A",b:"N",v:"4"},{a:"A",b:"C",v:"?",d:26}]},
+   hyp:"M ∈ [AB], N ∈ [AC], (MN) // (BC). Les longueurs sont en cm. <em>Calcule AC.</em>",ans:8,unit:"cm",rep:"AC = 8 cm",
+   w:`Les points A, M, B et A, N, C sont alignés et (MN) // (BC). D'après le théorème de Thalès : ${eq3([["AM","AB"],["AN","AC"]])}, donc ${eq3([["3","6"],["4","AC"]])}. Produit en croix : AC = (6 × 4) ÷ 3 = <em>8 cm</em>.`},
+  {f:{...TRI2,t:.4,par:true,lens:[{a:"A",b:"M",v:"2"},{a:"A",b:"B",v:"5",d:26},{a:"M",b:"N",v:"3"},{a:"B",b:"C",v:"?"}]},
+   hyp:"M ∈ [AB], N ∈ [AC], (MN) // (BC). Les longueurs sont en cm. <em>Calcule BC.</em>",ans:7.5,unit:"cm",rep:"BC = 7,5 cm",
+   w:`D'après le théorème de Thalès : ${eq3([["AM","AB"],["MN","BC"]])}, donc ${eq3([["2","5"],["3","BC"]])}. Produit en croix : BC = (3 × 5) ÷ 2 = <em>7,5 cm</em>.`},
+  {f:{...PAP,t:.42,par:true,names:{A:"O",B:"B",C:"C",M:"M",N:"N"},lens:[{a:"A",b:"M",v:"3"},{a:"A",b:"B",v:"9"},{a:"A",b:"N",v:"2,5"},{a:"A",b:"C",v:"?"}]},
+   hyp:"(MB) et (NC) se coupent en O, (MN) // (BC). Les longueurs sont en cm. <em>Calcule OC.</em>",ans:7.5,unit:"cm",rep:"OC = 7,5 cm",
+   w:`M, O, B et N, O, C sont alignés et (MN) // (BC). D'après le théorème de Thalès : ${eq3([["OM","OB"],["ON","OC"]])}, donc ${eq3([["3","9"],["2,5","OC"]])}. Produit en croix : OC = (9 × 2,5) ÷ 3 = <em>7,5 cm</em>.`},
+  {f:{...OMB,t:.25,par:true,lens:[{a:"A",b:"M",v:"2"},{a:"A",b:"B",v:"8",d:24},{a:"M",b:"N",v:"1,5",d:22},{a:"B",b:"C",v:"?",d:22}]},
+   hyp:"Au bout de l'ombre A, un bâton [MN] de 1,5 m et un arbre [BC], tous deux verticaux : (MN) // (BC). Les longueurs sont en mètres. <em>Calcule la hauteur BC de l'arbre.</em>",ans:6,unit:"m",rep:"BC = 6 m",
+   w:`Le bâton et l'arbre sont parallèles, et les points A, M, B et A, N, C alignés. D'après le théorème de Thalès : ${eq3([["AM","AB"],["MN","BC"]])}, donc ${eq3([["2","8"],["1,5","BC"]])}. BC = (1,5 × 8) ÷ 2 = <em>6 m</em> : l'arbre mesure 6 mètres.`},
+  {f:{...TRI,t:.55,par:true,lens:[{a:"A",b:"B",v:"9",d:26},{a:"A",b:"M",v:"?"},{a:"A",b:"N",v:"4"},{a:"A",b:"C",v:"6",d:26}]},
+   hyp:"M ∈ [AB], N ∈ [AC], (MN) // (BC). Les longueurs sont en cm. <em>Calcule AM.</em>",ans:6,unit:"cm",rep:"AM = 6 cm",
+   w:`D'après le théorème de Thalès : ${eq3([["AM","AB"],["AN","AC"]])}, donc ${eq3([["AM","9"],["4","6"]])}. Produit en croix : AM = (9 × 4) ÷ 6 = <em>6 cm</em>.`},
+  {f:{...PAP,t:.55,par:true,lens:[{a:"A",b:"M",v:"6"},{a:"A",b:"B",v:"4"},{a:"M",b:"N",v:"9",d:20},{a:"B",b:"C",v:"?",d:20}]},
+   hyp:"(MB) et (NC) se coupent en A, (MN) // (BC). Les longueurs sont en cm. <em>Calcule BC.</em>",ans:6,unit:"cm",rep:"BC = 6 cm",
+   w:`M, A, B et N, A, C sont alignés et (MN) // (BC). D'après le théorème de Thalès : ${eq3([["AM","AB"],["MN","BC"]])}, donc ${eq3([["6","4"],["9","BC"]])}. Produit en croix : BC = (9 × 4) ÷ 6 = <em>6 cm</em>.`},
+  {f:{...TRI2,t:.33,par:true,lens:[{a:"A",b:"M",v:"2,5"},{a:"A",b:"B",v:"7,5",d:26},{a:"M",b:"N",v:"3"},{a:"B",b:"C",v:"?"}]},
+   hyp:"M ∈ [AB], N ∈ [AC], (MN) // (BC). Les longueurs sont en cm. <em>Calcule BC.</em>",ans:9,unit:"cm",rep:"BC = 9 cm",
+   w:`D'après le théorème de Thalès : ${eq3([["AM","AB"],["MN","BC"]])}, donc ${eq3([["2,5","7,5"],["3","BC"]])}. Produit en croix : BC = (3 × 7,5) ÷ 2,5 = <em>9 cm</em>.`},
+  {f:{...PAP,t:.66,par:true,lens:[{a:"A",b:"N",v:"3"},{a:"A",b:"C",v:"4,5"},{a:"M",b:"N",v:"5",d:20},{a:"B",b:"C",v:"?",d:20}]},
+   hyp:"(MB) et (NC) se coupent en A, (MN) // (BC). Les longueurs sont en cm. <em>Calcule BC.</em>",ans:7.5,unit:"cm",rep:"BC = 7,5 cm",
+   w:`D'après le théorème de Thalès : ${eq3([["AN","AC"],["MN","BC"]])}, donc ${eq3([["3","4,5"],["5","BC"]])}. Produit en croix : BC = (5 × 4,5) ÷ 3 = <em>7,5 cm</em>.`}
+];
+
+const RECIP=[
+  {f:{...TRI,t:.5,dash:true,lens:[{a:"A",b:"M",v:"3"},{a:"A",b:"B",v:"4",d:26},{a:"A",b:"N",v:"4,5"},{a:"A",b:"C",v:"6",d:26}]},
+   rM:`${eq3([["AM","AB"],["3","4"]])} <span class="egal">=</span> <b>0,75</b>`,rN:`${eq3([["AN","AC"],["4,5","6"]])} <span class="egal">=</span> <b>0,75</b>`,ok:true,
+   w:"Les deux rapports sont égaux et les points A, M, B et A, N, C sont alignés dans le même ordre : d'après la <em>réciproque</em> du théorème de Thalès, (MN) // (BC)."},
+  {f:{...TRI,t:.4,tN:.45,dash:true,lens:[{a:"A",b:"M",v:"2"},{a:"A",b:"B",v:"5",d:26},{a:"A",b:"N",v:"3"},{a:"A",b:"C",v:"8",d:26}]},
+   rM:`${eq3([["AM","AB"],["2","5"]])} <span class="egal">=</span> <b>0,4</b>`,rN:`${eq3([["AN","AC"],["3","8"]])} <span class="egal">=</span> <b>0,375</b>`,ok:false,
+   w:"0,4 ≠ 0,375. Si les droites étaient parallèles, le théorème de Thalès imposerait des rapports égaux : ce n'est pas le cas, donc (MN) et (BC) <em>ne sont pas parallèles</em> (contraposée)."},
+  {f:{...PAP,t:.5,dash:true,lens:[{a:"A",b:"M",v:"6"},{a:"A",b:"B",v:"8"},{a:"A",b:"N",v:"4,5"},{a:"A",b:"C",v:"6"}]},
+   rM:`${eq3([["AM","AB"],["6","8"]])} <span class="egal">=</span> <b>0,75</b>`,rN:`${eq3([["AN","AC"],["4,5","6"]])} <span class="egal">=</span> <b>0,75</b>`,ok:true,
+   w:"Rapports égaux, et les points M, A, B et N, A, C sont alignés dans le même ordre (A entre les deux) : la réciproque s'applique aussi en papillon, (MN) // (BC)."},
+  {f:{...TRI2,t:.4,tN:.44,dash:true,lens:[{a:"A",b:"M",v:"3"},{a:"A",b:"B",v:"8",d:26},{a:"A",b:"N",v:"2"},{a:"A",b:"C",v:"5",d:26}]},
+   rM:`${eq3([["AM","AB"],["3","8"]])} <span class="egal">=</span> <b>0,375</b>`,rN:`${eq3([["AN","AC"],["2","5"]])} <span class="egal">=</span> <b>0,4</b>`,ok:false,
+   w:"0,375 ≠ 0,4 : les rapports diffèrent, donc les droites ne peuvent pas être parallèles. C'est la contraposée du théorème de Thalès."},
+  {f:{...TRI,t:.62,dash:true,lens:[{a:"A",b:"M",v:"5"},{a:"A",b:"B",v:"8",d:26},{a:"A",b:"N",v:"7,5"},{a:"A",b:"C",v:"12",d:26}]},
+   rM:`${eq3([["AM","AB"],["5","8"]])} <span class="egal">=</span> <b>0,625</b>`,rN:`${eq3([["AN","AC"],["7,5","12"]])} <span class="egal">=</span> <b>0,625</b>`,ok:true,
+   w:"Deux rapports égaux, des points alignés dans le même ordre : la réciproque du théorème de Thalès conclut que (MN) // (BC)."},
+  {f:{...TRI2,t:.4,dash:true,lens:[{a:"A",b:"M",v:"4"},{a:"A",b:"B",v:"10",d:26},{a:"A",b:"N",v:"6"},{a:"A",b:"C",v:"15",d:26}]},
+   rM:`${eq3([["AM","AB"],["4","10"]])} <span class="egal">=</span> <b>0,4</b>`,rN:`${eq3([["AN","AC"],["6","15"]])} <span class="egal">=</span> <b>0,4</b>`,ok:true,
+   w:"4/10 et 6/15 valent tous les deux 0,4 : d'après la réciproque du théorème de Thalès, (MN) // (BC)."},
+  {f:{...TRI,t:.58,tN:.52,dash:true,lens:[{a:"A",b:"M",v:"2,5"},{a:"A",b:"B",v:"4",d:26},{a:"A",b:"N",v:"3"},{a:"A",b:"C",v:"5",d:26}]},
+   rM:`${eq3([["AM","AB"],["2,5","4"]])} <span class="egal">=</span> <b>0,625</b>`,rN:`${eq3([["AN","AC"],["3","5"]])} <span class="egal">=</span> <b>0,6</b>`,ok:false,
+   w:"0,625 ≠ 0,6. Des rapports différents interdisent le parallélisme : (MN) et (BC) se coupent quelque part (contraposée)."},
+  {f:{...PAP,t:.6,dash:true,lens:[{a:"A",b:"M",v:"3"},{a:"A",b:"B",v:"5"},{a:"A",b:"N",v:"4,5"},{a:"A",b:"C",v:"7,5"}]},
+   rM:`${eq3([["AM","AB"],["3","5"]])} <span class="egal">=</span> <b>0,6</b>`,rN:`${eq3([["AN","AC"],["4,5","7,5"]])} <span class="egal">=</span> <b>0,6</b>`,ok:true,
+   w:"Rapports égaux et alignements dans le même ordre : la réciproque du théorème de Thalès donne (MN) // (BC), même en configuration croisée."}
+];
+
+/* ============ gamification ============ */
+const SHEET_URL="https://script.google.com/macros/s/AKfycbwB53nfh6Xk_z1Gn4ck_WL8aX0gPxDzQ2MpxWVnpsdunmWR_IKj-tHPHOEVkP614jQJ/exec";
+function logResult(game,score,good,total,secs){
+  try{fetch(SHEET_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({page:"thales",game,score,good,total,secs})});}catch(e){}
+}
+const CHEERS=[["🎉","Bravo !"],["⭐","Super !"],["🚀","Excellent !"],["🏆","Champion !"],["📐","Thalès applaudit !"],["🔥","Trop fort !"],["🌟","Génial !"],["🧮","Compte rond, bien joué !"]];
+const OOPS=[["😅","Oups, presque !"],["🙈","Pas cette fois !"],["🤔","Hmm, regarde la figure..."],["🐢","On y va doucement !"],["🧐","Presque ! Lis la correction."]];
+function confetti(host){
+  const cols=["#e63946","#f4a261","#2a9d8f","#457b9d","#ffd166","#9b5de5","#06d6a0"];
+  for(let i=0;i<22;i++){
+    const p=document.createElement("i");p.className="confetti";
+    const ang=Math.random()*Math.PI*2, d=60+Math.random()*90;
+    p.style.setProperty("--dx",Math.cos(ang)*d+"px");
+    p.style.setProperty("--dy",(Math.sin(ang)*d-40)+"px");
+    p.style.background=rnd(cols);
+    p.style.animationDelay=(Math.random()*.15)+"s";
+    host.appendChild(p);
+  }
+}
+function showVerdict(ok,sel,st){
+  const v=$(sel);
+  const [emo,msg]=ok?rnd(CHEERS):rnd(OOPS);
+  st.streak=ok?st.streak+1:0;
+  v.className="react "+(ok?"yes":"no");
+  v.innerHTML=`<span class="emo" role="img" aria-label="${ok?"Bonne réponse":"Mauvaise réponse"}">${emo}</span><span class="msg">${msg}</span>`+
+    (st.streak>=3?`<span class="streak">🔥 ${st.streak} d'affilée !</span>`:"");
+  if(ok)confetti(v);
+}
+function bilanHTML(st,titreOk){
+  const good=st.list.length-st.errs.length;
+  return `<div class="bilan">
+    <h2>${good===st.list.length?"🏆 Sans faute, incroyable !":good>=st.list.length*.8?"🌟 Bravo, belle manche !":good>=st.list.length/2?"👍 Pas mal du tout !":"💪 Continue, tu progresses !"}</h2>
+    <p class="bigscore">${st.score}</p>
+    <p class="meta">${good} bonnes réponses sur ${st.list.length}, en ${chrono(st.secs)}.</p>
+    ${st.errs.length?`<p class="section-title">À revoir</p><ul class="errlist">${st.errs.map(e=>`
+      <li><span class="rep">${e.rep}</span> ${e.w}</li>`).join("")}</ul>`
+    :`<p class="section-title">Sans faute</p><p style="margin-top:8px">${titreOk}</p>`}
+    <div class="row-end"><button class="btn ghost" id="again">Nouvelle manche</button></div>
+  </div>`;
+}
+
+/* onglets */
+document.querySelectorAll(".tab").forEach(t=>{
+  t.addEventListener("click",()=>{
+    document.querySelectorAll(".tab").forEach(x=>x.setAttribute("aria-selected",x===t));
+    document.querySelectorAll(".panel").forEach(p=>p.classList.toggle("on",p.id===t.dataset.panel));
+    if(t.dataset.panel==="reperer")repIntro();
+    if(t.dataset.panel==="rapports")rapIntro();
+    if(t.dataset.panel==="calculer")calcIntro();
+    if(t.dataset.panel==="recip")recIntro();
+    window.scrollTo({top:0,behavior:"smooth"});
+  });
+});
+
+/* ============ 1. reperer ============ */
+const R={list:[],i:0,score:0,errs:[],t0:0,streak:0,secs:0};
+const rp=$("#reperer");
+function repIntro(){
+  rp.innerHTML=`<div class="intro">
+    <h2>Peut-on appliquer Thalès ?</h2>
+    <p>Dix figures. Avant tout calcul, on vérifie les deux conditions : des points alignés, des droites parallèles. Réponds oui ou non.</p>
+    <button class="btn" id="rgo">Commencer la manche</button>
+  </div>`;
+  $("#rgo").onclick=()=>{R.list=shuffle(REPERER);R.i=0;R.score=0;R.errs=[];R.streak=0;R.t0=Date.now();repStep();};
+}
+function repStep(){
+  if(R.i>=R.list.length)return repEnd();
+  const q=R.list[R.i];
+  rp.innerHTML=`
+    <div class="status"><span>Figure <b>${R.i+1}</b>/${R.list.length}</span><span class="grow"></span><span>Points <b id="rsc">${R.score}</b></span></div>
+    <div id="rcard">
+      <div class="react" id="rv"></div>
+      <p class="annot" id="ran">Peut-on appliquer le théorème de Thalès ?</p>
+      <div class="fig">${figSVG(q.f)}</div>
+      <p class="echelle">Figure pas à l'échelle</p>
+      <p class="hyp">On sait : ${q.hyp}</p>
+      <p class="why" id="rwhy"></p>
+    </div>
+    <div class="judge"><button class="btn" data-v="1" id="ryes">Oui</button><button class="btn no" data-v="0" id="rno">Non</button></div>
+    <div class="row-end"><button class="btn hidden" id="rnext">Suivante</button></div>`;
+  rp.querySelectorAll(".judge .btn").forEach(b=>{
+    b.onclick=()=>{
+      const ok=(b.dataset.v==="1")===q.ok;
+      if(ok)R.score+=10;else R.errs.push({rep:q.ok?"Oui, Thalès s'applique.":"Non, pas de Thalès ici.",w:q.w});
+      rp.querySelectorAll(".judge .btn").forEach(x=>{
+        x.disabled=true;
+        if((x.dataset.v==="1")===q.ok)x.classList.add("good");
+        else if(x===b)x.classList.add("bad");
+        else x.classList.add("dim");
+      });
+      showVerdict(ok,"#rv",R);
+      $("#rcard").classList.add("revealed");
+      $("#ran").textContent=q.ok?"Oui, Thalès s'applique":"Non, pas de Thalès ici";
+      $("#rwhy").innerHTML=(ok?"":"<em>Non. </em>")+q.w;
+      $("#rsc").textContent=R.score;
+      const n=$("#rnext");n.classList.remove("hidden");
+      n.textContent=R.i===R.list.length-1?"Voir le bilan":"Suivante";
+      n.onclick=()=>{R.i++;repStep();};
+      n.focus({preventScroll:true});
+    };
+  });
+}
+function repEnd(){
+  R.secs=Math.round((Date.now()-R.t0)/1000);
+  logResult("reperer",R.score,R.list.length-R.errs.length,R.list.length,R.secs);
+  rp.innerHTML=bilanHTML(R,"Rien à revoir. Passe aux rapports, c'est là qu'on écrit l'égalité.");
+  $("#again",rp).onclick=()=>{R.list=shuffle(REPERER);R.i=0;R.score=0;R.errs=[];R.streak=0;R.t0=Date.now();repStep();};
+}
+
+/* ============ 2. les rapports ============ */
+const P={list:[],i:0,score:0,errs:[],t0:0,streak:0,secs:0};
+const pp=$("#rapports");
+function rapIntro(){
+  pp.innerHTML=`<div class="intro">
+    <h2>Quelle égalité écrit-on ?</h2>
+    <p>Huit figures où Thalès s'applique. Choisis la bonne égalité des trois rapports : gare aux rapports inversés.</p>
+    <button class="btn" id="pgo">Commencer la manche</button>
+  </div>`;
+  $("#pgo").onclick=()=>{P.list=shuffle(RAPPORTS);P.i=0;P.score=0;P.errs=[];P.streak=0;P.t0=Date.now();rapStep();};
+}
+function rapStep(){
+  if(P.i>=P.list.length)return rapEnd();
+  const q=P.list[P.i], eqs=buildEqs(q.names);
+  pp.innerHTML=`
+    <div class="status"><span>Figure <b>${P.i+1}</b>/${P.list.length}</span><span class="grow"></span><span>Points <b id="psc">${P.score}</b></span></div>
+    <div id="pcard">
+      <div class="react" id="pv"></div>
+      <p class="annot">${q.hyp}</p>
+      <div class="fig">${figSVG(q.f)}</div>
+      <p class="echelle">Figure pas à l'échelle</p>
+      <p class="why" id="pwhy"></p>
+    </div>
+    <div class="choices-eq">${eqs.map((e,k)=>`<button class="choice" data-k="${k}">${e.h}</button>`).join("")}</div>
+    <div class="row-end"><button class="btn hidden" id="pnext">Suivante</button></div>`;
+  pp.querySelectorAll(".choice").forEach(b=>{
+    b.onclick=()=>{
+      const ok=!!eqs[+b.dataset.k].g;
+      if(ok)P.score+=10;else P.errs.push({rep:"La bonne égalité :",w:`<span style="font-size:16px">${eqs.find(e=>e.g).h}</span> ${q.w}`});
+      pp.querySelectorAll(".choice").forEach(x=>{
+        x.disabled=true;
+        if(eqs[+x.dataset.k].g)x.classList.add("good");
+        else if(x===b)x.classList.add("bad");
+        else x.classList.add("dim");
+      });
+      showVerdict(ok,"#pv",P);
+      $("#pcard").classList.add("revealed");
+      $("#pwhy").innerHTML=(ok?"":"<em>Non. </em>")+q.w;
+      $("#psc").textContent=P.score;
+      const n=$("#pnext");n.classList.remove("hidden");
+      n.textContent=P.i===P.list.length-1?"Voir le bilan":"Suivante";
+      n.onclick=()=>{P.i++;rapStep();};
+      n.focus({preventScroll:true});
+    };
+  });
+}
+function rapEnd(){
+  P.secs=Math.round((Date.now()-P.t0)/1000);
+  logResult("rapports",P.score,P.list.length-P.errs.length,P.list.length,P.secs);
+  pp.innerHTML=bilanHTML(P,"Rien à revoir. Passe au calcul : le produit en croix t'attend.");
+  $("#again",pp).onclick=()=>{P.list=shuffle(RAPPORTS);P.i=0;P.score=0;P.errs=[];P.streak=0;P.t0=Date.now();rapStep();};
+}
+
+/* ============ 3. calculer ============ */
+const K={list:[],i:0,score:0,errs:[],t0:0,streak:0,secs:0};
+const kp=$("#calculer");
+function calcIntro(){
+  kp.innerHTML=`<div class="intro">
+    <h2>Trouve la longueur manquante.</h2>
+    <p>Huit calculs par produit en croix. Tape ta réponse, la calculatrice est autorisée. La rédaction modèle s'affiche après chaque question.</p>
+    <button class="btn" id="kgo">Commencer la manche</button>
+  </div>`;
+  $("#kgo").onclick=()=>{K.list=shuffle(CALCULER);K.i=0;K.score=0;K.errs=[];K.streak=0;K.t0=Date.now();calcStep();};
+}
+function calcStep(){
+  if(K.i>=K.list.length)return calcEnd();
+  const q=K.list[K.i];
+  kp.innerHTML=`
+    <div class="status"><span>Calcul <b>${K.i+1}</b>/${K.list.length}</span><span class="grow"></span><span>Points <b id="ksc">${K.score}</b></span></div>
+    <div id="kcard">
+      <div class="react" id="kv"></div>
+      <p class="annot" id="kan">À toi de calculer</p>
+      <div class="fig">${figSVG(q.f)}</div>
+      <p class="echelle">Figure pas à l'échelle</p>
+      <p class="hyp">${q.hyp}</p>
+      <p class="why" id="kwhy"></p>
+    </div>
+    <div class="answer"><input id="kin" inputmode="decimal" autocomplete="off" placeholder="Ta réponse"><span class="unit">${q.unit}</span><button class="btn" id="kok">Valider</button></div>
+    <div class="row-end"><button class="btn hidden" id="knext">Suivante</button></div>`;
+  const input=$("#kin");input.focus({preventScroll:true});
+  function valider(){
+    const v=parseFloat(input.value.replace(",",".").trim());
+    if(!isFinite(v)){input.value="";input.placeholder="Écris un nombre";return;}
+    const ok=Math.abs(v-q.ans)<=0.011;
+    if(ok)K.score+=10;else K.errs.push({rep:q.rep,w:q.w});
+    input.disabled=true;$("#kok").disabled=true;
+    showVerdict(ok,"#kv",K);
+    $("#kcard").classList.add("revealed");
+    $("#kan").textContent=q.rep;
+    $("#kwhy").innerHTML=(ok?"":`<em>Non, tu as répondu ${esc(input.value)}. </em>`)+q.w;
+    $("#ksc").textContent=K.score;
+    const n=$("#knext");n.classList.remove("hidden");
+    n.textContent=K.i===K.list.length-1?"Voir le bilan":"Suivante";
+    n.onclick=()=>{K.i++;calcStep();};
+    n.focus({preventScroll:true});
+  }
+  $("#kok").onclick=valider;
+  input.addEventListener("keydown",e=>{if(e.key==="Enter")valider();});
+}
+function calcEnd(){
+  K.secs=Math.round((Date.now()-K.t0)/1000);
+  logResult("calculer",K.score,K.list.length-K.errs.length,K.list.length,K.secs);
+  kp.innerHTML=bilanHTML(K,"Rien à revoir. Passe à la réciproque : cette fois, c'est toi qui conclus.");
+  $("#again",kp).onclick=()=>{K.list=shuffle(CALCULER);K.i=0;K.score=0;K.errs=[];K.streak=0;K.t0=Date.now();calcStep();};
+}
+
+/* ============ 4. reciproque ============ */
+const V={list:[],i:0,score:0,errs:[],t0:0,streak:0,secs:0};
+const vp=$("#recip");
+function recIntro(){
+  vp.innerHTML=`<div class="intro">
+    <h2>Parallèles, ou pas ?</h2>
+    <p>Huit figures, les rapports déjà calculés. S'ils sont égaux, la réciproque conclut ; sinon, la contraposée tranche. À toi de dire si (MN) // (BC).</p>
+    <button class="btn" id="vgo">Commencer la manche</button>
+  </div>`;
+  $("#vgo").onclick=()=>{V.list=shuffle(RECIP);V.i=0;V.score=0;V.errs=[];V.streak=0;V.t0=Date.now();recStep();};
+}
+function recStep(){
+  if(V.i>=V.list.length)return recEnd();
+  const q=V.list[V.i];
+  vp.innerHTML=`
+    <div class="status"><span>Figure <b>${V.i+1}</b>/${V.list.length}</span><span class="grow"></span><span>Points <b id="vsc">${V.score}</b></span></div>
+    <div id="vcard">
+      <div class="react" id="vv"></div>
+      <p class="annot" id="van">Les droites (MN) et (BC) sont-elles parallèles ?</p>
+      <div class="fig">${figSVG(q.f)}</div>
+      <p class="echelle">Figure pas à l'échelle</p>
+      <div class="ratios"><span>${q.rM}</span><span>${q.rN}</span></div>
+      <p class="why" id="vwhy"></p>
+    </div>
+    <div class="judge"><button class="btn" data-v="1">Oui, parallèles</button><button class="btn no" data-v="0">Non</button></div>
+    <div class="row-end"><button class="btn hidden" id="vnext">Suivante</button></div>`;
+  vp.querySelectorAll(".judge .btn").forEach(b=>{
+    b.onclick=()=>{
+      const ok=(b.dataset.v==="1")===q.ok;
+      if(ok)V.score+=10;else V.errs.push({rep:q.ok?"Oui, parallèles.":"Non, pas parallèles.",w:q.w});
+      vp.querySelectorAll(".judge .btn").forEach(x=>{
+        x.disabled=true;
+        if((x.dataset.v==="1")===q.ok)x.classList.add("good");
+        else if(x===b)x.classList.add("bad");
+        else x.classList.add("dim");
+      });
+      showVerdict(ok,"#vv",V);
+      $("#vcard").classList.add("revealed");
+      $("#van").textContent=q.ok?"Oui, (MN) // (BC)":"Non, pas parallèles";
+      $("#vwhy").innerHTML=(ok?"":"<em>Non. </em>")+q.w;
+      $("#vsc").textContent=V.score;
+      const n=$("#vnext");n.classList.remove("hidden");
+      n.textContent=V.i===V.list.length-1?"Voir le bilan":"Suivante";
+      n.onclick=()=>{V.i++;recStep();};
+      n.focus({preventScroll:true});
+    };
+  });
+}
+function recEnd(){
+  V.secs=Math.round((Date.now()-V.t0)/1000);
+  logResult("reciproque",V.score,V.list.length-V.errs.length,V.list.length,V.secs);
+  vp.innerHTML=bilanHTML(V,"Rien à revoir. Théorème, réciproque, contraposée : tu as tout en main.");
+  $("#again",vp).onclick=()=>{V.list=shuffle(RECIP);V.i=0;V.score=0;V.errs=[];V.streak=0;V.t0=Date.now();recStep();};
+}
+
+repIntro();
+</script>
+</body>
+</html>

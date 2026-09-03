@@ -10,7 +10,8 @@ Aucune dépendance, aucun build : il suffit d'ouvrir le fichier dans un navigate
 | [classes-grammaticales.html](classes-grammaticales.html) | Les classes grammaticales, en contexte |
 | [fonctions-grammaticales.html](fonctions-grammaticales.html) | Les fonctions grammaticales, en contexte |
 | [astuces.html](astuces.html) | La boîte à astuces : reconnaître classes et fonctions |
-| [maths.html](maths.html) | Rubrique Maths, en attente de ses premiers carnets |
+| [maths.html](maths.html) | Rubrique Maths, vers les carnets de maths |
+| [thales.html](thales.html) | Le théorème de Thalès, sur la figure |
 
 Chaque carnet enchaîne les mêmes types de manches :
 

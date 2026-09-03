@@ -12,7 +12,8 @@ Site statique sans build, sans dépendances, sans tests : chaque page est un fic
 
 - `index.html` : page chapeau, deux cartes seulement (Français, Maths).
 - `francais.html` : rubrique Français, cartes vers les deux carnets et la boîte à astuces.
-- `maths.html` : rubrique Maths, en attente de ses premiers carnets.
+- `maths.html` : rubrique Maths, carte vers le carnet Thalès.
+- `thales.html` : carnet de maths sur le théorème de Thalès (accent vert `--maths: #1B6F55`). Reprend la mécanique des carnets de grammaire (onglets, `showVerdict`, confettis, série, `logResult` avec `page:"thales"`), avec en plus un moteur de figures `figSVG(f)` qui dessine les configurations de Thalès (triangle ou papillon) en SVG inline à partir des données de chaque exercice (`REPERER`, `RAPPORTS`, `CALCULER`, `RECIP`), et une manche à saisie numérique (virgule ou point acceptés, tolérance ±0,01).
 - `classes-grammaticales.html` : carnet 1, les classes grammaticales (accent bleu `--classes: #1D4E89`).
 - `fonctions-grammaticales.html` : carnet 2, les fonctions grammaticales (accent vert `--fonctions: #1B6F55`).
 - `astuces.html` : fiche mémo statique (astuce de reconnaissance + 3 à 5 exemples par classe et par fonction, sections « Ne confonds pas ») ; deux onglets, pas de score ni d'appel Google Sheets, contenu écrit directement dans le HTML.
