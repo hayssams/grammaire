@@ -99,6 +99,21 @@ h1 em{font-style:italic;color:var(--classes)}
 }
 .note em{font-style:normal;color:var(--ink);font-weight:700}
 
+/* ---------- matieres ---------- */
+.matiere{
+  font-family:var(--serif);font-weight:400;font-size:21px;color:var(--ink);
+  margin:0 0 10px;display:flex;align-items:baseline;gap:10px
+}
+.cards + .matiere{margin-top:26px}
+.matiere::after{content:"";flex:1;height:1px;background:var(--rule);transform:translateY(-4px)}
+.soon{
+  border:1px dashed var(--rule);border-left:3px dashed var(--rule);
+  background:transparent;border-radius:8px;padding:16px 16px 15px;color:var(--ink-soft)
+}
+.soon .num{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;margin:0 0 5px}
+.soon h2{font-family:var(--serif);font-weight:400;font-size:25px;line-height:1.15;margin:0 0 6px;color:var(--ink-soft)}
+.soon p{margin:0;font-size:14px;max-width:42ch}
+
 @media (max-width:420px){
   h1{font-size:29px}
   .sheet{padding-left:26px}
@@ -109,12 +124,13 @@ h1 em{font-style:italic;color:var(--classes)}
 <body>
 <div class="wrap">
   <header>
-    <p class="eyebrow">Français, 3<sup>e</sup></p>
-    <h1>Un mot ne se lit jamais <em>tout seul</em></h1>
-    <p class="sub">Deux carnets d'entraînement. Le premier demande ce qu'est un mot, le second ce qu'il fait dans la phrase.</p>
+    <p class="eyebrow">Révisions, 3<sup>e</sup></p>
+    <h1>Les carnets <em>d'entraînement</em></h1>
+    <p class="sub">Des carnets classés par matière. Chacun tient dans une page : rien à installer.</p>
   </header>
 
   <div class="sheet">
+    <p class="matiere">Français</p>
     <div class="cards">
 
       <a class="card" style="--c:var(--classes)" href="classes-grammaticales.html">
@@ -143,9 +159,30 @@ h1 em{font-style:italic;color:var(--classes)}
         </ul>
       </a>
 
+      <a class="card" style="--c:var(--marge)" href="astuces.html">
+        <span class="go">&rarr;</span>
+        <p class="num">Fiche &middot; la bo&icirc;te &agrave; astuces</p>
+        <h2>Des trucs pour ne plus h&eacute;siter</h2>
+        <p>Pour chaque classe et chaque fonction, un test concret et des exemples. &Agrave; garder sous la main pendant les exercices.</p>
+        <ul class="modes">
+          <li>Classes</li>
+          <li>Fonctions</li>
+          <li>Ne confonds pas</li>
+        </ul>
+      </a>
+
     </div>
 
-    <p class="note">Chaque carnet enchaîne quatre manches, de la reconnaissance guidée à la réponse <em>sans les propositions</em>. Tout tient dans une page : rien à installer.</p>
+    <p class="matiere">Maths</p>
+    <div class="cards">
+      <div class="soon">
+        <p class="num">Bient&ocirc;t</p>
+        <h2>Les carnets arrivent</h2>
+        <p>Cette rubrique attend ses premiers carnets d'entra&icirc;nement.</p>
+      </div>
+    </div>
+
+    <p class="note">Chaque carnet enchaîne plusieurs manches, de la reconnaissance guidée à la réponse <em>sans les propositions</em>.</p>
   </div>
 </div>
 </body>
