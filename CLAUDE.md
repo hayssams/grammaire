@@ -10,9 +10,11 @@ Site statique sans build, sans dépendances, sans tests : chaque page est un fic
 
 ## Structure
 
-- `index.html` : page d'accueil, liens vers les deux carnets.
+- `index.html` : page d'accueil, cartes classées par matière (rubriques « Français » et « Maths », cette dernière en attente de contenu).
 - `classes-grammaticales.html` : carnet 1, les classes grammaticales (accent bleu `--classes: #1D4E89`).
 - `fonctions-grammaticales.html` : carnet 2, les fonctions grammaticales (accent vert `--fonctions: #1B6F55`).
+- `astuces.html` : fiche mémo statique (astuce de reconnaissance + 3 à 5 exemples par classe et par fonction, sections « Ne confonds pas ») ; deux onglets, pas de score ni d'appel Google Sheets, contenu écrit directement dans le HTML.
+- `docs/superpowers/` : specs et plans d'implémentation.
 
 ## Architecture des deux carnets (fichiers jumeaux)
 
