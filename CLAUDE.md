@@ -10,7 +10,9 @@ Site statique sans build, sans dépendances, sans tests : chaque page est un fic
 
 ## Structure
 
-- `index.html` : page d'accueil, cartes classées par matière (rubriques « Français » et « Maths », cette dernière en attente de contenu).
+- `index.html` : page chapeau, deux cartes seulement (Français, Maths).
+- `francais.html` : rubrique Français, cartes vers les deux carnets et la boîte à astuces.
+- `maths.html` : rubrique Maths, en attente de ses premiers carnets.
 - `classes-grammaticales.html` : carnet 1, les classes grammaticales (accent bleu `--classes: #1D4E89`).
 - `fonctions-grammaticales.html` : carnet 2, les fonctions grammaticales (accent vert `--fonctions: #1B6F55`).
 - `astuces.html` : fiche mémo statique (astuce de reconnaissance + 3 à 5 exemples par classe et par fonction, sections « Ne confonds pas ») ; deux onglets, pas de score ni d'appel Google Sheets, contenu écrit directement dans le HTML.
@@ -18,7 +20,7 @@ Site statique sans build, sans dépendances, sans tests : chaque page est un fic
 
 ## Architecture des deux carnets (fichiers jumeaux)
 
-Les deux carnets sont volontairement parallèles : même structure HTML (en-tête avec bouton Accueil, `nav[role=tablist]` à quatre onglets, quatre `section.panel`), mêmes helpers JS, même CSS. **Toute modification de comportement partagé (helpers, gamification, style) doit être reportée à la main dans les deux fichiers.**
+Les deux carnets sont volontairement parallèles : même structure HTML (en-tête avec bouton 🏠 vers `francais.html`, `nav[role=tablist]` à quatre onglets, quatre `section.panel`), mêmes helpers JS, même CSS. **Toute modification de comportement partagé (helpers, gamification, style) doit être reportée à la main dans les deux fichiers.**
 
 Chaque carnet enchaîne quatre modes, chacun rendu dans son panel par manipulation directe de `innerHTML` :
 

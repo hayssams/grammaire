@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Les carnets d'entraînement</title>
+<title>Maths, les carnets</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
@@ -16,7 +16,6 @@
   --marge:#DE5B4A;
   --ink:#16233B;
   --ink-soft:#5E6E85;
-  --francais:#1D4E89;
   --maths:#1B6F55;
   --serif:"Instrument Serif", Georgia, "Times New Roman", serif;
   --sans:"Karla", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -36,6 +35,14 @@ body{
 
 /* ---------- en-tete ---------- */
 header{padding:26px 0 14px}
+.topbar{display:flex;align-items:center;gap:14px;margin:0 0 6px}
+.topbar .eyebrow{margin:0}
+.home{
+  font-family:var(--sans);font-size:13px;font-weight:700;text-decoration:none;color:var(--ink);
+  border:1px solid var(--rule);border-radius:999px;padding:6px 12px;background:var(--paper,transparent);
+  transition:background .2s,transform .2s
+}
+.home:hover{background:var(--rule-soft);transform:translateY(-1px)}
 .eyebrow{
   font-size:11px;letter-spacing:.16em;text-transform:uppercase;
   color:var(--ink-soft);font-weight:700;margin:0 0 6px
@@ -44,7 +51,7 @@ h1{
   font-family:var(--serif);font-weight:400;font-size:34px;line-height:1.05;
   margin:0 0 4px;letter-spacing:-.01em
 }
-h1 em{font-style:italic;color:var(--francais)}
+h1 em{font-style:italic;color:var(--maths)}
 .sub{margin:0;color:var(--ink-soft);font-size:14px;max-width:44ch}
 
 /* ---------- feuille ---------- */
@@ -59,55 +66,35 @@ h1 em{font-style:italic;color:var(--francais)}
   content:"";position:absolute;top:0;bottom:0;left:20px;width:1px;background:var(--marge);opacity:.5
 }
 
-/* ---------- matieres ---------- */
-.cards{display:grid;gap:12px;margin:0}
-.card{
-  display:flex;align-items:center;gap:12px;position:relative;
-  text-decoration:none;color:inherit;
-  border:1px solid var(--rule);border-left:3px solid var(--c);
-  background:var(--paper-2);border-radius:8px;
-  padding:22px 18px;
-  transition:border-color .15s,box-shadow .15s,transform .15s
+/* ---------- carte en attente ---------- */
+.soon{
+  border:1px dashed var(--rule);border-left:3px dashed var(--rule);
+  background:transparent;border-radius:8px;padding:16px 16px 15px;color:var(--ink-soft)
 }
-.card:hover{border-color:var(--c);box-shadow:0 2px 0 var(--c);transform:translateY(-1px)}
-.card h2{
-  font-family:var(--serif);font-weight:400;font-size:30px;line-height:1.1;
-  margin:0;letter-spacing:-.005em;color:var(--c);flex:1
-}
-.card .go{
-  font-family:var(--serif);font-size:24px;line-height:1;color:var(--c);
-  transition:transform .15s
-}
-.card:hover .go{transform:translateX(3px)}
+.soon .num{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;margin:0 0 5px}
+.soon h2{font-family:var(--serif);font-weight:400;font-size:25px;line-height:1.15;margin:0 0 6px;color:var(--ink-soft)}
+.soon p{margin:0;font-size:14px;max-width:42ch}
 
 @media (max-width:420px){
   h1{font-size:29px}
   .sheet{padding-left:26px}
-  .card h2{font-size:26px}
+  .soon h2{font-size:22px}
 }
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
-    <p class="eyebrow">Révisions, 3<sup>e</sup></p>
-    <h1>Les carnets <em>d'entraînement</em></h1>
-    <p class="sub">Choisis ta matière.</p>
+    <div class="topbar"><a class="home" href="index.html">🏠 Accueil</a><p class="eyebrow">Maths, 3<sup>e</sup></p></div>
+    <h1>Les carnets <em>arrivent</em></h1>
+    <p class="sub">Cette rubrique attend ses premiers carnets d'entraînement.</p>
   </header>
 
   <div class="sheet">
-    <div class="cards">
-
-      <a class="card" style="--c:var(--francais)" href="francais.html">
-        <h2>Français</h2>
-        <span class="go">&rarr;</span>
-      </a>
-
-      <a class="card" style="--c:var(--maths)" href="maths.html">
-        <h2>Maths</h2>
-        <span class="go">&rarr;</span>
-      </a>
-
+    <div class="soon">
+      <p class="num">Bient&ocirc;t</p>
+      <h2>Rien &agrave; r&eacute;viser ici, pour l'instant</h2>
+      <p>Les premiers carnets de maths seront bient&ocirc;t rang&eacute;s sur cette feuille.</p>
     </div>
   </div>
 </div>
