@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>La carte de France</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F5F6F1;
+  --paper-2:#FCFCFA;
+  --rule:#BFD3E4;
+  --rule-soft:#DDE7F0;
+  --marge:#DE5B4A;
+  --ink:#16233B;
+  --ink-soft:#5E6E85;
+  --geo:#17697B;
+  --terre:#DCE7DB;
+  --terre-2:#C6D8C4;
+  --eau:#CFE2EE;
+  --relief:#C9A98C;
+  --serif:"Instrument Serif", Georgia, "Times New Roman", serif;
+  --sans:"Karla", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:16px;
+  line-height:1.5;
+  min-height:100vh;
+  padding:0 0 40px;
+}
+.wrap{max-width:560px;margin:0 auto;padding:0 14px}
+
+/* ---------- en-tete ---------- */
+header{padding:26px 0 14px}
+.topbar{display:flex;align-items:center;gap:14px;margin:0 0 6px}
+.topbar .eyebrow{margin:0}
+.home{
+  font-family:var(--sans);font-size:13px;font-weight:700;text-decoration:none;color:var(--ink);
+  border:1px solid var(--rule);border-radius:999px;padding:6px 12px;background:var(--paper,transparent);
+  transition:background .2s,transform .2s
+}
+.home:hover{background:var(--rule-soft);transform:translateY(-1px)}
+.eyebrow{
+  font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-soft);font-weight:700;margin:0 0 6px
+}
+h1{
+  font-family:var(--serif);font-weight:400;font-size:34px;line-height:1.05;
+  margin:0 0 4px;letter-spacing:-.01em
+}
+h1 em{font-style:italic;color:var(--geo)}
+.sub{margin:0;color:var(--ink-soft);font-size:14px}
+
+/* ---------- onglets ---------- */
+nav{display:flex;gap:6px;margin:18px 0 0;align-items:flex-end}
+.tab{
+  flex:1;border:1px solid var(--rule);border-bottom:none;
+  background:#EDEFE9;color:var(--ink-soft);
+  font-family:var(--sans);font-size:12.5px;font-weight:700;
+  padding:11px 3px 10px;border-radius:9px 9px 0 0;cursor:pointer;
+  letter-spacing:.01em;transition:background .15s,color .15s,transform .15s
+}
+.tab:hover{color:var(--ink)}
+.tab[aria-selected="true"]{background:var(--paper-2);color:var(--ink);transform:translateY(1px);box-shadow:0 -2px 0 var(--geo) inset}
+
+/* ---------- feuille ---------- */
+.sheet{
+  position:relative;background:var(--paper-2);
+  border:1px solid var(--rule);border-radius:0 0 10px 10px;
+  padding:22px 16px 20px 30px;overflow:hidden;
+  background-image:repeating-linear-gradient(to bottom,transparent 0 31px,var(--rule-soft) 31px 32px);
+  background-position:0 8px;
+}
+.sheet::before{
+  content:"";position:absolute;top:0;bottom:0;left:20px;width:1px;background:var(--marge);opacity:.5
+}
+.panel{display:none}
+.panel.on{display:block}
+
+/* ---------- barre d'etat ---------- */
+.status{
+  display:flex;align-items:center;gap:12px;
+  font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--ink-soft);margin-bottom:14px
+}
+.status .grow{flex:1}
+.status b{color:var(--ink);font-size:14px;letter-spacing:0}
+
+.hyp{font-size:14.5px;margin:0 0 6px}
+.hyp em{font-style:normal;font-weight:700}
+.annot{
+  font-family:var(--sans);font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-soft);transition:color .3s ease;margin:0 0 4px
+}
+.revealed .annot{color:var(--geo)}
+
+/* ---------- reactions ---------- */
+.react{text-align:center;min-height:78px;margin:0 0 8px;position:relative}
+.react .emo{display:inline-block;font-size:48px;line-height:52px;animation:pop .45s cubic-bezier(.2,1.6,.4,1)}
+.react .msg{display:block;font-family:var(--sans);font-weight:800;font-size:16px;line-height:22px;letter-spacing:.02em;animation:pop .45s .1s both cubic-bezier(.2,1.6,.4,1)}
+.react.yes .msg{color:var(--geo)}
+.react.no .msg{color:var(--marge)}
+.react.no .emo{animation:shake .5s ease}
+.react .streak{display:block;font-family:var(--sans);font-size:12px;font-weight:700;color:var(--ink-soft);margin-top:2px;animation:pop .4s .25s both}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px) rotate(-8deg)}40%,80%{transform:translateX(8px) rotate(8deg)}}
+.confetti{position:absolute;left:50%;top:26px;width:9px;height:9px;border-radius:2px;pointer-events:none;animation:fly .9s ease-out forwards}
+@keyframes fly{0%{transform:translate(0,0) rotate(0);opacity:1}100%{transform:translate(var(--dx),var(--dy)) rotate(540deg);opacity:0}}
+@keyframes pop{from{transform:scale(.3);opacity:0}to{transform:scale(1);opacity:1}}
+.why{font-size:14px;color:var(--ink-soft);margin:8px 0 0;opacity:0;transition:opacity .3s .3s}
+.revealed .why{opacity:1}
+.why em{font-style:normal;color:var(--ink);font-weight:700}
+
+/* ---------- choix ---------- */
+.judge{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px}
+.judge .btn{width:100%;text-align:center}
+.judge .no{background:transparent;color:var(--marge);border-color:var(--marge)}
+.judge .btn.good{background:var(--geo);border-color:var(--geo);color:#fff;opacity:1}
+.judge .btn.bad{background:transparent;border-color:var(--marge);color:var(--marge);text-decoration:line-through;opacity:1}
+.judge .btn.dim{opacity:.35}
+.choices{display:grid;gap:8px;margin:18px 0 0}
+.choice{
+  border:1px solid var(--rule);background:var(--paper-2);color:var(--ink);
+  font-family:var(--sans);font-size:14.5px;font-weight:700;line-height:1.3;
+  padding:13px 12px;border-radius:7px;cursor:pointer;text-align:left;
+  transition:background .12s,border-color .12s,color .12s,opacity .2s
+}
+.choice:hover:not(:disabled){border-color:var(--ink);background:#F1F3EE}
+.choice:disabled{cursor:default}
+.choice.dim{opacity:.32}
+.choice.good{background:var(--geo);border-color:var(--geo);color:#fff;opacity:1}
+.choice.bad{background:transparent;border-color:var(--marge);color:var(--marge);opacity:1;text-decoration:line-through}
+
+/* ---------- cartes ---------- */
+.enonce{font-family:var(--serif);font-size:26px;line-height:1.15;color:var(--geo);margin:6px 0 14px}
+.fig{margin:14px 0 4px;text-align:center}
+.fig svg{width:100%;max-width:340px;height:auto;background:var(--eau);border-radius:8px}
+.fig .z path{fill:var(--terre);stroke:var(--paper-2);stroke-width:1.2;cursor:pointer;transition:fill .15s}
+.fig .z.trait path{stroke:#3E7CA8;stroke-width:2.4;stroke-linejoin:round;stroke-linecap:round;fill:none}
+.fig .z.point circle:not(.halo){fill:var(--ink);stroke:var(--paper-2);stroke-width:1.5}
+.fig .halo{fill:transparent;cursor:pointer}
+.fig .z:hover path{fill:var(--terre-2)}
+.fig .z:focus{outline:none}
+.fig .z:focus path{stroke:var(--ink);stroke-width:2}
+.fig .z.vise path{fill:var(--geo)}
+.fig .z.vise.trait path,.fig .z.vise.point circle:not(.halo){stroke:var(--geo);fill:var(--geo)}
+.fig .z.good path{fill:var(--geo);stroke:var(--ink);stroke-width:2}
+.fig .z.good.trait path{stroke:var(--geo);stroke-width:4;fill:none}
+.fig .z.bad path{fill:var(--marge);opacity:.55}
+.fig .z.bad.trait path{stroke:var(--marge);stroke-width:4;fill:none}
+.fig .z.dim path{opacity:.75}
+.fig .zlab{font-family:var(--sans);font-size:7.5px;font-weight:700;fill:var(--ink-soft);pointer-events:none}
+.revealed .fig .z path,.revealed .fig .halo{cursor:default}
+@media (prefers-reduced-motion:reduce){
+  .fig .z path{transition:none}
+}
+.credit{margin:14px 0 0;font-size:11px;color:var(--ink-soft);text-align:center}
+
+/* ---------- boutons ---------- */
+.btn{
+  display:inline-block;border:1px solid var(--ink);background:var(--ink);color:var(--paper-2);
+  font-family:var(--sans);font-size:15px;font-weight:700;padding:12px 22px;border-radius:8px;cursor:pointer;
+  transition:opacity .15s
+}
+.btn:hover{opacity:.86}
+.btn:disabled{cursor:default}
+.btn.ghost{background:transparent;color:var(--ink)}
+.row-end{display:flex;justify-content:flex-end;gap:8px;margin-top:18px;min-height:46px;align-items:center}
+.hidden{display:none !important}
+
+/* ---------- accueil de manche ---------- */
+.intro{padding:6px 0 4px}
+.intro h2{font-family:var(--serif);font-weight:400;font-size:27px;margin:0 0 8px;line-height:1.15}
+.intro p{margin:0 0 18px;color:var(--ink-soft);font-size:15px;max-width:44ch}
+
+/* ---------- bilan ---------- */
+.bilan h2{font-family:var(--serif);font-weight:400;font-size:30px;margin:0 0 2px}
+.bigscore{font-family:var(--serif);font-size:56px;line-height:1;margin:10px 0 2px}
+.bilan .meta{color:var(--ink-soft);font-size:14px;margin:0 0 18px}
+.errlist{border-top:1px solid var(--rule-soft);margin:14px 0 0;padding:0;list-style:none}
+.errlist li{border-bottom:1px solid var(--rule-soft);padding:11px 0;font-size:14px;color:var(--ink-soft)}
+.errlist .rep{font-weight:700;color:var(--geo)}
+.section-title{
+  font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);
+  margin:22px 0 0
+}
+
+@media (prefers-reduced-motion:reduce){
+  *{transition-duration:.01ms !important;animation-duration:.01ms !important}
+}
+:focus-visible{outline:2px solid var(--geo);outline-offset:2px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="topbar"><a class="home" href="geographie.html">🏠 Géographie</a><p class="eyebrow">Géographie, 3<sup>e</sup></p></div>
+    <h1>La France <em>au bout du doigt</em></h1>
+    <p class="sub">Quatre entraînements : les régions, leurs capitales, les fleuves et les reliefs, les mers et les DROM.</p>
+    <nav role="tablist">
+      <button class="tab" role="tab" aria-selected="true" data-panel="regions">Les régions</button>
+      <button class="tab" role="tab" aria-selected="false" data-panel="capitales">Les capitales</button>
+      <button class="tab" role="tab" aria-selected="false" data-panel="relief">Fleuves et reliefs</button>
+      <button class="tab" role="tab" aria-selected="false" data-panel="outremer">Mers et DROM</button>
+    </nav>
+  </header>
+
+  <div class="sheet">
+    <section class="panel on" id="regions"></section>
+    <section class="panel" id="capitales"></section>
+    <section class="panel" id="relief"></section>
+    <section class="panel" id="outremer"></section>
+  </div>
+  <p class="credit">Fonds de carte : IGN, Admin Express, sous Licence Ouverte (Etalab).</p>
+</div>
+
+<script>
+/* ============ outils ============ */
+const $ = (sel,root=document)=>root.querySelector(sel);
+const shuffle = a => {const c=[...a];for(let i=c.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[c[i],c[j]]=[c[j],c[i]];}return c;};
+const pick = (a,n) => shuffle(a).slice(0,n);
+const esc = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;");
+function chrono(sec){return sec<60?sec+" s":Math.floor(sec/60)+" min "+String(sec%60).padStart(2,"0");}
+const rnd=a=>a[Math.floor(Math.random()*a.length)];
+
+/* ============ moteur de cartes ============ */
+/* Un fond = {viewBox, zones:[{id,nom,d,cx,cy,type}]}.
+   type "aire"  : polygone plein, cliquable sur toute sa surface.
+   type "trait" : polyligne (un fleuve), cliquable via un halo.
+   type "point" : repere ponctuel (une ville, une ile), cliquable via un halo.
+   La cible tactile depend du type, et c'est ce qui rend la carte jouable au doigt :
+     - "aire"  : le polygone lui-meme, plus un halo circulaire pour les petites zones ;
+     - "trait" : le trace repris en transparent avec une forte epaisseur, si bien
+                 qu'un fleuve se tape n'importe ou sur sa longueur ;
+     - "point" : un halo circulaire centre sur cx,cy.
+   Mesure faite sur les vrais fonds : sans cela l'Ile-de-France tombe a 34 px, le
+   Luxembourg a 8 px et la Guadeloupe a 1 px. */
+const HALO=22, EPAISSEUR_CIBLE=11;
+function mapSVG(fond,opts={}){
+  const {bonne,choisie,surligne,etiquettes}=opts;
+  const corps=fond.zones.map(z=>{
+    let cls="z "+z.type;
+    if(surligne&&z.id===surligne)cls+=" vise";
+    if(bonne&&z.id===bonne)cls+=" good";
+    else if(choisie&&z.id===choisie)cls+=" bad";
+    else if(bonne)cls+=" dim";
+    const forme=z.type==="trait"
+      ? `<path class="cible-trait" d="${z.d}" fill="none" stroke-width="${EPAISSEUR_CIBLE}"></path>`+
+        `<path d="${z.d}" fill="none"></path>`
+      : z.type==="point"
+        ? `<circle cx="${z.cx}" cy="${z.cy}" r="4.5"></circle>`
+        : `<path d="${z.d}"></path>`;
+    const nom=etiquettes?`<text x="${z.cx}" y="${z.cy+3}" text-anchor="middle" class="zlab">${esc(z.nom)}</text>`:"";
+    return `<g class="${cls}" data-z="${z.id}" role="button" tabindex="0" aria-label="${esc(z.nom)}">
+      ${forme}<circle class="halo" cx="${z.cx}" cy="${z.cy}" r="${HALO}"></circle>${nom}</g>`;
+  }).join("");
+  return `<svg viewBox="${opts.vb||fond.viewBox}" role="img" aria-label="Carte cliquable">${corps}</svg>`;
+}
+/* ---- la loupe ----
+   Sur une carte dense, viser au doigt est impossible : mesure faite, le Luxembourg
+   offre 8 px et la Guadeloupe 1 px. Un premier appui resserre donc le viewBox
+   autour du point vise, un second designe la zone. `cadreSur` sert aussi a montrer
+   de pres un pays surligne dans les manches ou l'eleve repond par un bouton. */
+const ZOOM=2.8;
+function cadre(fond){return fond.viewBox.split(/\s+/).map(Number);}
+function loupeVB(fond,cx,cy){
+  const [x0,y0,w,h]=cadre(fond), nw=w/ZOOM, nh=h/ZOOM;
+  const x=Math.max(x0,Math.min(x0+w-nw,cx-nw/2)), y=Math.max(y0,Math.min(y0+h-nh,cy-nh/2));
+  return `${x.toFixed(1)} ${y.toFixed(1)} ${nw.toFixed(1)} ${nh.toFixed(1)}`;
+}
+function cadreSur(fond,id){
+  const z=fond.zones.find(v=>v.id===id);
+  return z?loupeVB(fond,z.cx,z.cy):fond.viewBox;
+}
+/* convertit un clic en coordonnees du viewBox courant */
+function pointCarte(svg,ev){
+  const r=svg.getBoundingClientRect(), [x0,y0,w,h]=(svg.getAttribute("viewBox")).split(/\s+/).map(Number);
+  return [x0+(ev.clientX-r.left)/r.width*w, y0+(ev.clientY-r.top)/r.height*h];
+}
+/* branche les gestionnaires de clic et de clavier sur une carte deja rendue */
+function mapBrancher(hote,repondre){
+  hote.querySelectorAll(".z").forEach(g=>{
+    g.onclick=()=>repondre(g.dataset.z);
+    g.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();repondre(g.dataset.z);}};
+  });
+}
+
+/* ============ donnees ============ */
+/* Traces reels, IGN Admin Express, simplifies puis figes ici. Le site reste sans
+   dependance et sans acces reseau : les traces sont du texte dans le fichier, au
+   meme titre que les figures SVG de thales.html. */
+const REGIONS=[
+ {id:"idf",nom:"Île-de-France",capitale:"Paris",type:"aire",cx:166.4,cy:94.1,d:"M168.2 82.9 L169.1 82.0 L171.2 83.4 L172.8 82.3 L174.0 83.1 L178.1 82.7 L178.2 81.7 L180.2 82.2 L180.3 84.9 L183.7 88.0 L184.5 87.5 L184.7 89.2 L186.9 89.7 L187.0 90.9 L185.2 91.0 L186.1 91.6 L185.0 92.6 L186.6 93.2 L186.2 96.3 L187.9 96.0 L188.5 96.8 L186.5 98.3 L186.8 99.1 L185.2 99.5 L185.9 100.5 L184.8 101.0 L185.4 103.7 L177.8 104.6 L177.1 106.3 L177.8 108.0 L175.4 110.6 L173.0 111.6 L172.5 110.4 L171.2 110.5 L171.6 111.1 L170.6 111.8 L165.1 111.8 L166.6 110.5 L166.7 108.6 L164.7 107.6 L164.2 105.8 L162.5 105.5 L160.9 106.5 L161.0 105.5 L160.0 105.1 L159.2 106.5 L155.2 106.8 L155.6 104.5 L155.4 103.4 L154.3 103.2 L154.3 101.7 L153.1 102.2 L151.7 101.4 L151.4 98.8 L147.5 95.5 L147.4 90.1 L144.2 83.9 L145.5 82.7 L147.9 82.7 L149.7 78.0 L150.7 80.0 L153.4 80.3 L157.5 78.9 L159.3 80.3 L160.4 79.8 L160.6 80.7 L162.3 79.6 L166.1 82.0 L167.5 81.5 L168.2 82.9 Z"},
+ {id:"cvl",nom:"Centre-Val de Loire",capitale:"Orléans",type:"aire",cx:149.2,cy:131.1,d:"M174.1 130.0 L175.3 132.5 L174.2 136.0 L176.4 137.9 L177.2 143.7 L178.3 144.9 L178.0 151.0 L177.3 152.0 L174.9 152.1 L173.5 154.0 L171.7 154.3 L170.8 153.5 L168.9 155.2 L169.0 156.1 L167.7 156.3 L168.7 159.3 L167.1 160.3 L163.3 160.4 L161.7 163.3 L157.7 163.7 L153.9 162.6 L152.5 163.2 L151.3 162.3 L150.5 162.4 L150.1 164.2 L149.2 163.4 L148.0 164.3 L147.6 163.2 L146.3 164.1 L145.8 163.1 L143.6 165.5 L142.3 163.9 L141.2 164.8 L138.7 164.7 L139.3 163.0 L138.0 162.5 L137.9 160.7 L133.0 157.8 L133.0 154.1 L128.7 148.7 L128.4 146.6 L125.8 145.6 L126.5 147.1 L120.7 147.9 L120.3 144.2 L117.6 144.0 L117.8 142.3 L115.6 142.2 L115.0 140.9 L115.6 137.2 L117.8 134.3 L117.1 133.7 L118.5 130.6 L118.0 129.5 L118.8 127.3 L121.8 128.6 L121.9 126.3 L123.3 127.0 L123.6 126.3 L126.4 125.4 L126.9 124.8 L126.1 124.2 L128.6 122.6 L130.1 120.4 L129.8 118.6 L130.5 118.2 L130.9 118.9 L131.7 117.3 L131.1 115.9 L131.6 114.6 L130.6 114.4 L130.5 113.4 L131.6 113.3 L131.0 112.5 L131.7 111.5 L133.1 111.3 L130.6 109.8 L131.3 109.2 L130.8 106.8 L129.7 106.5 L130.4 105.2 L133.1 104.2 L134.4 102.2 L133.5 101.1 L134.2 99.7 L131.1 97.1 L130.9 95.4 L132.6 93.7 L137.3 92.9 L137.4 91.6 L141.8 92.5 L142.7 91.9 L142.4 90.3 L144.6 89.1 L144.7 87.1 L146.1 87.6 L147.4 90.1 L147.5 95.5 L151.4 98.8 L151.7 101.4 L153.1 102.2 L154.3 101.7 L154.3 103.2 L155.4 103.4 L155.2 106.8 L159.2 106.5 L160.0 105.1 L161.0 105.5 L160.9 106.5 L162.7 105.5 L163.3 106.2 L164.2 105.8 L164.7 107.6 L166.7 108.6 L166.6 110.5 L165.1 111.8 L170.6 111.8 L171.6 111.1 L171.2 110.5 L172.5 110.4 L172.6 111.5 L175.8 110.5 L177.4 111.5 L177.8 113.3 L179.4 114.6 L179.4 116.4 L177.0 118.4 L177.3 122.0 L173.7 122.9 L173.6 124.1 L175.2 125.2 L176.3 128.6 L173.8 129.1 L174.1 130.0 Z"},
+ {id:"bfc",nom:"Bourgogne-Franche-Comté",capitale:"Dijon",type:"aire",cx:214.6,cy:138.7,d:"M189.9 153.4 L189.1 153.0 L188.5 155.2 L186.3 156.3 L185.8 154.5 L184.0 155.3 L182.4 154.4 L180.9 155.5 L177.5 152.6 L178.3 144.9 L177.2 143.7 L176.4 137.9 L174.2 136.0 L175.3 132.5 L173.5 129.3 L176.3 128.6 L175.2 125.2 L173.6 124.1 L173.7 122.9 L177.3 122.0 L177.0 118.4 L179.4 116.4 L179.4 114.6 L177.8 113.3 L177.4 111.5 L175.4 110.5 L177.8 108.0 L177.1 106.3 L177.8 104.6 L184.2 104.3 L184.8 103.4 L185.7 104.7 L187.2 104.3 L189.8 107.7 L188.8 109.8 L190.1 109.8 L190.7 111.3 L192.4 110.5 L192.3 111.5 L193.3 112.0 L195.0 115.0 L194.6 116.0 L195.5 115.5 L195.8 116.1 L195.7 117.8 L198.6 117.8 L199.0 117.2 L200.0 117.8 L201.2 116.7 L201.9 117.3 L201.9 116.3 L203.8 117.8 L204.3 116.7 L209.3 116.5 L208.9 115.3 L210.0 114.6 L214.2 115.3 L214.2 116.6 L215.8 117.3 L215.2 118.3 L216.6 117.9 L218.5 121.0 L216.9 122.3 L217.8 122.7 L218.0 125.0 L219.3 124.3 L219.8 125.6 L221.3 126.2 L222.4 125.2 L222.3 126.0 L224.1 127.0 L224.0 128.3 L225.4 127.3 L226.1 127.9 L227.4 125.3 L229.7 125.4 L230.5 124.4 L231.1 125.5 L233.1 125.1 L233.1 120.9 L234.2 121.0 L234.6 119.8 L236.0 120.0 L238.2 116.2 L238.5 117.5 L240.5 115.4 L242.3 114.8 L243.9 117.6 L247.7 116.7 L249.6 119.0 L252.3 117.2 L257.3 120.8 L257.8 122.1 L260.9 123.3 L261.5 125.1 L260.7 127.6 L262.2 127.7 L263.5 129.9 L262.9 130.8 L260.2 130.9 L260.6 132.1 L259.3 132.7 L258.0 135.1 L260.9 134.5 L261.7 135.7 L259.3 137.1 L259.6 138.4 L254.3 143.3 L254.6 144.3 L248.7 148.0 L249.3 149.1 L249.1 152.6 L241.9 158.6 L242.9 159.5 L241.1 162.0 L241.4 162.7 L236.9 168.0 L233.8 168.2 L233.6 166.7 L232.1 165.6 L231.1 167.1 L228.6 168.1 L228.4 166.3 L227.8 166.5 L227.5 165.5 L227.1 166.7 L226.6 164.5 L224.9 163.6 L225.2 162.6 L223.2 161.9 L222.9 160.7 L219.8 161.4 L217.4 160.3 L214.0 170.7 L212.9 170.6 L213.1 169.0 L212.0 168.3 L212.6 167.6 L211.9 166.8 L210.7 168.0 L209.4 167.1 L208.3 168.0 L206.2 167.1 L205.5 170.4 L203.6 171.3 L202.1 170.2 L197.5 170.9 L197.1 169.9 L195.4 169.6 L195.4 167.4 L197.8 166.1 L197.7 162.1 L196.8 161.2 L194.9 161.2 L194.3 160.0 L192.3 159.7 L192.2 157.8 L189.9 153.4 Z"},
+ {id:"nor",nom:"Normandie",capitale:"Rouen",type:"aire",cx:116.2,cy:81.6,d:"M90.5 74.5 L91.5 73.5 L94.1 73.3 L98.1 74.7 L105.6 75.2 L109.2 76.7 L112.1 76.2 L116.6 73.1 L121.1 72.1 L116.5 71.2 L115.3 69.8 L118.2 63.7 L126.1 59.5 L137.1 56.9 L142.6 53.0 L144.3 52.9 L144.4 53.9 L149.1 57.5 L151.3 62.2 L149.3 64.2 L150.6 64.6 L149.5 65.8 L150.0 67.4 L149.3 67.7 L150.5 69.0 L149.9 70.0 L151.4 70.0 L149.8 73.0 L150.8 74.2 L151.4 77.8 L149.7 77.3 L147.7 82.8 L145.5 82.7 L145.4 83.5 L144.2 83.6 L144.7 86.0 L145.7 85.9 L144.2 87.5 L144.5 89.1 L142.4 90.3 L142.7 91.9 L139.5 92.6 L137.4 91.6 L137.3 92.9 L132.6 93.7 L130.9 95.3 L131.1 97.1 L134.2 99.7 L133.5 101.1 L134.4 102.2 L133.0 104.3 L130.0 105.8 L131.3 109.2 L129.9 110.1 L128.2 107.8 L127.3 107.6 L127.2 108.4 L125.1 108.0 L124.2 106.2 L122.2 105.8 L121.9 102.7 L120.2 101.0 L117.0 101.7 L115.2 104.0 L113.9 103.5 L112.9 104.2 L112.8 101.8 L110.8 101.7 L110.3 100.1 L110.9 99.6 L109.6 98.5 L106.5 100.9 L105.6 100.1 L103.2 100.1 L100.3 102.1 L100.0 100.8 L98.6 101.2 L98.9 101.9 L98.0 102.3 L96.2 100.4 L93.9 99.9 L92.9 100.7 L88.6 99.1 L87.5 99.2 L85.0 101.7 L82.7 100.7 L81.0 96.6 L85.6 96.4 L84.6 95.7 L85.1 94.6 L83.6 95.7 L81.0 93.0 L80.9 90.7 L80.1 90.3 L81.4 87.3 L81.5 88.4 L81.3 84.5 L82.4 84.6 L81.2 84.2 L80.9 85.3 L80.4 84.1 L80.1 78.6 L81.1 78.6 L80.1 78.1 L79.9 78.9 L78.1 75.4 L78.8 75.2 L77.9 75.4 L76.5 73.9 L77.1 74.0 L76.0 74.0 L74.4 69.3 L75.3 66.5 L73.1 64.9 L73.2 63.3 L80.1 65.8 L82.8 65.0 L83.1 64.2 L87.4 64.2 L88.2 66.9 L87.3 68.0 L86.8 67.6 L86.6 69.0 L89.4 72.8 L89.3 74.2 L90.5 74.5 Z"},
+ {id:"hdf",nom:"Hauts-de-France",capitale:"Lille",type:"aire",cx:172,cy:55.9,d:"M200.7 55.6 L202.6 56.3 L203.0 58.9 L202.0 61.7 L202.9 62.4 L200.4 64.7 L200.1 66.1 L198.2 66.4 L199.3 68.0 L198.4 74.4 L196.1 72.9 L194.0 73.1 L194.8 73.6 L194.6 74.8 L193.0 74.5 L190.2 75.8 L191.0 78.1 L190.4 78.7 L192.4 80.5 L189.8 80.7 L189.3 81.6 L190.1 82.9 L189.0 84.1 L190.4 84.0 L191.0 84.8 L186.4 90.1 L184.7 89.2 L184.5 87.5 L183.7 88.0 L180.3 84.9 L180.8 83.7 L179.7 82.0 L178.2 81.7 L178.1 82.7 L176.5 83.1 L176.1 82.5 L173.7 83.1 L172.8 82.3 L171.2 83.4 L169.1 82.0 L168.0 82.8 L167.4 81.5 L166.1 82.0 L162.3 79.6 L160.6 80.7 L160.4 79.8 L159.3 80.3 L157.5 78.9 L153.4 80.3 L150.7 80.0 L149.6 77.6 L150.8 77.0 L151.4 77.8 L151.7 77.0 L149.8 72.9 L151.4 70.0 L149.9 70.0 L150.5 69.0 L149.3 67.7 L150.0 67.4 L149.5 65.8 L150.6 64.3 L149.3 64.2 L151.3 62.2 L149.1 57.5 L144.4 53.9 L144.3 52.9 L142.8 53.1 L145.9 48.7 L149.2 49.5 L146.1 46.6 L146.5 44.1 L148.3 44.3 L146.5 43.0 L147.1 38.8 L148.7 39.6 L146.9 37.7 L147.1 28.6 L151.2 26.1 L157.4 24.5 L158.4 25.0 L159.0 23.7 L159.6 24.5 L159.4 23.4 L164.1 23.2 L167.2 22.0 L169.1 26.4 L168.2 27.2 L168.4 29.3 L169.1 30.4 L171.0 30.5 L172.3 33.0 L174.8 34.1 L175.7 32.3 L179.9 31.1 L181.1 33.4 L182.2 33.8 L181.8 35.1 L182.8 39.1 L184.6 40.1 L186.7 38.9 L187.6 39.2 L187.3 40.3 L189.5 40.0 L190.6 41.2 L190.5 43.8 L191.6 45.8 L192.4 44.4 L195.6 45.1 L198.2 44.1 L200.2 45.8 L200.5 47.2 L201.1 46.3 L202.1 46.7 L200.4 50.9 L201.8 50.9 L202.5 52.8 L200.9 53.8 L200.7 55.6 Z"},
+ {id:"ge",nom:"Grand Est",capitale:"Strasbourg",type:"aire",cx:231.5,cy:94.7,d:"M202.6 56.3 L204.2 55.9 L207.1 56.9 L212.2 55.1 L212.2 52.4 L215.0 49.9 L216.5 50.8 L214.9 53.0 L215.3 53.8 L214.3 55.9 L216.3 57.7 L215.5 61.3 L218.6 61.0 L220.6 62.2 L222.1 64.3 L224.3 64.2 L225.6 65.4 L225.2 66.8 L226.0 66.2 L227.6 67.2 L228.4 70.2 L230.3 69.2 L231.4 70.0 L232.1 68.6 L234.3 68.9 L234.8 68.2 L236.7 70.1 L238.4 70.1 L239.2 71.6 L240.5 71.7 L244.6 69.7 L246.6 71.1 L248.6 70.8 L250.9 72.2 L252.2 74.2 L251.4 74.8 L253.6 76.8 L255.1 80.3 L257.1 80.7 L257.1 78.8 L259.0 78.5 L261.3 79.5 L261.7 81.9 L262.7 80.6 L263.9 81.6 L266.7 81.8 L268.2 80.0 L269.9 79.7 L269.7 80.3 L270.9 80.1 L271.6 82.3 L273.8 83.6 L277.2 83.3 L278.7 84.3 L280.1 83.5 L283.4 85.6 L286.2 86.0 L283.4 91.1 L280.9 92.6 L277.3 97.7 L277.4 99.9 L275.9 103.6 L276.1 105.6 L272.6 111.9 L272.5 114.5 L273.6 116.4 L272.2 119.2 L272.0 123.7 L271.3 124.7 L273.0 127.7 L271.0 129.5 L271.7 129.8 L271.1 130.9 L269.6 130.7 L270.1 131.6 L268.6 132.7 L265.7 133.1 L264.1 132.4 L264.8 130.8 L263.3 130.6 L262.2 127.7 L260.7 127.6 L261.5 125.1 L260.9 123.3 L257.8 122.1 L257.3 120.8 L252.3 117.2 L249.6 119.0 L247.7 116.7 L243.9 117.6 L242.3 114.8 L240.5 115.4 L238.5 117.5 L238.2 116.2 L236.0 120.0 L234.6 119.8 L234.2 121.0 L233.1 120.9 L233.1 125.1 L231.1 125.5 L230.5 124.4 L229.7 125.4 L227.4 125.3 L226.2 127.8 L225.4 127.3 L224.0 128.3 L224.1 127.0 L222.3 126.0 L222.4 125.2 L221.3 126.2 L219.8 125.6 L219.3 124.3 L218.0 125.0 L217.8 122.7 L216.9 122.3 L218.5 121.0 L216.6 117.9 L215.2 118.3 L215.8 117.3 L214.2 116.6 L214.2 115.3 L210.0 114.6 L208.9 115.3 L209.3 116.5 L204.3 116.7 L203.8 117.8 L201.9 116.3 L201.9 117.3 L201.2 116.7 L200.0 117.8 L199.0 117.2 L198.6 117.8 L195.5 117.7 L195.8 116.1 L195.5 115.5 L194.6 116.0 L195.0 115.0 L193.3 112.0 L192.3 111.5 L192.4 110.5 L190.7 111.3 L190.1 109.8 L188.9 109.9 L189.7 107.3 L187.2 104.3 L185.4 104.1 L184.8 101.0 L185.9 100.5 L185.2 99.5 L186.8 99.1 L186.5 98.3 L188.5 96.9 L187.9 96.0 L186.2 96.3 L186.6 93.2 L185.1 92.7 L186.1 91.6 L185.2 91.0 L187.0 90.9 L186.8 89.3 L191.0 84.8 L190.4 84.0 L189.0 84.1 L190.1 82.9 L189.3 81.6 L189.8 80.7 L192.4 80.5 L190.4 78.7 L191.0 78.1 L190.3 75.7 L193.0 74.5 L194.6 74.8 L194.8 73.6 L194.0 73.1 L196.1 72.9 L198.4 74.4 L199.3 68.0 L198.2 66.5 L200.1 66.1 L200.4 64.7 L202.9 62.4 L202.0 61.7 L203.0 58.9 L202.6 56.3 Z"},
+ {id:"pdl",nom:"Pays de la Loire",capitale:"Nantes",type:"aire",cx:96.9,cy:131.3,d:"M62.4 132.2 L63.2 131.4 L65.4 131.8 L65.8 130.2 L66.9 130.9 L68.2 130.3 L68.6 131.0 L68.8 130.0 L70.0 129.6 L70.3 126.1 L72.6 124.8 L72.8 125.5 L75.0 124.4 L79.2 124.3 L79.9 122.7 L83.1 121.5 L83.0 120.5 L87.8 122.3 L89.7 116.6 L92.6 115.4 L90.8 107.6 L92.0 105.6 L91.2 102.4 L91.7 99.9 L92.9 100.7 L93.9 99.9 L96.2 100.4 L98.0 102.3 L98.9 101.9 L98.6 101.2 L100.0 100.8 L100.3 102.1 L103.2 100.1 L105.6 100.1 L106.5 100.9 L109.6 98.5 L110.9 99.6 L110.3 100.1 L110.8 101.7 L112.8 101.8 L112.9 104.2 L113.9 103.5 L115.2 104.0 L117.0 101.7 L120.2 101.0 L121.9 102.7 L122.4 106.0 L124.2 106.2 L125.1 108.0 L127.2 108.4 L127.3 107.6 L128.2 107.8 L129.5 109.9 L130.6 109.6 L133.1 111.3 L131.7 111.5 L131.0 112.5 L131.6 113.3 L130.5 113.4 L130.6 114.4 L131.6 114.6 L131.1 115.9 L131.7 117.3 L130.9 118.9 L130.5 118.2 L129.8 118.6 L130.1 120.4 L128.6 122.6 L126.1 124.2 L126.8 125.1 L123.6 126.3 L123.3 127.0 L121.9 126.3 L121.8 128.6 L118.8 127.3 L118.0 129.5 L118.5 130.6 L117.1 133.7 L117.8 134.3 L115.6 137.2 L115.2 140.5 L113.7 141.1 L113.2 143.2 L112.1 142.7 L111.2 144.1 L110.2 143.7 L111.0 142.9 L110.2 142.5 L105.6 143.0 L103.9 144.2 L104.3 143.3 L103.6 143.3 L102.2 143.8 L102.6 144.8 L101.4 145.9 L98.9 146.3 L97.4 145.6 L95.0 146.7 L97.0 148.2 L96.5 149.3 L97.5 150.5 L99.3 151.5 L98.7 152.9 L100.2 154.8 L100.1 156.8 L101.1 157.2 L100.5 164.0 L101.1 163.5 L102.7 164.4 L100.2 166.5 L98.3 166.9 L97.1 165.7 L94.4 166.7 L93.7 166.3 L94.4 164.8 L91.9 165.5 L91.0 166.6 L88.7 166.5 L88.6 168.0 L86.8 166.2 L86.8 167.3 L85.8 165.7 L83.2 165.7 L82.2 163.8 L79.4 163.3 L76.0 161.1 L75.0 157.6 L69.1 151.3 L68.8 149.1 L72.4 144.9 L69.9 142.3 L66.8 141.8 L68.5 140.8 L68.5 137.7 L65.8 138.7 L64.2 137.4 L63.0 138.0 L60.6 137.0 L61.5 135.8 L60.3 134.5 L62.9 133.3 L62.4 132.2 Z M67.9 147.3 L66.5 147.0 L65.6 145.0 L67.3 145.3 L67.1 146.4 L68.7 147.3 L68.9 149.0 L67.9 147.3 Z M65.6 154.6 L66.1 155.2 L65.1 155.3 L63.6 154.1 L65.6 154.6 Z"},
+ {id:"bre",nom:"Bretagne",capitale:"Rennes",type:"aire",cx:54.5,cy:110,d:"M71.9 98.4 L72.6 99.3 L72.1 100.6 L73.1 99.8 L72.3 97.8 L73.0 98.0 L71.7 97.4 L71.4 95.8 L73.3 94.3 L75.3 94.0 L75.2 96.8 L81.0 96.6 L82.7 100.7 L84.0 101.5 L85.6 101.4 L87.6 99.1 L91.5 100.1 L92.0 105.6 L90.8 107.6 L92.6 115.4 L89.7 116.6 L87.8 122.3 L83.0 120.5 L83.1 121.5 L79.9 122.7 L79.2 124.3 L75.0 124.4 L71.2 125.5 L70.0 126.7 L70.0 129.6 L68.8 130.0 L68.6 131.0 L68.2 130.3 L66.9 130.9 L65.8 130.2 L65.4 131.8 L63.2 131.4 L62.0 132.4 L61.5 130.9 L63.2 130.8 L60.8 129.8 L58.8 130.5 L60.3 129.1 L59.7 128.7 L59.4 129.7 L59.2 128.6 L58.9 129.7 L58.0 129.4 L59.0 129.9 L57.9 130.9 L54.9 131.1 L52.9 128.9 L56.6 129.4 L57.6 126.5 L57.1 126.2 L56.9 127.9 L55.4 126.3 L55.6 127.0 L54.0 127.0 L53.4 128.4 L52.5 127.5 L52.4 128.1 L51.5 125.8 L52.6 128.9 L50.6 127.9 L50.7 128.6 L50.1 128.0 L49.1 128.7 L48.4 127.7 L48.4 130.0 L49.4 131.6 L48.3 131.4 L48.2 128.2 L46.7 126.3 L48.0 124.1 L48.9 124.1 L47.9 124.0 L48.0 123.0 L47.7 123.7 L46.9 123.2 L47.6 124.5 L46.6 124.7 L46.6 126.3 L43.6 125.0 L45.3 124.9 L43.4 124.3 L45.3 121.7 L43.9 123.3 L42.9 120.7 L43.6 123.6 L41.7 124.8 L40.0 122.6 L39.7 119.7 L39.8 122.7 L36.8 122.3 L35.9 121.5 L37.7 120.7 L35.7 121.5 L35.3 120.2 L35.5 121.7 L33.2 121.9 L32.2 120.5 L32.6 119.8 L32.0 120.1 L30.6 118.3 L30.6 120.0 L28.1 119.7 L27.1 118.3 L28.5 117.4 L27.7 116.0 L27.8 117.5 L27.1 118.6 L26.4 118.3 L27.8 119.7 L26.6 120.4 L26.4 119.2 L25.6 119.6 L26.8 120.6 L26.4 121.4 L22.4 121.7 L22.9 120.4 L22.0 117.7 L18.9 115.2 L19.9 114.4 L18.8 114.4 L18.3 115.5 L14.6 114.3 L16.2 113.3 L24.1 112.4 L24.4 110.9 L23.5 109.4 L19.9 108.4 L18.5 110.4 L18.8 108.0 L17.1 107.9 L17.0 107.0 L18.2 107.0 L18.5 105.3 L18.9 106.9 L19.7 106.1 L19.6 107.0 L24.4 106.6 L24.6 107.7 L27.8 108.1 L27.7 108.9 L28.1 107.8 L25.9 108.0 L24.3 107.1 L26.2 106.6 L24.2 106.1 L24.9 105.6 L23.2 106.1 L24.6 104.7 L20.6 105.6 L24.5 102.1 L17.4 105.3 L15.9 104.8 L13.9 105.5 L14.5 104.5 L13.7 104.6 L14.2 104.1 L13.5 103.0 L15.1 101.1 L13.9 100.7 L14.4 99.1 L17.0 98.0 L19.6 99.0 L17.9 98.5 L17.5 97.3 L20.1 98.2 L18.3 96.6 L21.8 96.3 L21.0 95.7 L22.8 95.1 L23.9 95.4 L23.9 96.4 L27.4 94.4 L29.0 95.2 L29.0 94.2 L30.7 93.5 L31.1 96.9 L31.5 97.4 L31.8 95.1 L32.9 97.2 L34.0 96.5 L33.0 95.2 L33.9 93.8 L37.6 94.5 L37.3 95.6 L38.0 94.8 L39.1 95.1 L39.6 92.9 L38.8 92.0 L40.5 90.1 L42.8 91.3 L46.4 89.2 L46.5 91.8 L47.3 90.0 L49.5 88.8 L48.5 92.5 L49.6 90.7 L50.9 90.7 L50.1 91.8 L52.6 92.7 L52.2 93.7 L54.7 95.7 L54.8 97.5 L57.1 98.7 L57.8 100.6 L57.7 99.4 L58.8 99.6 L60.4 97.4 L62.1 96.7 L61.8 96.0 L63.3 96.4 L65.4 94.7 L66.1 95.4 L65.4 97.1 L66.8 96.0 L67.6 98.2 L67.9 97.1 L68.3 98.1 L68.9 96.8 L69.4 97.2 L68.9 96.3 L70.8 96.2 L71.9 98.4 Z M46.1 136.0 L45.9 134.1 L49.9 136.5 L49.2 137.4 L46.5 136.9 L46.1 136.0 Z M7.0 102.3 L7.1 101.7 L6.3 102.0 L7.0 101.2 L8.5 101.5 L7.0 102.3 Z M42.2 127.0 L40.3 126.1 L42.1 126.3 L42.2 127.0 Z"},
+ {id:"naq",nom:"Nouvelle-Aquitaine",capitale:"Bordeaux",type:"aire",cx:118.4,cy:200.2,d:"M143.6 165.5 L145.8 163.1 L146.3 164.1 L147.6 163.2 L148.0 164.3 L149.2 163.4 L150.1 164.2 L150.5 162.4 L151.6 162.3 L152.5 163.2 L153.9 162.6 L157.7 163.7 L161.7 163.3 L161.8 164.5 L162.9 165.0 L162.1 165.7 L165.9 167.5 L167.5 170.8 L167.3 173.4 L168.6 176.9 L166.1 180.2 L163.9 181.3 L166.8 184.8 L166.7 186.9 L165.5 188.3 L166.6 189.6 L166.0 193.7 L166.8 194.7 L165.8 195.1 L163.2 193.8 L163.3 196.1 L159.8 199.6 L160.7 201.4 L159.6 202.2 L159.5 203.8 L157.8 204.6 L158.5 206.8 L154.7 207.8 L153.9 207.0 L151.6 208.7 L148.1 205.3 L146.1 204.9 L143.4 206.1 L144.1 210.0 L141.1 212.5 L141.5 214.2 L137.9 216.3 L137.0 219.3 L134.5 220.1 L136.2 225.1 L133.7 226.1 L132.7 225.0 L132.1 227.2 L133.8 228.3 L132.9 230.8 L131.8 231.0 L132.6 231.4 L132.4 232.6 L130.4 232.2 L130.7 233.2 L127.8 235.8 L126.4 234.2 L120.3 236.9 L118.8 235.9 L117.2 237.4 L116.6 236.5 L115.1 237.7 L115.2 239.7 L113.4 238.7 L114.1 238.0 L113.2 237.1 L111.9 238.7 L110.2 238.5 L109.1 239.3 L110.0 240.6 L109.9 242.3 L109.2 242.4 L109.9 244.5 L108.7 245.4 L108.1 248.1 L108.8 249.2 L111.9 249.2 L113.5 252.6 L112.5 252.8 L112.5 254.4 L113.9 253.4 L114.5 256.4 L113.0 257.7 L113.6 258.7 L112.4 260.1 L112.5 261.5 L111.5 261.4 L109.9 263.4 L110.1 265.2 L107.9 266.7 L107.1 271.8 L104.7 273.0 L103.3 272.1 L102.0 273.5 L101.3 271.9 L98.6 270.0 L98.1 267.8 L94.1 268.3 L90.6 266.1 L90.0 266.6 L86.5 264.8 L87.3 263.3 L85.7 264.0 L85.6 266.0 L83.7 265.4 L83.1 264.2 L85.0 261.1 L84.8 259.0 L81.8 257.9 L80.2 259.2 L79.9 257.6 L77.7 257.9 L76.4 255.6 L79.0 255.1 L80.3 253.8 L83.6 247.4 L86.6 231.4 L87.5 220.1 L88.9 216.7 L92.9 217.0 L89.5 213.1 L87.5 217.4 L89.7 191.9 L91.1 189.3 L93.2 188.6 L88.6 185.2 L88.9 185.9 L88.2 185.8 L87.9 182.7 L90.2 182.0 L89.4 180.4 L90.6 180.3 L91.4 178.6 L90.9 177.7 L91.6 177.6 L90.4 176.0 L91.9 175.7 L89.6 171.3 L87.9 171.1 L90.6 168.1 L90.4 166.3 L91.4 166.4 L91.9 165.5 L94.4 164.8 L93.7 166.3 L94.4 166.7 L97.1 165.7 L98.8 166.9 L102.7 164.4 L101.1 163.5 L100.5 164.0 L101.2 162.3 L100.4 160.3 L101.3 159.5 L101.1 157.2 L100.1 156.8 L100.6 156.0 L99.7 155.3 L100.2 154.8 L98.7 152.9 L99.3 151.5 L97.5 150.5 L96.5 149.3 L97.0 148.2 L95.0 146.7 L97.4 145.6 L98.9 146.3 L101.4 145.9 L102.6 144.8 L102.2 143.8 L103.6 143.3 L104.3 143.3 L103.9 144.2 L105.6 143.0 L110.2 142.5 L111.0 142.9 L110.2 143.7 L111.2 144.1 L112.1 142.7 L113.2 143.2 L113.7 141.1 L114.9 140.7 L115.6 142.2 L117.8 142.3 L117.6 144.0 L120.3 144.2 L120.7 147.9 L126.5 147.1 L125.8 145.6 L128.4 146.6 L128.7 148.7 L133.0 154.1 L133.1 158.0 L137.9 160.7 L138.0 162.5 L139.3 163.0 L138.7 164.7 L141.2 164.8 L142.3 163.9 L143.6 165.5 Z M82.9 169.7 L84.3 169.1 L83.8 169.7 L87.6 171.2 L86.5 171.7 L83.3 169.9 L82.4 170.2 L81.2 168.7 L82.6 168.3 L83.0 169.0 L82.2 169.2 L82.9 169.7 Z M87.7 180.7 L84.9 177.5 L84.3 174.6 L88.0 176.5 L89.0 179.5 L88.2 182.0 L87.7 180.7 Z"},
+ {id:"occ",nom:"Occitanie",capitale:"Toulouse",type:"aire",cx:158.9,cy:245.6,d:"M151.3 279.7 L150.1 279.3 L150.3 278.4 L147.5 278.2 L146.4 277.3 L144.9 277.4 L144.8 278.6 L144.0 278.8 L142.4 275.3 L138.3 275.7 L136.5 273.2 L133.3 273.2 L128.8 271.0 L127.7 271.7 L127.4 273.4 L128.1 276.2 L122.8 276.2 L121.5 275.2 L120.1 276.7 L119.4 275.4 L117.6 274.8 L112.7 276.2 L110.5 272.9 L110.0 273.3 L107.5 271.6 L107.1 269.4 L108.0 268.9 L107.9 266.7 L110.1 265.2 L109.9 263.4 L111.5 261.4 L112.5 261.5 L112.4 260.1 L113.6 258.7 L113.0 257.7 L114.5 256.4 L113.9 253.4 L112.5 254.4 L112.5 252.8 L113.5 252.6 L111.9 249.2 L108.8 249.2 L108.1 248.1 L108.7 245.4 L109.9 244.5 L109.2 242.4 L109.9 242.3 L110.0 240.6 L108.9 239.7 L110.2 238.5 L111.9 238.7 L113.2 237.1 L114.1 238.0 L113.4 238.7 L115.2 239.7 L115.1 237.7 L116.6 236.5 L117.2 237.4 L118.8 235.9 L120.3 236.9 L126.4 234.2 L128.1 235.8 L129.8 233.3 L130.7 233.2 L130.4 232.2 L132.6 232.4 L131.8 231.0 L132.9 230.8 L133.8 228.3 L132.1 227.2 L132.7 225.0 L133.7 226.1 L136.2 225.1 L134.5 220.1 L137.0 219.3 L137.9 216.3 L141.5 214.2 L141.1 212.5 L144.1 210.0 L143.4 206.1 L145.5 205.1 L148.4 205.5 L151.1 208.6 L153.9 207.0 L154.7 207.8 L157.1 207.0 L158.1 209.0 L157.6 209.8 L159.3 212.0 L158.5 215.4 L160.2 217.9 L160.3 216.9 L161.8 216.4 L163.2 217.2 L165.9 216.9 L167.5 214.8 L168.4 211.1 L171.3 208.1 L172.0 210.7 L173.8 210.1 L176.4 217.1 L178.9 209.7 L179.7 209.2 L180.7 210.5 L182.0 208.1 L182.7 208.5 L184.6 207.1 L186.8 212.1 L189.1 211.6 L189.2 210.1 L190.0 209.9 L190.6 211.5 L192.3 211.2 L195.1 214.2 L195.7 218.6 L199.1 224.3 L198.7 226.9 L200.4 226.4 L203.1 228.6 L204.5 226.3 L205.9 226.1 L206.0 227.8 L206.9 228.0 L207.2 226.3 L208.3 226.2 L212.5 230.1 L212.8 234.1 L213.6 234.0 L215.4 236.9 L211.1 240.6 L211.7 241.2 L210.8 246.1 L207.9 245.7 L206.6 247.9 L207.6 248.3 L207.4 249.0 L204.7 250.6 L204.3 250.0 L204.5 250.9 L202.7 251.7 L202.5 252.9 L200.4 252.0 L200.2 250.2 L197.6 250.2 L190.2 255.2 L187.4 258.6 L184.5 258.4 L180.3 262.0 L177.8 267.3 L177.3 275.8 L177.8 280.6 L179.7 281.5 L180.4 283.9 L178.6 284.2 L177.6 282.7 L175.6 282.5 L175.0 283.3 L173.4 283.2 L172.1 284.6 L169.9 284.9 L170.0 286.7 L167.8 286.3 L167.0 287.0 L164.9 285.2 L161.2 283.8 L159.0 284.4 L156.1 286.6 L154.5 283.4 L150.2 282.2 L150.3 280.5 L151.3 279.7 Z M111.8 256.0 L112.6 256.1 L112.3 257.5 L111.6 257.4 L111.8 256.0 Z M111.8 259.5 L111.0 258.6 L111.6 257.4 L112.3 258.6 L111.8 259.5 Z"},
+ {id:"ara",nom:"Auvergne-Rhône-Alpes",capitale:"Lyon",type:"aire",cx:208.9,cy:190.8,d:"M214.0 170.7 L217.4 160.3 L219.8 161.4 L222.9 160.7 L223.2 161.9 L225.2 162.6 L224.9 163.6 L226.6 164.5 L227.1 166.7 L227.5 165.5 L227.8 166.5 L228.4 166.3 L228.6 168.1 L231.1 167.1 L232.1 165.6 L233.6 166.7 L233.8 168.2 L236.9 168.0 L240.8 163.5 L241.7 163.7 L243.2 165.0 L241.7 167.4 L242.2 168.5 L239.1 169.5 L239.5 170.5 L238.7 172.2 L242.4 171.8 L245.8 169.2 L246.1 168.3 L245.2 168.6 L244.6 167.6 L246.0 165.0 L247.7 165.8 L250.3 163.8 L254.8 163.7 L256.5 164.1 L255.8 165.5 L257.7 167.5 L256.3 171.9 L258.4 172.3 L257.9 174.6 L259.2 174.1 L261.3 177.4 L260.4 180.0 L258.0 180.6 L257.8 181.4 L256.7 181.0 L256.5 184.4 L258.8 186.6 L260.6 186.9 L260.5 191.0 L264.4 194.0 L262.9 196.4 L263.4 198.6 L262.0 200.0 L259.8 200.0 L258.3 202.2 L255.7 201.5 L252.8 203.0 L250.3 203.0 L249.8 204.6 L247.2 204.2 L246.6 202.6 L244.4 203.0 L243.9 205.9 L246.4 206.3 L247.0 210.7 L245.6 210.1 L244.8 210.8 L242.4 210.4 L240.8 211.9 L239.9 211.3 L238.5 212.2 L239.2 212.9 L238.6 213.6 L236.0 213.6 L235.4 215.1 L236.0 215.7 L235.2 216.8 L232.1 216.9 L231.2 220.1 L232.6 221.4 L231.5 222.4 L228.3 221.5 L229.1 223.3 L227.4 223.7 L227.7 225.4 L228.9 226.4 L231.9 226.5 L231.4 227.3 L233.0 228.5 L233.0 230.7 L232.1 231.4 L232.8 232.1 L231.3 230.8 L230.0 232.6 L228.2 233.0 L227.8 232.0 L226.7 231.9 L226.1 230.1 L221.9 229.6 L222.2 227.0 L220.9 228.2 L219.9 227.3 L215.0 229.7 L213.7 226.7 L211.3 226.6 L211.3 228.4 L208.3 226.2 L207.2 226.3 L206.9 228.0 L206.1 227.9 L205.8 226.1 L203.8 227.0 L203.1 228.6 L200.4 226.4 L198.8 227.0 L199.1 224.3 L195.7 218.6 L195.1 214.2 L192.3 211.2 L190.6 211.5 L190.0 209.9 L189.2 210.1 L189.1 211.6 L186.8 212.1 L184.6 207.1 L182.7 208.5 L182.0 208.1 L180.7 210.5 L179.7 209.2 L178.9 209.7 L176.4 217.1 L173.8 210.1 L172.0 210.7 L171.3 208.1 L168.4 211.1 L167.5 214.8 L165.9 216.9 L163.2 217.2 L162.7 216.3 L160.3 216.9 L160.2 217.9 L159.3 217.3 L159.6 216.2 L158.5 215.4 L159.3 212.0 L157.6 209.8 L158.1 209.0 L157.1 207.0 L158.7 206.6 L157.8 204.6 L159.5 203.8 L159.6 202.2 L160.7 201.4 L159.8 199.6 L163.3 196.1 L163.2 193.8 L165.8 195.1 L166.8 194.7 L166.0 193.7 L166.6 189.6 L165.5 188.3 L166.7 186.9 L166.8 184.8 L163.9 181.3 L166.1 180.2 L168.6 176.9 L166.6 168.8 L164.0 166.1 L163.5 166.6 L162.1 165.7 L162.9 165.0 L161.8 164.5 L161.6 163.2 L163.3 160.4 L167.1 160.3 L168.7 159.3 L167.7 156.3 L169.0 156.1 L168.9 155.2 L170.6 153.7 L173.5 154.0 L174.9 152.1 L177.1 151.8 L180.9 155.5 L182.4 154.4 L184.0 155.3 L185.6 154.5 L186.8 156.4 L188.5 155.2 L188.2 154.2 L189.3 154.1 L189.3 153.0 L191.9 157.1 L192.3 159.7 L194.3 160.0 L194.9 161.2 L196.8 161.2 L197.7 162.1 L197.8 166.1 L195.5 167.2 L195.6 169.7 L197.1 169.9 L197.5 170.9 L202.1 170.2 L203.6 171.3 L205.5 170.4 L206.2 167.1 L208.3 168.0 L209.4 167.1 L210.7 168.0 L211.9 166.8 L212.6 167.6 L212.0 168.3 L213.1 169.0 L212.9 170.6 L214.0 170.7 Z"},
+ {id:"pac",nom:"Provence-Alpes-Côte d'Azur",capitale:"Marseille",type:"aire",cx:240.9,cy:237.9,d:"M259.5 216.8 L259.9 217.8 L257.5 220.6 L259.5 223.6 L258.3 223.8 L258.2 225.7 L260.7 229.5 L264.4 230.5 L268.0 233.1 L274.7 231.2 L274.5 232.6 L275.6 234.1 L274.2 237.4 L272.5 238.2 L272.3 239.6 L271.0 240.5 L271.6 243.0 L270.7 244.2 L268.0 245.0 L267.5 246.4 L267.1 245.5 L265.6 246.0 L265.0 247.3 L263.8 247.1 L263.4 250.4 L262.6 249.6 L261.3 250.7 L259.8 250.4 L258.9 253.2 L257.5 254.4 L255.2 254.2 L254.6 256.3 L251.8 258.4 L254.2 258.8 L253.1 261.8 L251.4 261.1 L250.0 262.3 L247.6 262.5 L247.2 264.2 L243.8 263.3 L242.7 266.1 L241.5 265.8 L242.4 265.4 L242.0 264.3 L240.0 264.5 L237.9 263.1 L237.1 263.7 L238.5 264.8 L237.3 264.5 L236.1 265.4 L235.2 264.8 L235.6 263.4 L233.2 262.5 L233.0 261.4 L231.7 261.2 L231.3 262.0 L229.9 260.4 L225.8 260.4 L226.5 257.9 L225.2 255.9 L223.5 256.9 L219.7 257.0 L218.0 254.0 L217.0 253.8 L216.4 254.6 L215.7 253.1 L216.1 254.4 L215.0 254.0 L216.0 255.0 L215.1 255.5 L216.2 256.1 L216.9 255.3 L215.2 256.9 L210.0 255.9 L209.3 255.3 L210.0 254.0 L208.8 253.1 L202.5 252.9 L202.7 251.7 L204.5 250.9 L204.3 250.0 L204.7 250.6 L207.4 249.0 L207.6 248.3 L206.6 247.9 L207.9 245.7 L210.8 246.1 L211.7 241.2 L211.1 240.6 L215.4 236.9 L214.2 234.6 L212.5 233.4 L212.8 230.9 L211.3 228.7 L211.3 226.6 L214.0 226.9 L215.0 229.7 L219.9 227.3 L220.9 228.2 L222.2 227.0 L221.9 229.6 L226.1 230.1 L226.7 231.9 L227.8 232.0 L228.2 233.0 L230.0 232.6 L231.3 230.8 L232.8 232.1 L232.1 231.4 L233.0 230.7 L233.0 228.5 L231.4 227.3 L231.9 226.5 L228.9 226.4 L227.7 225.4 L227.4 223.7 L229.1 223.3 L228.3 221.5 L231.5 222.4 L232.6 221.4 L231.2 220.1 L232.1 216.9 L235.2 216.8 L236.0 215.7 L235.4 215.1 L236.0 213.6 L238.6 213.6 L239.2 212.9 L238.5 212.2 L239.9 211.3 L240.8 211.9 L242.4 210.4 L244.8 210.8 L245.6 210.1 L247.0 210.7 L246.4 206.3 L243.9 205.9 L245.1 202.5 L246.6 202.6 L247.2 204.2 L249.1 204.7 L250.3 203.0 L252.7 202.8 L253.7 205.7 L255.2 205.9 L255.3 209.2 L257.7 210.8 L259.1 210.4 L261.0 211.7 L260.5 212.7 L262.2 216.0 L260.3 215.7 L259.5 216.8 Z M216.4 225.5 L218.0 223.5 L220.2 225.1 L218.4 227.7 L216.4 227.4 L216.4 225.5 Z M244.7 266.2 L243.9 267.4 L243.0 266.9 L244.7 266.2 Z"},
+ {id:"cor",nom:"Corse",capitale:"Ajaccio",type:"aire",cx:304.7,cy:292.5,d:"M310.9 301.4 L310.5 307.8 L308.3 309.3 L310.1 309.5 L308.2 311.3 L308.5 312.7 L306.9 314.9 L307.9 314.8 L306.2 316.3 L304.4 315.4 L305.0 314.0 L303.9 313.9 L304.1 312.9 L303.3 313.5 L300.8 312.6 L299.1 311.6 L299.4 310.8 L298.0 310.5 L298.1 308.2 L300.7 306.6 L297.9 306.2 L297.7 304.9 L296.3 305.5 L295.3 305.0 L296.7 303.9 L296.4 303.1 L297.6 302.8 L297.2 301.8 L298.3 300.2 L297.2 299.1 L294.2 300.3 L293.9 298.2 L295.4 297.8 L295.3 296.7 L297.1 295.6 L296.2 293.7 L295.3 294.0 L293.2 292.7 L293.9 292.0 L292.8 289.9 L296.0 289.0 L294.1 287.8 L294.4 286.5 L293.2 287.0 L292.9 286.0 L294.2 285.4 L294.2 284.5 L295.2 284.5 L295.4 281.6 L296.6 281.2 L296.3 279.6 L297.8 280.3 L298.3 278.9 L301.0 277.6 L302.7 277.7 L305.0 275.0 L307.1 274.8 L308.5 276.7 L309.0 276.3 L309.7 274.6 L309.2 270.0 L310.0 269.1 L309.6 267.0 L311.2 266.5 L312.1 267.3 L312.8 272.7 L311.8 276.7 L313.6 280.5 L314.1 291.1 L314.0 294.0 L311.2 298.3 L310.9 301.4 Z"},
+];
+const FOND_ADMIN={viewBox:"0 0 320 340",zones:REGIONS};
+
+/* ============ gamification ============ */
+const SHEET_URL="https://script.google.com/macros/s/AKfycbwB53nfh6Xk_z1Gn4ck_WL8aX0gPxDzQ2MpxWVnpsdunmWR_IKj-tHPHOEVkP614jQJ/exec";
+function logResult(game,score,good,total,secs){
+  try{fetch(SHEET_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({page:"geo-france",game,score,good,total,secs})});}catch(e){}
+}
+const CHEERS=[["🎉","Bravo !"],["⭐","Super !"],["🚀","Excellent !"],["🏆","Champion !"],["🗺️","Pile au bon endroit !"],["🔥","Trop fort !"],["🌟","Génial !"],["🧭","Bien orientée !"]];
+const OOPS=[["😅","Oups, presque !"],["🙈","Pas cette fois !"],["🤔","Hmm, regarde la carte..."],["🐢","On y va doucement !"],["🧐","Presque ! Lis la correction."]];
+function confetti(host){
+  const cols=["#e63946","#f4a261","#2a9d8f","#457b9d","#ffd166","#9b5de5","#06d6a0"];
+  for(let i=0;i<22;i++){
+    const p=document.createElement("i");p.className="confetti";
+    const ang=Math.random()*Math.PI*2, d=60+Math.random()*90;
+    p.style.setProperty("--dx",Math.cos(ang)*d+"px");
+    p.style.setProperty("--dy",(Math.sin(ang)*d-40)+"px");
+    p.style.background=rnd(cols);
+    p.style.animationDelay=(Math.random()*.15)+"s";
+    host.appendChild(p);
+  }
+}
+function showVerdict(ok,sel,st){
+  const v=$(sel);
+  const [emo,msg]=ok?rnd(CHEERS):rnd(OOPS);
+  st.streak=ok?st.streak+1:0;
+  v.className="react "+(ok?"yes":"no");
+  v.innerHTML=`<span class="emo" role="img" aria-label="${ok?"Bonne réponse":"Mauvaise réponse"}">${emo}</span><span class="msg">${msg}</span>`+
+    (st.streak>=3?`<span class="streak">🔥 ${st.streak} d'affilée !</span>`:"");
+  if(ok)confetti(v);
+}
+function bilanHTML(st,titreOk){
+  const good=st.list.length-st.errs.length;
+  return `<div class="bilan">
+    <h2>${good===st.list.length?"🏆 Sans faute, incroyable !":good>=st.list.length*.8?"🌟 Bravo, belle manche !":good>=st.list.length/2?"👍 Pas mal du tout !":"💪 Continue, tu progresses !"}</h2>
+    <p class="bigscore">${st.score}</p>
+    <p class="meta">${good} bonnes réponses sur ${st.list.length}, en ${chrono(st.secs)}.</p>
+    ${st.errs.length?`<p class="section-title">À revoir</p><ul class="errlist">${st.errs.map(e=>`
+      <li><span class="rep">${e.rep}</span> ${e.w}</li>`).join("")}</ul>`
+    :`<p class="section-title">Sans faute</p><p style="margin-top:8px">${titreOk}</p>`}
+    <div class="row-end"><button class="btn ghost" id="again">Nouvelle manche</button></div>
+  </div>`;
+}
+
+/* onglets */
+document.querySelectorAll(".tab").forEach(t=>{
+  t.addEventListener("click",()=>{
+    document.querySelectorAll(".tab").forEach(x=>x.setAttribute("aria-selected",x===t));
+    document.querySelectorAll(".panel").forEach(p=>p.classList.toggle("on",p.id===t.dataset.panel));
+    if(t.dataset.panel==="regions")regIntro();
+    if(t.dataset.panel==="capitales")capIntro();
+    if(t.dataset.panel==="relief")relIntro();
+    if(t.dataset.panel==="outremer")omIntro();
+    window.scrollTo({top:0,behavior:"smooth"});
+  });
+});
+
+/* ============ 1. les regions ============ */
+const G={list:[],i:0,score:0,errs:[],t0:0,streak:0,secs:0};
+const gp=$("#regions");
+function regIntro(){
+  gp.innerHTML=`<div class="intro">
+    <h2>Place les régions</h2>
+    <p>Les treize régions de France métropolitaine, dans le désordre. On te donne un nom, tu cliques la région sur la carte. La carte est schématique : ce sont les positions qui comptent.</p>
+    <button class="btn" id="ggo">Commencer la manche</button>
+  </div>`;
+  $("#ggo").onclick=regStart;
+}
+function regStart(){
+  G.list=shuffle(REGIONS);G.i=0;G.score=0;G.errs=[];G.streak=0;G.t0=Date.now();regStep();
+}
+function regStep(){
+  if(G.i>=G.list.length)return regEnd();
+  const q=G.list[G.i];
+  gp.innerHTML=`
+    <div class="status"><span>Région <b>${G.i+1}</b>/${G.list.length}</span><span class="grow"></span><span>Points <b id="gsc">${G.score}</b></span></div>
+    <div id="gcard">
+      <div class="react" id="gv"></div>
+      <p class="annot" id="gan">Clique sur cette région</p>
+      <p class="hyp enonce">${esc(q.nom)}</p>
+      <div class="fig" id="gfig">${mapSVG(FOND_ADMIN)}</div>
+      <p class="why" id="gwhy"></p>
+    </div>
+    <div class="row-end"><button class="btn hidden" id="gnext">Suivante</button></div>`;
+  mapBrancher($("#gfig"),id=>{
+    const ok=id===q.id;
+    if(ok)G.score+=10;
+    else G.errs.push({rep:q.nom,w:`Capitale : ${q.capitale}. Tu avais cliqué ${REGIONS.find(r=>r.id===id).nom}.`});
+    $("#gfig").innerHTML=mapSVG(FOND_ADMIN,{bonne:q.id,choisie:id,etiquettes:true});
+    showVerdict(ok,"#gv",G);
+    $("#gcard").classList.add("revealed");
+    $("#gan").textContent=`${q.nom}, capitale ${q.capitale}`;
+    $("#gwhy").innerHTML=ok?`Capitale de région : <b>${esc(q.capitale)}</b>.`
+      :`<em>Non, ça c'était ${esc(REGIONS.find(r=>r.id===id).nom)}. </em>${esc(q.nom)}, capitale <b>${esc(q.capitale)}</b>.`;
+    $("#gsc").textContent=G.score;
+    const n=$("#gnext");n.classList.remove("hidden");
+    n.textContent=G.i===G.list.length-1?"Voir le bilan":"Suivante";
+    n.onclick=()=>{G.i++;regStep();};
+    n.focus({preventScroll:true});
+  });
+}
+function regEnd(){
+  G.secs=Math.round((Date.now()-G.t0)/1000);
+  logResult("regions",G.score,G.list.length-G.errs.length,G.list.length,G.secs);
+  gp.innerHTML=bilanHTML(G,"Les treize régions sont en place. Passe aux capitales.");
+  $("#again",gp).onclick=regStart;
+}
+
+/* ============ 2. les capitales ============ */
+const K={list:[],i:0,score:0,errs:[],t0:0,streak:0,secs:0};
+const kp=$("#capitales");
+function capIntro(){
+  kp.innerHTML=`<div class="intro">
+    <h2>Chaque région, sa capitale</h2>
+    <p>Treize questions. La région est surlignée sur la carte, à toi de choisir sa capitale parmi quatre villes. Les mauvaises réponses sont les capitales des régions voisines.</p>
+    <button class="btn" id="kgo">Commencer la manche</button>
+  </div>`;
+  $("#kgo").onclick=capStart;
+}
+function capStart(){
+  K.list=shuffle(REGIONS);K.i=0;K.score=0;K.errs=[];K.streak=0;K.t0=Date.now();capStep();
+}
+/* les trois leurres sont les capitales des regions les plus proches */
+function capLeurres(r){
+  return REGIONS.filter(x=>x!==r)
+    .map(x=>({x,d:Math.hypot(x.cx-r.cx,x.cy-r.cy)}))
+    .sort((a,b)=>a.d-b.d).slice(0,5)
+    .map(o=>o.x);
+}
+function capStep(){
+  if(K.i>=K.list.length)return capEnd();
+  const q=K.list[K.i];
+  const props=shuffle([q,...pick(capLeurres(q),3)]);
+  kp.innerHTML=`
+    <div class="status"><span>Région <b>${K.i+1}</b>/${K.list.length}</span><span class="grow"></span><span>Points <b id="ksc">${K.score}</b></span></div>
+    <div id="kcard">
+      <div class="react" id="kv"></div>
+      <p class="annot">Quelle est la capitale de cette région ?</p>
+      <p class="hyp enonce">${esc(q.nom)}</p>
+      <div class="fig">${mapSVG(FOND_ADMIN,{surligne:q.id})}</div>
+      <div class="choices">${props.map((p,i)=>`<button class="choice" data-i="${i}">${esc(p.capitale)}</button>`).join("")}</div>
+      <p class="why" id="kwhy"></p>
+    </div>
+    <div class="row-end"><button class="btn hidden" id="knext">Suivante</button></div>`;
+  kp.querySelectorAll(".choice").forEach((b,i)=>{
+    b.onclick=()=>{
+      const ok=props[i]===q;
+      if(ok)K.score+=10;else K.errs.push({rep:q.nom,w:`Sa capitale est ${q.capitale}.`});
+      kp.querySelectorAll(".choice").forEach((x,j)=>{
+        x.disabled=true;
+        if(props[j]===q)x.classList.add("good");
+        else if(j===i)x.classList.add("bad");
+        else x.classList.add("dim");
+      });
+      showVerdict(ok,"#kv",K);
+      $("#kcard").classList.add("revealed");
+      $("#kwhy").innerHTML=`<b>${esc(q.nom)}</b>, capitale <b>${esc(q.capitale)}</b>.`;
+      $("#ksc").textContent=K.score;
+      const n=$("#knext");n.classList.remove("hidden");
+      n.textContent=K.i===K.list.length-1?"Voir le bilan":"Suivante";
+      n.onclick=()=>{K.i++;capStep();};
+      n.focus({preventScroll:true});
+    };
+  });
+}
+function capEnd(){
+  K.secs=Math.round((Date.now()-K.t0)/1000);
+  logResult("capitales",K.score,K.list.length-K.errs.length,K.list.length,K.secs);
+  kp.innerHTML=bilanHTML(K,"Treize régions, treize capitales. Passe aux fleuves.");
+  $("#again",kp).onclick=capStart;
+}
+
+/* ============ 3. fleuves et reliefs, 4. mers et DROM ============ */
+/* Ces deux manches arrivent a la tache suivante, avec les fonds FOND_PHYSIQUE
+   et FOND_MONDE. Le moteur mapSVG et la loupe sont deja prets pour les recevoir. */
+function relIntro(){$("#relief").innerHTML=`<div class="intro"><h2>Bientôt</h2><p>Cette manche arrive à la tâche suivante.</p></div>`;}
+function omIntro(){$("#outremer").innerHTML=`<div class="intro"><h2>Bientôt</h2><p>Cette manche arrive à la tâche suivante.</p></div>`;}
+
+regIntro();
+</script>
+</body>
+</html>
