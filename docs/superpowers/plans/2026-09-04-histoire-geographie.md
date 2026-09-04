@@ -1746,6 +1746,18 @@ Attendu : une ligne `KO ... 2 appel(s) à logResult pour 4 onglets`, rien d'autr
 
 - [ ] **Step 9 : Vérifier dans le navigateur**
 
+Avant même de regarder la carte, la faire contrôler par le calcul. Le validateur charge le
+fond, vérifie que l'ancre de chaque zone tombe bien dans son propre polygone, que les tracés
+sont fermés, et qu'aucune ancre ne tombe dans une zone voisine, signe d'un recouvrement :
+
+```bash
+node /tmp/verif-grammaire/cartes.mjs geo-france.html FOND_ADMIN
+```
+
+Chacune doit se terminer par `ancres dans leur zone, aucun recouvrement d'ancre.`. Un tracé
+peut passer ce contrôle et rester laid, mais un tracé qui y échoue est faux, et l'erreur est
+de celles que l'œil ne voit pas sur une carte schématique.
+
 ```bash
 open geo-france.html
 ```
@@ -2063,6 +2075,20 @@ node /tmp/verif-grammaire/verif.mjs geo-france.html
 Attendu : `Tout est bon.` Quatre appels à `logResult` : `regions`, `capitales`, `relief`, `outremer`.
 
 - [ ] **Step 6 : Vérifier dans le navigateur**
+
+Avant même de regarder la carte, la faire contrôler par le calcul. Le validateur charge le
+fond, vérifie que l'ancre de chaque zone tombe bien dans son propre polygone, que les tracés
+sont fermés, et qu'aucune ancre ne tombe dans une zone voisine, signe d'un recouvrement :
+
+```bash
+node /tmp/verif-grammaire/cartes.mjs geo-france.html FOND_PHYSIQUE
+node /tmp/verif-grammaire/cartes.mjs geo-france.html FOND_MERS
+node /tmp/verif-grammaire/cartes.mjs geo-france.html FOND_MONDE
+```
+
+Chacune doit se terminer par `ancres dans leur zone, aucun recouvrement d'ancre.`. Un tracé
+peut passer ce contrôle et rester laid, mais un tracé qui y échoue est faux, et l'erreur est
+de celles que l'œil ne voit pas sur une carte schématique.
 
 ```bash
 open geo-france.html
@@ -2473,6 +2499,18 @@ node /tmp/verif-grammaire/verif.mjs geo-europe.html geographie.html
 Attendu pour `geo-europe.html` : `Tout est bon.`, quatre appels à `logResult` (`placer`, `nommer`, `membre`, `voisins`). Pour `geographie.html` : il ne reste qu'un lien mort, `geo-memo.html`.
 
 - [ ] **Step 8 : Vérifier dans le navigateur**
+
+Avant même de regarder la carte, la faire contrôler par le calcul. Le validateur charge le
+fond, vérifie que l'ancre de chaque zone tombe bien dans son propre polygone, que les tracés
+sont fermés, et qu'aucune ancre ne tombe dans une zone voisine, signe d'un recouvrement :
+
+```bash
+node /tmp/verif-grammaire/cartes.mjs geo-europe.html FOND_EUROPE
+```
+
+Chacune doit se terminer par `ancres dans leur zone, aucun recouvrement d'ancre.`. Un tracé
+peut passer ce contrôle et rester laid, mais un tracé qui y échoue est faux, et l'erreur est
+de celles que l'œil ne voit pas sur une carte schématique.
 
 ```bash
 open geo-europe.html
