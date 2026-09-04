@@ -221,14 +221,24 @@ Un helper `mapSVG(zones, {consigne, bonne, choisie})` commun aux deux carnets de
 en SVG inline des `<path>` porteurs d'un `data-id`, gère le clic, et colore la zone juste et
 la zone choisie après réponse. Il joue le même rôle que `figSVG` dans `thales.html`.
 
-Les tracés sont des polygones simplifiés écrits à la main : les formes sont **reconnaissables
-et correctement placées les unes par rapport aux autres, mais pas cartographiques**. C'est un
-choix assumé, cohérent avec la contrainte « pas de dépendance, pas de build » : embarquer de
-vraies frontières supposerait un fichier de données externe.
+Les tracés sont les **vraies frontières**, simplifiées puis figées en clair dans les fichiers.
+Les régions viennent de l'IGN (Admin Express), sous Licence Ouverte Etalab, ce qui oblige à
+citer la source sur les pages de géo ; les pays d'Europe, les fleuves et le planisphère
+viennent de Natural Earth, domaine public. Le site reste sans dépendance, sans build et sans
+accès réseau à l'exécution : ce sont des chaînes de caractères dans le HTML, au même titre que
+les figures SVG de `thales.html`. La fabrication et les sources sont documentées dans
+`docs/superpowers/outils/geo/`.
 
-Les zones minuscules à l'échelle de la carte (Île-de-France, Luxembourg, Malte, Chypre)
-reçoivent, en plus de leur tracé, un halo circulaire cliquable d'au moins 30 px de rayon,
-sinon elles sont injouables au doigt sur un téléphone.
+Le premier jet de la spec écartait cette voie au motif qu'elle supposerait un fichier de
+données externe. C'était faux, et trois passes de dessin à la main n'avaient produit qu'un
+hexagone méconnaissable, alors que l'objet même du programme est de reconnaître et de placer.
+
+La cible tactile dépend du type de zone : le polygone lui-même pour une région, le tracé repris
+en transparent et fortement épaissi pour un fleuve, un halo circulaire pour un point. Là où cela
+ne suffit pas, la carte se joue **à la loupe** : un premier appui resserre le cadre, un second
+désigne la zone. C'est indispensable pour l'Europe et pour les DROM, où la mesure donne 8 px
+pour le Luxembourg et 1 px pour la Guadeloupe. À cette densité, viser au doigt mesurerait la
+dextérité et non la connaissance.
 
 ## Carnet 3 : `geo-france.html`
 
@@ -277,7 +287,9 @@ contour), plus un planisphère très simplifié pour les DROM.
 
 ### Les quatre manches
 
-1. **Placer** (`#placer`) : « Clique sur la Croatie » sur la carte d'Europe.
+1. **Placer** (`#placer`) : « Clique sur la Croatie », à la loupe : un premier appui approche,
+   un second désigne. Après réponse la carte revient en vue d'ensemble, pour que le pays se
+   retienne dans son contexte européen.
 2. **Reconnaître** (`#nommer`) : un pays est surligné, QCM sur quatre noms : le sens inverse
    de la manche 1.
 3. **Dans l'UE ou pas ?** (`#membre`) : un pays est surligné, réponse Oui / Non. C'est là que
@@ -315,8 +327,10 @@ Chaque fiche se termine par une section **« Ne confonds pas »** dans l'esprit 
 - Pas de saisie au clavier des noms : tout se joue au clic ou au QCM, la cible étant un
   téléphone.
 - Pas de capitales européennes, pas de dates d'adhésion à l'UE, pas de repères hors PDF.
-- Pas de vraies frontières géographiques : les tracés sont dessinés à la main et assumés
-  comme schématiques.
+- Pas de zoom libre ni de déplacement de la carte au doigt : la loupe se limite à deux niveaux,
+  vue d'ensemble et cadre resserré.
+- Les reliefs et les mers restent schématiques : aucune donnée ne les délimite, ce sont des
+  zones dessinées à la main, mais posées aux coordonnées géographiques réelles.
 
 ## Vérification
 
