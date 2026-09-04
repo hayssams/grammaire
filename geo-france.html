@@ -676,18 +676,19 @@ function omStart(){
   O.list=[...shuffle(MERS).map(m=>({...m,fond:"mers"})),...shuffle(DROM).map(d=>({...d,fond:"monde"}))];
   O.i=0;O.score=0;O.errs=[];O.streak=0;O.t0=Date.now();omStep();
 }
-/* Le rayon des points (r=4.5) et la taille des etiquettes (7.5px) sont calibres
-   pour le monde entier, largeur 360 : une fois le cadre resserre a une dizaine
-   d'unites il faut les redessiner plus petits, sinon points et textes recouvrent
-   tout le cadre et les deux territoires ne se distinguent plus. */
+/* mapSVG dimensionne deja le point et son repere annulaire en pixels rendus
+   (POINT_PX*u, 7*u), donc corrects a n'importe quel zoom. Seule l'etiquette
+   (7.5px fixes) ne l'est pas : une fois le cadre resserre a une dizaine
+   d'unites elle deviendrait geante et recouvrirait tout le cadre. */
 function redimensionnerCadre(svg,vb){
-  const [,,cw]=vb.split(/\s+/).map(Number);
-  const rPoint=cw*0.035, taille=cw*0.03;
-  svg.querySelectorAll(".z.point:not(.inerte)").forEach(g=>{
-    const c=g.querySelector("circle:not(.halo)");
-    c.setAttribute("r",rPoint.toFixed(2));
-    const t=g.querySelector(".zlab");
-    if(t){t.setAttribute("y",(+c.getAttribute("cy")+rPoint+taille).toFixed(2));t.style.fontSize=taille.toFixed(2);}
+  const cw=Number(vb.split(/\s+/)[2]);
+  const u=cw/284, taille=cw*0.03, repereR=7*u;
+  /* la reference de position est le repere annulaire, present sur toute zone
+     "petit" quel que soit son type (les DROM sont des ilots "aire", pas des
+     "point" : il n'y a donc pas toujours de simple cercle a cote du halo). */
+  svg.querySelectorAll(".zlab").forEach(t=>{
+    const g=t.closest(".z"), rep=g&&g.querySelector(".repere");
+    if(rep){t.setAttribute("y",(+rep.getAttribute("cy")+repereR+taille).toFixed(2));t.style.fontSize=taille.toFixed(2);}
   });
 }
 /* Le planisphere se joue en deux appuis. Un halo classique ne conviendrait pas :
@@ -702,25 +703,21 @@ function mondeJouer(hote,fond,repondre){
     const vb=cadre?cadre.vb:fond.viewBox;
     hote.innerHTML=mapSVG(fond,{vb})+
       (cadre?`<button class="btn ghost retour" type="button">Vue d'ensemble</button>`:"");
-    const svg=hote.querySelector("svg");
-    svg.querySelectorAll(".z").forEach(g=>g.setAttribute("tabindex","-1"));
-    if(cadre)redimensionnerCadre(svg,vb);
-    svg.onclick=ev=>{
-      const [x,y]=pointCarte(svg,ev);
-      if(!cadre){
+    if(cadre){
+      /* une fois le cadre ouvert, les DROM sont assez ecartes (49 a 222 px) pour
+         que mapBrancher, le meme mecanisme que partout ailleurs, suffise : leur
+         halo est deja borne par dmin, il ne peut pas mordre sur le voisin. */
+      mapBrancher(hote,repondre);
+      hote.querySelector(".retour").onclick=()=>{cadre=null;dessiner();};
+    }else{
+      const svg=hote.querySelector("svg");
+      svg.querySelectorAll(".z").forEach(g=>g.setAttribute("tabindex","-1"));
+      svg.onclick=ev=>{
+        const [x,y]=pointCarte(svg,ev);
         const c=cadreNomme(fond,x,y);
         if(c){cadre=c;dessiner();}
-        return;
-      }
-      const membres=fond.zones.filter(z=>z.type==="point"&&!z.inerte&&cadreNomme(fond,z.cx,z.cy)===cadre);
-      let meilleur=null,dmin=Infinity;
-      for(const z of membres){
-        const d=Math.hypot(z.cx-x,z.cy-y);
-        if(d<dmin){dmin=d;meilleur=z;}
-      }
-      if(meilleur)repondre(meilleur.id);
-    };
-    if(cadre)hote.querySelector(".retour").onclick=()=>{cadre=null;dessiner();};
+      };
+    }
   }
   dessiner();
 }
