@@ -371,6 +371,20 @@ function mapBrancher(hote,repondre){
     g.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();repondre(g.dataset.z);}};
   });
 }
+/* mapSVG dimensionne deja le point et son repere annulaire en pixels rendus
+   (POINT_PX*u, 7*u), donc corrects a n'importe quel zoom. Seule l'etiquette
+   (7.5px fixes) ne l'est pas : une fois le cadre resserre a une dizaine
+   d'unites elle deviendrait geante et recouvrirait tout le cadre. A appeler
+   apres tout rendu dont le viewBox est resserre, des que des etiquettes sont
+   susceptibles d'y apparaitre : sans effet si la carte n'en porte aucune. */
+function redimensionnerCadre(svg,vb){
+  const cw=Number(vb.split(/\s+/)[2]);
+  const u=cw/284, taille=cw*0.03, repereR=7*u;
+  svg.querySelectorAll(".zlab").forEach(t=>{
+    const g=t.closest(".z"), rep=g&&g.querySelector(".repere");
+    if(rep){t.setAttribute("y",(+rep.getAttribute("cy")+repereR+taille).toFixed(2));t.style.fontSize=taille.toFixed(2);}
+  });
+}
 
 /* ============ donnees ============ */
 /* Traces reels, Natural Earth 50m, simplifies puis figes ici (domaine public,
@@ -509,6 +523,7 @@ function plaStep(){
   function dessiner(){
     fig.innerHTML=mapSVG(FOND_EUROPE,P.vb?{vb:P.vb}:{});
     if(P.vb){
+      redimensionnerCadre(svg(),P.vb);                 /* etiquettes a la bonne taille dans le cadre resserre */
       mapBrancher(fig,repondre);                       /* zoome : on repond */
     }else{
       svg().onclick=ev=>{                              /* vue d'ensemble : on zoome */
@@ -572,16 +587,18 @@ function nomStep(){
   if(N.i>=N.list.length)return nomEnd();
   const q=N.list[N.i];
   const props=shuffle([q,...pick(voisinsDe(q,5),3)]);
+  const vb=cadreSur(FOND_EUROPE,q.id);
   np.innerHTML=`
     <div class="status"><span>Pays <b>${N.i+1}</b>/${N.list.length}</span><span class="grow"></span><span>Points <b id="nsc">${N.score}</b></span></div>
     <div id="ncard">
       <div class="react" id="nv"></div>
       <p class="annot">Quel est ce pays ?</p>
-      <div class="fig">${mapSVG(FOND_EUROPE,{surligne:q.id,vb:cadreSur(FOND_EUROPE,q.id)})}</div>
+      <div class="fig">${mapSVG(FOND_EUROPE,{surligne:q.id,vb})}</div>
       <div class="choices">${props.map((p,i)=>`<button class="choice" data-i="${i}">${esc(p.nom)}</button>`).join("")}</div>
       <p class="why" id="nwhy"></p>
     </div>
     <div class="row-end"><button class="btn hidden" id="nnext">Suivant</button></div>`;
+  redimensionnerCadre(np.querySelector(".fig svg"),vb);
   np.querySelectorAll(".choice").forEach((b,i)=>{
     b.onclick=()=>{
       const ok=props[i]===q;
@@ -629,17 +646,19 @@ function memStart(){
 function memStep(){
   if(U.i>=U.list.length)return memEnd();
   const q=U.list[U.i];
+  const vb=cadreSur(FOND_EUROPE,q.id);
   up.innerHTML=`
     <div class="status"><span>Pays <b>${U.i+1}</b>/${U.list.length}</span><span class="grow"></span><span>Points <b id="usc">${U.score}</b></span></div>
     <div id="ucard">
       <div class="react" id="uv"></div>
       <p class="annot" id="uan">Ce pays est-il membre de l'Union européenne ?</p>
       <p class="hyp enonce">${esc(q.nom)}</p>
-      <div class="fig">${mapSVG(FOND_EUROPE,{surligne:q.id,vb:cadreSur(FOND_EUROPE,q.id)})}</div>
+      <div class="fig">${mapSVG(FOND_EUROPE,{surligne:q.id,vb})}</div>
       <p class="why" id="uwhy"></p>
     </div>
     <div class="judge"><button class="btn" data-v="1">Oui</button><button class="btn no" data-v="0">Non</button></div>
     <div class="row-end"><button class="btn hidden" id="unext">Suivant</button></div>`;
+  redimensionnerCadre(up.querySelector(".fig svg"),vb);
   up.querySelectorAll(".judge .btn").forEach(b=>{
     b.onclick=()=>{
       const ok=(b.dataset.v==="1")===q.ue;
