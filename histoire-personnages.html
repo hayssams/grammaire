@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Les 21 personnages</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F5F6F1;
+  --paper-2:#FCFCFA;
+  --rule:#BFD3E4;
+  --rule-soft:#DDE7F0;
+  --marge:#DE5B4A;
+  --ink:#16233B;
+  --ink-soft:#5E6E85;
+  --histoire:#8C4A2F;
+  --t1:#7C3A2E;
+  --t2:#A6702B;
+  --t3:#4A5F8A;
+  --t4:#8C4A2F;
+  --t5:#1B6F55;
+  --gm1:#7C3A2E;
+  --totalitarismes:#5B2333;
+  --allies:#2F5D62;
+  --resistance:#1B6F55;
+  --vichy:#6B6257;
+  --froide:#4A5F8A;
+  --deco:#A6702B;
+  --europe:#1D4E89;
+  --serif:"Instrument Serif", Georgia, "Times New Roman", serif;
+  --sans:"Karla", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:16px;
+  line-height:1.5;
+  min-height:100vh;
+  padding:0 0 40px;
+}
+.wrap{max-width:560px;margin:0 auto;padding:0 14px}
+
+/* ---------- en-tete ---------- */
+header{padding:26px 0 14px}
+.topbar{display:flex;align-items:center;gap:14px;margin:0 0 6px}
+.topbar .eyebrow{margin:0}
+.home{
+  font-family:var(--sans);font-size:13px;font-weight:700;text-decoration:none;color:var(--ink);
+  border:1px solid var(--rule);border-radius:999px;padding:6px 12px;background:var(--paper,transparent);
+  transition:background .2s,transform .2s
+}
+.home:hover{background:var(--rule-soft);transform:translateY(-1px)}
+.eyebrow{
+  font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-soft);font-weight:700;margin:0 0 6px
+}
+h1{
+  font-family:var(--serif);font-weight:400;font-size:34px;line-height:1.05;
+  margin:0 0 4px;letter-spacing:-.01em
+}
+h1 em{font-style:italic;color:var(--histoire)}
+.sub{margin:0;color:var(--ink-soft);font-size:14px}
+
+/* ---------- onglets ---------- */
+nav{display:flex;gap:6px;margin:18px 0 0;align-items:flex-end}
+.tab{
+  flex:1;border:1px solid var(--rule);border-bottom:none;
+  background:#EDEFE9;color:var(--ink-soft);
+  font-family:var(--sans);font-size:12.5px;font-weight:700;
+  padding:11px 3px 10px;border-radius:9px 9px 0 0;cursor:pointer;
+  letter-spacing:.01em;transition:background .15s,color .15s,transform .15s
+}
+.tab:hover{color:var(--ink)}
+.tab[aria-selected="true"]{background:var(--paper-2);color:var(--ink);transform:translateY(1px);box-shadow:0 -2px 0 var(--histoire) inset}
+
+/* ---------- feuille ---------- */
+.sheet{
+  position:relative;background:var(--paper-2);
+  border:1px solid var(--rule);border-radius:0 0 10px 10px;
+  padding:22px 16px 20px 30px;overflow:hidden;
+  background-image:repeating-linear-gradient(to bottom,transparent 0 31px,var(--rule-soft) 31px 32px);
+  background-position:0 8px;
+}
+.sheet::before{
+  content:"";position:absolute;top:0;bottom:0;left:20px;width:1px;background:var(--marge);opacity:.5
+}
+.panel{display:none}
+.panel.on{display:block}
+
+/* ---------- barre d'etat ---------- */
+.status{
+  display:flex;align-items:center;gap:12px;
+  font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--ink-soft);margin-bottom:14px
+}
+.status .grow{flex:1}
+.status b{color:var(--ink);font-size:14px;letter-spacing:0}
+
+/* ---------- frise ---------- */
+.fig{margin:14px 0 4px;text-align:center}
+.fig svg{width:100%;max-width:320px;height:auto;overflow:visible}
+.fig .axe{stroke:var(--ink-soft);stroke-width:1}
+.fig .tr .cible{fill:transparent;cursor:pointer}
+.fig .tr rect:not(.cible){cursor:pointer;opacity:.82;transition:opacity .15s,transform .15s}
+.fig .tr:hover rect:not(.cible),.fig .tr:focus rect:not(.cible){opacity:1}
+.fig .tr:focus{outline:none}
+.fig .tr:focus rect:not(.cible){stroke:var(--ink);stroke-width:2}
+.fig .trlab{font-family:var(--sans);font-size:9.5px;font-weight:700;fill:#fff;pointer-events:none}
+.fig .good rect:not(.cible){opacity:1;stroke:var(--ink);stroke-width:2}
+.fig .bad rect:not(.cible){opacity:.35;stroke:var(--marge);stroke-width:2;stroke-dasharray:3 2}
+.fig .dim rect:not(.cible){opacity:.3}
+.fig .dim .trlab,.fig .bad .trlab{fill:var(--ink)}
+.fig .repere line{stroke:var(--ink);stroke-width:1.5;stroke-dasharray:2 2}
+.fig .rlab{font-family:var(--sans);font-size:10px;font-weight:700;fill:var(--ink)}
+.fig .borne{font-family:var(--sans);font-size:9px;fill:var(--ink-soft)}
+.revealed .fig .tr rect,.revealed .fig .cible{cursor:default}
+@media (prefers-reduced-motion:reduce){
+  .fig .tr rect:not(.cible){transition:none}
+}
+.hyp{font-size:14.5px;margin:0 0 6px}
+.hyp em{font-style:normal;font-weight:700}
+.annot{
+  font-family:var(--sans);font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-soft);transition:color .3s ease;margin:0 0 4px
+}
+.revealed .annot{color:var(--histoire)}
+
+/* ---------- reactions ---------- */
+.react{text-align:center;min-height:78px;margin:0 0 8px;position:relative}
+.react .emo{display:inline-block;font-size:48px;line-height:52px;animation:pop .45s cubic-bezier(.2,1.6,.4,1)}
+.react .msg{display:block;font-family:var(--sans);font-weight:800;font-size:16px;line-height:22px;letter-spacing:.02em;animation:pop .45s .1s both cubic-bezier(.2,1.6,.4,1)}
+.react.yes .msg{color:var(--histoire)}
+.react.no .msg{color:var(--marge)}
+.react.no .emo{animation:shake .5s ease}
+.react .streak{display:block;font-family:var(--sans);font-size:12px;font-weight:700;color:var(--ink-soft);margin-top:2px;animation:pop .4s .25s both}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px) rotate(-8deg)}40%,80%{transform:translateX(8px) rotate(8deg)}}
+.confetti{position:absolute;left:50%;top:26px;width:9px;height:9px;border-radius:2px;pointer-events:none;animation:fly .9s ease-out forwards}
+@keyframes fly{0%{transform:translate(0,0) rotate(0);opacity:1}100%{transform:translate(var(--dx),var(--dy)) rotate(540deg);opacity:0}}
+@keyframes pop{from{transform:scale(.3);opacity:0}to{transform:scale(1);opacity:1}}
+.why{font-size:14px;color:var(--ink-soft);margin:8px 0 0;opacity:0;transition:opacity .3s .3s}
+.revealed .why{opacity:1}
+.why em{font-style:normal;color:var(--ink);font-weight:700}
+
+/* ---------- choix ---------- */
+.judge{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px}
+.judge .btn{width:100%;text-align:center}
+.judge .no{background:transparent;color:var(--marge);border-color:var(--marge)}
+.judge .btn.good{background:var(--histoire);border-color:var(--histoire);color:#fff;opacity:1}
+.judge .btn.bad{background:transparent;border-color:var(--marge);color:var(--marge);text-decoration:line-through;opacity:1}
+.judge .btn.dim{opacity:.35}
+.choices{display:grid;gap:8px;margin:18px 0 0}
+.choice{
+  border:1px solid var(--rule);background:var(--paper-2);color:var(--ink);
+  font-family:var(--sans);font-size:14.5px;font-weight:700;line-height:1.3;
+  padding:13px 12px;border-radius:7px;cursor:pointer;text-align:left;
+  transition:background .12s,border-color .12s,color .12s,opacity .2s
+}
+.choice:hover:not(:disabled){border-color:var(--ink);background:#F1F3EE}
+.choice:disabled{cursor:default}
+.choice.dim{opacity:.32}
+.choice.good{background:var(--histoire);border-color:var(--histoire);color:#fff;opacity:1}
+.choice.bad{background:transparent;border-color:var(--marge);color:var(--marge);opacity:1;text-decoration:line-through}
+.enonce{font-family:var(--serif);font-size:26px;line-height:1.15;color:var(--histoire);margin:6px 0 14px}
+
+/* ---------- boutons ---------- */
+.btn{
+  display:inline-block;border:1px solid var(--ink);background:var(--ink);color:var(--paper-2);
+  font-family:var(--sans);font-size:15px;font-weight:700;padding:12px 22px;border-radius:8px;cursor:pointer;
+  transition:opacity .15s
+}
+.btn:hover{opacity:.86}
+.btn:disabled{cursor:default}
+.btn.ghost{background:transparent;color:var(--ink)}
+.row-end{display:flex;justify-content:flex-end;gap:8px;margin-top:18px;min-height:46px;align-items:center}
+.hidden{display:none !important}
+
+/* ---------- accueil de manche ---------- */
+.intro{padding:6px 0 4px}
+.intro h2{font-family:var(--serif);font-weight:400;font-size:27px;margin:0 0 8px;line-height:1.15}
+.intro p{margin:0 0 18px;color:var(--ink-soft);font-size:15px;max-width:44ch}
+
+/* ---------- bilan ---------- */
+.bilan h2{font-family:var(--serif);font-weight:400;font-size:30px;margin:0 0 2px}
+.bigscore{font-family:var(--serif);font-size:56px;line-height:1;margin:10px 0 2px}
+.bilan .meta{color:var(--ink-soft);font-size:14px;margin:0 0 18px}
+.errlist{border-top:1px solid var(--rule-soft);margin:14px 0 0;padding:0;list-style:none}
+.errlist li{border-bottom:1px solid var(--rule-soft);padding:11px 0;font-size:14px;color:var(--ink-soft)}
+.errlist .rep{font-weight:700;color:var(--histoire)}
+.section-title{
+  font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);
+  margin:22px 0 0
+}
+
+/* ---------- memory ---------- */
+.grille{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0 4px}
+.mcarte{
+  position:relative;min-height:76px;padding:8px 6px;
+  border:1px solid var(--rule);border-radius:8px;background:var(--paper-2);
+  font-family:var(--sans);font-size:12px;font-weight:700;line-height:1.25;color:var(--ink);
+  cursor:pointer;overflow:hidden
+}
+.mcarte .dos{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  background:var(--histoire);color:#fff;font-family:var(--serif);font-size:26px;
+  transition:opacity .2s
+}
+.mcarte .face{display:block;opacity:0;visibility:hidden;transition:opacity .2s,visibility .2s}
+.mcarte.vue .dos,.mcarte.prise .dos{opacity:0;pointer-events:none}
+.mcarte.vue .face,.mcarte.prise .face{opacity:1;visibility:visible}
+.mcarte.date .face{font-family:var(--serif);font-size:17px;color:var(--histoire)}
+.mcarte.prise{border-color:var(--histoire);box-shadow:0 2px 0 var(--histoire);cursor:default}
+@media (max-width:360px){
+  .grille{grid-template-columns:repeat(2,1fr)}
+}
+@media (prefers-reduced-motion:reduce){
+  .mcarte .dos,.mcarte .face{transition:none}
+}
+
+/* ---------- flashcards ---------- */
+.flash{
+  border:1px solid var(--rule);border-left:3px solid var(--histoire);border-radius:8px;
+  background:var(--paper-2);padding:26px 18px;margin:14px 0 4px;min-height:150px;
+  display:flex;flex-direction:column;justify-content:center;text-align:center
+}
+.flash .recto{font-family:var(--serif);font-size:27px;line-height:1.15;margin:0;color:var(--histoire)}
+.flash .verso{margin:16px 0 0;font-size:16px;font-weight:700;line-height:1.35;border-top:1px solid var(--rule-soft);padding-top:14px}
+.flash .verso.hidden{display:none}
+.flash .detail{display:block;margin-top:8px;font-weight:400;font-size:13.5px;color:var(--ink-soft)}
+@media (max-width:420px){
+  .flash .recto{font-size:27px}
+}
+
+@media (prefers-reduced-motion:reduce){
+  *{transition-duration:.01ms !important;animation-duration:.01ms !important}
+}
+:focus-visible{outline:2px solid var(--histoire);outline-offset:2px}
+.cat{font-weight:700}
+.fait{display:block;margin-top:6px;font-weight:400;font-size:14px;color:var(--ink-soft)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="topbar"><a class="home" href="histoire.html">🏠 Histoire</a><p class="eyebrow">Histoire, 3<sup>e</sup></p></div>
+    <h1>Les 21 personnages <em>et leur rôle</em></h1>
+    <p class="sub">Quatre entraînements : reconnaître un rôle, situer un personnage, apparier, réviser en cartes.</p>
+    <nav role="tablist">
+      <button class="tab" role="tab" aria-selected="true" data-panel="qui">Qui est-ce ?</button>
+      <button class="tab" role="tab" aria-selected="false" data-panel="frise">Frise</button>
+      <button class="tab" role="tab" aria-selected="false" data-panel="memo">Mémo</button>
+      <button class="tab" role="tab" aria-selected="false" data-panel="cartes">Cartes</button>
+    </nav>
+  </header>
+
+  <div class="sheet">
+    <section class="panel on" id="qui"></section>
+    <section class="panel" id="frise"></section>
+    <section class="panel" id="memo"></section>
+    <section class="panel" id="cartes"></section>
+  </div>
+</div>
+
+<script>
+/* ============ outils ============ */
+const $ = (sel,root=document)=>root.querySelector(sel);
+const shuffle = a => {const c=[...a];for(let i=c.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[c[i],c[j]]=[c[j],c[i]];}return c;};
+const pick = (a,n) => shuffle(a).slice(0,n);
+const esc = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;");
+function chrono(sec){return sec<60?sec+" s":Math.floor(sec/60)+" min "+String(sec%60).padStart(2,"0");}
+const rnd=a=>a[Math.floor(Math.random()*a.length)];
+
+/* ============ donnees ============ */
+const TRANCHES={
+  t1:{label:"1914-1918 · la Grande Guerre",court:"1914-1918",de:1914,a:1918,v:"--t1"},
+  t2:{label:"1919-1938 · l'entre-deux-guerres",court:"1919-1938",de:1919,a:1938,v:"--t2"},
+  t3:{label:"1939-1945 · la Seconde Guerre mondiale",court:"1939-1945",de:1939,a:1945,v:"--t3"},
+  t4:{label:"1946-1975 · la guerre froide s'installe",court:"1946-1975",de:1946,a:1975,v:"--t4"},
+  t5:{label:"1976-2002 · la fin de la guerre froide et l'Europe",court:"1976-2002",de:1976,a:2002,v:"--t5"}
+};
+const TORDRE=["t1","t2","t3","t4","t5"];
+
+const ROLES={
+  gm1:{label:"Première Guerre mondiale",v:"--gm1"},
+  totalitarismes:{label:"Régimes totalitaires",v:"--totalitarismes"},
+  allies:{label:"Les Alliés",v:"--allies"},
+  resistance:{label:"France libre et Résistance",v:"--resistance"},
+  vichy:{label:"Vichy et la collaboration",v:"--vichy"},
+  froide:{label:"Guerre froide",v:"--froide"},
+  deco:{label:"Décolonisation",v:"--deco"},
+  europe:{label:"Construction européenne",v:"--europe"}
+};
+
+/* fait = le fait precis affiche dans la manche Frise, pour que la periode
+   soit determinee meme quand la vie du personnage traverse plusieurs tranches */
+const PERSONNAGES=[
+ {nom:"Georges Clemenceau",annees:"1841-1929",r:"gm1",t:"t1",an:1917,
+  court:"le Tigre, président du Conseil qui mène la France à la victoire de 1918",
+  fait:"président du Conseil à partir de 1917",
+  role:"Surnommé « le Tigre », il devient président du Conseil en 1917 et redresse le moral du pays. Il mène la France à la victoire de 1918 puis négocie le traité de Versailles."},
+ {nom:"Jean Jaurès",annees:"1859-1914",r:"gm1",t:"t1",an:1914,
+  court:"député socialiste et pacifiste, assassiné à la veille de la guerre",
+  fait:"assassiné le 31 juillet 1914",
+  role:"Député socialiste, fondateur du journal L'Humanité, il se bat jusqu'au bout pour empêcher la guerre. Il est assassiné le 31 juillet 1914, la veille de la mobilisation."},
+ {nom:"Vladimir Lénine",annees:"1870-1924",r:"totalitarismes",t:"t1",an:1917,
+  court:"chef des bolcheviks, il fonde le premier État communiste",
+  fait:"prend le pouvoir en Russie en octobre 1917",
+  role:"Chef des bolcheviks, il prend le pouvoir lors de la révolution d'Octobre 1917 et fonde le premier État communiste, qui devient l'URSS en 1922."},
+ {nom:"Joseph Staline",annees:"1878-1953",r:"totalitarismes",t:"t2",an:1928,
+  court:"dictateur de l'URSS, collectivisation forcée et goulag",
+  fait:"prend la tête de l'URSS à partir de 1928",
+  role:"Successeur de Lénine, il dirige l'URSS d'une main de fer : collectivisation forcée, goulag, culte de la personnalité. Allié des Occidentaux contre Hitler, il devient leur adversaire dès 1947."},
+ {nom:"Benito Mussolini",annees:"1883-1945",r:"totalitarismes",t:"t2",an:1922,
+  court:"le Duce, fondateur du fascisme italien",
+  fait:"prend le pouvoir en Italie en 1922",
+  role:"Fondateur du fascisme, il prend le pouvoir en Italie en 1922 après la marche sur Rome et installe une dictature. Il devient l'allié de Hitler dans la guerre."},
+ {nom:"Adolf Hitler",annees:"1889-1945",r:"totalitarismes",t:"t2",an:1933,
+  court:"chef du parti nazi, il déclenche la guerre et organise la Shoah",
+  fait:"arrive au pouvoir en Allemagne en 1933",
+  role:"Chef du parti nazi, chancelier en 1933, il installe une dictature raciste et antisémite. Il déclenche la Seconde Guerre mondiale et organise le génocide des Juifs et des Tsiganes."},
+ {nom:"Franklin D. Roosevelt",annees:"1882-1945",r:"allies",t:"t3",an:1941,
+  court:"président des États-Unis, le New Deal puis la guerre aux côtés des Alliés",
+  fait:"engage les États-Unis dans la guerre en 1941",
+  role:"Président des États-Unis de 1933 à 1945, il lance le New Deal contre la crise de 1929, puis engage son pays dans la guerre après Pearl Harbor en décembre 1941."},
+ {nom:"Winston Churchill",annees:"1874-1965",r:"allies",t:"t3",an:1940,
+  court:"Premier ministre britannique, il refuse tout compromis avec Hitler",
+  fait:"Premier ministre britannique à partir de mai 1940",
+  role:"Premier ministre britannique à partir de 1940, il refuse tout compromis avec Hitler et incarne la résistance des Alliés. En 1946, il popularise l'expression « rideau de fer »."},
+ {nom:"Charles de Gaulle",annees:"1890-1970",r:"resistance",t:"t3",an:1940,
+  court:"l'appel du 18 juin, la France libre, puis la Ve République",
+  fait:"lance l'appel du 18 juin 1940 depuis Londres",
+  role:"Général, il refuse l'armistice et lance l'appel du 18 juin 1940 depuis Londres. Il dirige la France libre, puis fonde et préside la Ve République de 1958 à 1969."},
+ {nom:"Jean Moulin",annees:"1899-1943",r:"resistance",t:"t3",an:1943,
+  court:"il unifie la Résistance intérieure et meurt sans parler",
+  fait:"unifie la Résistance au sein du CNR en 1943",
+  role:"Envoyé par de Gaulle, il unifie les mouvements de la Résistance intérieure au sein du Conseil national de la Résistance en mai 1943. Arrêté et torturé, il meurt sans avoir parlé."},
+ {nom:"Lucie Aubrac",annees:"1912-2007",r:"resistance",t:"t3",an:1943,
+  court:"résistante, cofondatrice de Libération-Sud",
+  fait:"fait évader son mari des mains de la Gestapo en 1943",
+  role:"Résistante française, cofondatrice du mouvement Libération-Sud. En 1943, elle organise l'évasion de son mari Raymond, prisonnier de la Gestapo de Lyon."},
+ {nom:"Germaine Tillion",annees:"1907-2008",r:"resistance",t:"t3",an:1942,
+  court:"ethnologue et résistante, déportée à Ravensbrück",
+  fait:"réseau du Musée de l'Homme, déportée en 1943",
+  role:"Ethnologue, elle entre dès 1940 dans le réseau du Musée de l'Homme, l'un des tout premiers de la Résistance. Déportée à Ravensbrück, elle est entrée au Panthéon en 2015."},
+ {nom:"Philippe Pétain",annees:"1856-1951",r:"vichy",t:"t3",an:1940,
+  court:"vainqueur de Verdun devenu chef de l'État français collaborateur",
+  fait:"devient chef de l'État français en juillet 1940",
+  role:"Vainqueur de Verdun en 1916, il devient en juillet 1940 chef de l'État français. Son régime de Vichy supprime la République et collabore avec l'Allemagne nazie."},
+ {nom:"Harry S. Truman",annees:"1884-1972",r:"froide",t:"t4",an:1947,
+  court:"président américain, la bombe atomique puis l'endiguement",
+  fait:"lance la doctrine d'endiguement en 1947",
+  role:"Président des États-Unis, il décide des bombardements d'Hiroshima et Nagasaki en août 1945. En 1947, sa doctrine d'endiguement ouvre la guerre froide."},
+ {nom:"Nikita Khrouchtchev",annees:"1894-1971",r:"froide",t:"t4",an:1961,
+  court:"dirigeant soviétique du mur de Berlin et de la crise de Cuba",
+  fait:"fait construire le mur de Berlin en 1961",
+  role:"Dirigeant de l'URSS, il dénonce les crimes de Staline en 1956, fait construire le mur de Berlin en 1961, puis recule lors de la crise de Cuba en 1962."},
+ {nom:"Nehru",annees:"1889-1964",r:"deco",t:"t4",an:1947,
+  court:"premier chef de gouvernement de l'Inde indépendante",
+  fait:"Premier ministre de l'Inde indépendante en 1947",
+  role:"Premier ministre de l'Inde à partir de son indépendance en 1947. Figure de la décolonisation, il est l'un des artisans du non-alignement à la conférence de Bandung en 1955."},
+ {nom:"Nasser",annees:"1918-1970",r:"deco",t:"t4",an:1956,
+  court:"président égyptien, il nationalise le canal de Suez",
+  fait:"nationalise le canal de Suez en 1956",
+  role:"Président de l'Égypte, il nationalise le canal de Suez en 1956 face aux Occidentaux. Il devient une grande figure du nationalisme arabe et du non-alignement."},
+ {nom:"Robert Schuman",annees:"1886-1963",r:"europe",t:"t4",an:1950,
+  court:"sa déclaration de 1950 lance la construction européenne",
+  fait:"déclaration du 9 mai 1950",
+  role:"Ministre français des Affaires étrangères, sa déclaration du 9 mai 1950 propose de mettre en commun le charbon et l'acier. C'est l'acte de naissance de la construction européenne."},
+ {nom:"Simone Veil",annees:"1927-2017",r:"europe",t:"t5",an:1979,
+  court:"rescapée d'Auschwitz, loi de 1975, première présidente du Parlement européen élu",
+  fait:"première présidente du Parlement européen élu, en 1979",
+  role:"Rescapée d'Auschwitz, ministre de la Santé, elle fait adopter en 1975 la loi dépénalisant l'IVG. En 1979, elle devient la première présidente du Parlement européen élu au suffrage universel."},
+ {nom:"Mikhaïl Gorbatchev",annees:"1931-2022",r:"froide",t:"t5",an:1991,
+  court:"dernier dirigeant de l'URSS, perestroïka et fin de la guerre froide",
+  fait:"ses réformes mènent à la disparition de l'URSS en 1991",
+  role:"Dernier dirigeant de l'URSS. Ses réformes, la perestroïka et la glasnost, mènent à la fin de la guerre froide et à la disparition de l'Union soviétique en 1991."},
+ {nom:"François Mitterrand",annees:"1916-1996",r:"europe",t:"t5",an:1992,
+  court:"président français, il fait adopter le traité de Maastricht",
+  fait:"fait adopter le traité de Maastricht en 1992",
+  role:"Président de la République de 1981 à 1995. Avec le chancelier allemand Helmut Kohl, il relance l'Europe et fait adopter le traité de Maastricht par référendum en 1992."}
+];
+
+/* ============ la frise ============ */
+/* Axe 1910 -> 2010 sur 300 px utiles. Les tranches courtes (t1, t3) seraient
+   des traits fins si la largeur etait strictement proportionnelle. Chaque
+   tranche recoit donc d'abord le plancher, cliquable au doigt, puis le reste
+   est reparti au prorata de la duree : la somme fait exactement la largeur
+   utile, et la proportionnalite chronologique reste lisible (t4, trente ans,
+   reste 1,4 fois plus large que t1, cinq ans).
+   Ne pas normaliser apres coup : diviser par la somme des planchers annule
+   le plancher lui-meme et ramene la bande la plus etroite a 41 unites. */
+const FRISE_X0=20, FRISE_X1=320, FRISE_MIN=46;
+/* les bornes de l'axe se deduisent des tranches : l'axe va de 1914 a 2002, pas
+   de 1910 a 2010. Les coder en dur decrit un axe qui n'existe pas. */
+const FRISE_DE=TRANCHES[TORDRE[0]].de, FRISE_A=TRANCHES[TORDRE[TORDRE.length-1]].a;
+const FRISE_GEO=(()=>{
+  const duree=TORDRE.map(id=>TRANCHES[id].a-TRANCHES[id].de+1);
+  const totalDuree=duree.reduce((s,d)=>s+d,0);
+  const utile=FRISE_X1-FRISE_X0;
+  const reste=utile-TORDRE.length*FRISE_MIN;
+  let x=FRISE_X0;
+  const geo={};
+  TORDRE.forEach((id,i)=>{
+    const w=FRISE_MIN+duree[i]/totalDuree*reste;
+    geo[id]={x,w};
+    x+=w;
+  });
+  return geo;
+})();
+/* position exacte d'une annee sur l'axe, pour le repere affiche apres reponse.
+   Interpoler sur la largeur du rectangle dessine (g.w-2) et non sur la largeur
+   allouee : sinon le repere de la derniere annee d'une tranche tombe dans la
+   gouttiere, juste a cote de la bande qu'on designe a l'eleve. */
+function friseX(an){
+  const id=TORDRE.find(k=>an>=TRANCHES[k].de&&an<=TRANCHES[k].a)||TORDRE[TORDRE.length-1];
+  const t=TRANCHES[id], g=FRISE_GEO[id];
+  return g.x+(an-t.de+.5)/(t.a-t.de+1)*(g.w-2);
+}
+/* opts : {bonne, choisie, an} tous optionnels */
+function friseSVG(opts={}){
+  const {bonne,choisie,an}=opts;
+  const bandes=TORDRE.map(id=>{
+    const t=TRANCHES[id], g=FRISE_GEO[id];
+    let cls="tr";
+    if(bonne&&id===bonne)cls+=" good";
+    else if(choisie&&id===choisie)cls+=" bad";
+    else if(bonne)cls+=" dim";
+    /* une fois la reponse revelee les bandes n'ecoutent plus rien : leur retirer
+       role et tabindex, sinon cinq boutons restent annonces et tabulables alors
+       qu'ils sont inertes. */
+    const inter=bonne?"":` role="button" tabindex="0"`;
+    return `<g class="${cls}" data-tr="${id}"${inter} aria-label="${esc(t.label)}">
+      <rect class="cible" x="${g.x.toFixed(1)}" y="34" width="${g.w.toFixed(1)}" height="60"></rect>
+      <rect x="${g.x.toFixed(1)}" y="34" width="${(g.w-2).toFixed(1)}" height="60" rx="5" fill="var(${t.v})"></rect>
+      <text x="${(g.x+g.w/2-1).toFixed(1)}" y="68" text-anchor="middle" class="trlab">${t.court.replace("-","‑")}</text>
+    </g>`;
+  }).join("");
+  const repere=(bonne&&an!=null)
+    ? `<g class="repere"><line x1="${friseX(an).toFixed(1)}" y1="26" x2="${friseX(an).toFixed(1)}" y2="102"></line>
+       <text x="${friseX(an).toFixed(1)}" y="18" text-anchor="middle" class="rlab">${an}</text></g>`
+    : "";
+  return `<svg viewBox="20 0 300 118" role="img" aria-label="Frise chronologique de ${FRISE_DE} à ${FRISE_A}">
+    <line class="axe" x1="${FRISE_X0}" y1="102" x2="${FRISE_X1}" y2="102"></line>
+    ${bandes}${repere}
+    <text x="${FRISE_X0}" y="115" class="borne">${FRISE_DE}</text>
+    <text x="${FRISE_X1}" y="115" text-anchor="end" class="borne">${FRISE_A}</text>
+  </svg>`;
+}
+
+/* ============ gamification ============ */
+const SHEET_URL="https://script.google.com/macros/s/AKfycbwB53nfh6Xk_z1Gn4ck_WL8aX0gPxDzQ2MpxWVnpsdunmWR_IKj-tHPHOEVkP614jQJ/exec";
+function logResult(game,score,good,total,secs){
+  try{fetch(SHEET_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({page:"histoire-personnages",game,score,good,total,secs})});}catch(e){}
+}
+const CHEERS=[["🎉","Bravo !"],["⭐","Super !"],["🚀","Excellent !"],["🏆","Champion !"],["📜","L'Histoire retient ton nom !"],["🔥","Trop fort !"],["🌟","Génial !"],["⏳","Pile au bon moment !"]];
+const OOPS=[["😅","Oups, presque !"],["🙈","Pas cette fois !"],["🤔","Hmm, regarde la frise..."],["🐢","On y va doucement !"],["🧐","Presque ! Lis la correction."]];
+function confetti(host){
+  const cols=["#e63946","#f4a261","#2a9d8f","#457b9d","#ffd166","#9b5de5","#06d6a0"];
+  for(let i=0;i<22;i++){
+    const p=document.createElement("i");p.className="confetti";
+    const ang=Math.random()*Math.PI*2, d=60+Math.random()*90;
+    p.style.setProperty("--dx",Math.cos(ang)*d+"px");
+    p.style.setProperty("--dy",(Math.sin(ang)*d-40)+"px");
+    p.style.background=rnd(cols);
+    p.style.animationDelay=(Math.random()*.15)+"s";
+    host.appendChild(p);
+  }
+}
+function showVerdict(ok,sel,st){
+  const v=$(sel);
+  const [emo,msg]=ok?rnd(CHEERS):rnd(OOPS);
+  st.streak=ok?st.streak+1:0;
+  v.className="react "+(ok?"yes":"no");
+  v.innerHTML=`<span class="emo" role="img" aria-label="${ok?"Bonne réponse":"Mauvaise réponse"}">${emo}</span><span class="msg">${msg}</span>`+
+    (st.streak>=3?`<span class="streak">🔥 ${st.streak} d'affilée !</span>`:"");
+  if(ok)confetti(v);
+}
+function bilanHTML(st,titreOk){
+  const good=st.list.length-st.errs.length;
+  return `<div class="bilan">
+    <h2>${good===st.list.length?"🏆 Sans faute, incroyable !":good>=st.list.length*.8?"🌟 Bravo, belle manche !":good>=st.list.length/2?"👍 Pas mal du tout !":"💪 Continue, tu progresses !"}</h2>
+    <p class="bigscore">${st.score}</p>
+    <p class="meta">${good} bonnes réponses sur ${st.list.length}, en ${chrono(st.secs)}.</p>
+    ${st.errs.length?`<p class="section-title">À revoir</p><ul class="errlist">${st.errs.map(e=>`
+      <li><span class="rep">${e.rep}</span> ${e.w}</li>`).join("")}</ul>`
+    :`<p class="section-title">Sans faute</p><p style="margin-top:8px">${titreOk}</p>`}
+    <div class="row-end"><button class="btn ghost" id="again">Nouvelle manche</button></div>
+  </div>`;
+}
+
+/* onglets */
+document.querySelectorAll(".tab").forEach(t=>{
+  t.addEventListener("click",()=>{
+    document.querySelectorAll(".tab").forEach(x=>x.setAttribute("aria-selected",x===t));
+    document.querySelectorAll(".panel").forEach(p=>p.classList.toggle("on",p.id===t.dataset.panel));
+    if(t.dataset.panel==="qui")quiIntro();
+    if(t.dataset.panel==="frise")friIntro();
+    if(t.dataset.panel==="memo")memoIntro();
+    if(t.dataset.panel==="cartes")cartesIntro();
+    window.scrollTo({top:0,behavior:"smooth"});
+  });
+});
+
+/* ============ 1. qui est-ce ============ */
+const P={list:[],i:0,score:0,errs:[],t0:0,streak:0,secs:0};
+const pp=$("#qui");
+/* trois leurres, pris d'abord dans la meme categorie */
+function leurresP(bon){
+  const meme=shuffle(PERSONNAGES.filter(x=>x!==bon&&x.r===bon.r));
+  const autres=shuffle(PERSONNAGES.filter(x=>x!==bon&&x.r!==bon.r));
+  return [...meme,...autres].slice(0,3);
+}
+function quiIntro(){
+  pp.innerHTML=`<div class="intro">
+    <h2>Qui est-ce ?</h2>
+    <p>Dix rôles, dix personnages. On te décrit ce qu'un personnage a fait, à toi de dire qui c'est. Les propositions viennent souvent de la même famille : lis bien.</p>
+    <button class="btn" id="pgo">Commencer la manche</button>
+  </div>`;
+  $("#pgo").onclick=quiStart;
+}
+function quiStart(){
+  P.list=pick(PERSONNAGES,10);P.i=0;P.score=0;P.errs=[];P.streak=0;P.t0=Date.now();quiStep();
+}
+function quiStep(){
+  if(P.i>=P.list.length)return quiEnd();
+  const q=P.list[P.i];
+  const props=shuffle([q,...leurresP(q)]);
+  pp.innerHTML=`
+    <div class="status"><span>Personnage <b>${P.i+1}</b>/${P.list.length}</span><span class="grow"></span><span>Points <b id="psc">${P.score}</b></span></div>
+    <div id="pcard">
+      <div class="react" id="pv"></div>
+      <p class="annot">De qui parle-t-on ?</p>
+      <p class="hyp">${esc(q.role)}</p>
+      <div class="choices">${props.map((x,i)=>`<button class="choice" data-i="${i}">${esc(x.nom)}</button>`).join("")}</div>
+      <p class="why" id="pwhy"></p>
+    </div>
+    <div class="row-end"><button class="btn hidden" id="pnext">Suivant</button></div>`;
+  pp.querySelectorAll(".choice").forEach((b,i)=>{
+    b.onclick=()=>{
+      const ok=props[i]===q;
+      if(ok)P.score+=10;else P.errs.push({rep:q.nom,w:q.court+"."});
+      pp.querySelectorAll(".choice").forEach((x,j)=>{
+        x.disabled=true;
+        if(props[j]===q)x.classList.add("good");
+        else if(j===i)x.classList.add("bad");
+        else x.classList.add("dim");
+      });
+      showVerdict(ok,"#pv",P);
+      $("#pcard").classList.add("revealed");
+      $("#pwhy").innerHTML=`<b>${esc(q.nom)} (${esc(q.annees)})</b>, <span class="cat" style="color:var(${ROLES[q.r].v})">${esc(ROLES[q.r].label)}</span>.`;
+      $("#psc").textContent=P.score;
+      const n=$("#pnext");n.classList.remove("hidden");
+      n.textContent=P.i===P.list.length-1?"Voir le bilan":"Suivant";
+      n.onclick=()=>{P.i++;quiStep();};
+      n.focus({preventScroll:true});
+    };
+  });
+}
+function quiEnd(){
+  P.secs=Math.round((Date.now()-P.t0)/1000);
+  logResult("qui",P.score,P.list.length-P.errs.length,P.list.length,P.secs);
+  pp.innerHTML=bilanHTML(P,"Tu les reconnais tous. Va les situer sur la frise.");
+  $("#again",pp).onclick=quiStart;
+}
+
+/* ============ 2. frise ============ */
+const F1={list:[],i:0,score:0,errs:[],t0:0,streak:0,secs:0};
+const fp=$("#frise");
+function friIntro(){
+  fp.innerHTML=`<div class="intro">
+    <h2>À quelle époque ?</h2>
+    <p>Dix personnages. Pour chacun, on te rappelle le fait qui l'a rendu célèbre : clique la période de la frise où ce fait se place. C'est le fait qui compte, pas toute la vie du personnage.</p>
+    <button class="btn" id="fgo">Commencer la manche</button>
+  </div>`;
+  $("#fgo").onclick=friStart;
+}
+function friStart(){
+  F1.list=pick(PERSONNAGES,10);F1.i=0;F1.score=0;F1.errs=[];F1.streak=0;F1.t0=Date.now();friStep();
+}
+function friStep(){
+  if(F1.i>=F1.list.length)return friEnd();
+  const q=F1.list[F1.i];
+  fp.innerHTML=`
+    <div class="status"><span>Personnage <b>${F1.i+1}</b>/${F1.list.length}</span><span class="grow"></span><span>Points <b id="fsc">${F1.score}</b></span></div>
+    <div id="fcard">
+      <div class="react" id="fv"></div>
+      <p class="annot" id="fan">Quand ce personnage a-t-il joué ce rôle ?</p>
+      <p class="hyp"><b>${esc(q.nom)}</b><span class="fait">${esc(q.fait)}</span></p>
+      <div class="fig" id="ffig">${friseSVG()}</div>
+      <p class="why" id="fwhy"></p>
+    </div>
+    <div class="row-end"><button class="btn hidden" id="fnext">Suivant</button></div>`;
+  const repondre=id=>{
+    const ok=id===q.t;
+    if(ok)F1.score+=10;
+    else F1.errs.push({rep:q.nom,w:`${q.fait}, donc ${TRANCHES[q.t].court}.`});
+    $("#ffig").innerHTML=friseSVG({bonne:q.t,choisie:id,an:q.an});
+    showVerdict(ok,"#fv",F1);
+    $("#fcard").classList.add("revealed");
+    $("#fan").textContent=`${q.nom}, ${TRANCHES[q.t].court}`;
+    $("#fwhy").innerHTML=(ok?"":`<em>Non, c'était ${TRANCHES[q.t].court}. </em>`)+q.role;
+    $("#fsc").textContent=F1.score;
+    const n=$("#fnext");n.classList.remove("hidden");
+    n.textContent=F1.i===F1.list.length-1?"Voir le bilan":"Suivant";
+    n.onclick=()=>{F1.i++;friStep();};
+    n.focus({preventScroll:true});
+  };
+  fp.querySelectorAll("#ffig .tr").forEach(g=>{
+    g.onclick=()=>repondre(g.dataset.tr);
+    g.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();repondre(g.dataset.tr);}};
+  });
+}
+function friEnd(){
+  F1.secs=Math.round((Date.now()-F1.t0)/1000);
+  logResult("frise",F1.score,F1.list.length-F1.errs.length,F1.list.length,F1.secs);
+  fp.innerHTML=bilanHTML(F1,"Tu les situes tous. Passe au mémo.");
+  $("#again",fp).onclick=friStart;
+}
+
+/* ============ 3. memo ============ */
+const M={paires:[],cartes:[],ouverte:null,trouve:0,essais:0,t0:0,bloque:false,secs:0};
+const mp=$("#memo");
+function memoIntro(){
+  mp.innerHTML=`<div class="intro">
+    <h2>Six paires à retrouver</h2>
+    <p>Douze cartes face cachée : six personnages et les six rôles qui vont avec. Retourne-les deux par deux. Moins tu fais d'essais, meilleur est ton score.</p>
+    <button class="btn" id="mgo">Commencer la partie</button>
+  </div>`;
+  $("#mgo").onclick=memoStart;
+}
+function memoStart(){
+  M.paires=pick(PERSONNAGES,6);
+  M.cartes=shuffle(M.paires.flatMap((p,i)=>[
+    {p:i,face:esc(p.nom),type:"date"},
+    {p:i,face:esc(p.court),type:"evt"}
+  ]));
+  M.ouverte=null;M.trouve=0;M.essais=0;M.bloque=false;M.t0=Date.now();memoRender();
+}
+function memoRender(){
+  mp.innerHTML=`
+    <div class="status"><span>Paires <b id="mtr">${M.trouve}</b>/6</span><span class="grow"></span><span>Essais <b id="mes">${M.essais}</b></span></div>
+    <div class="grille">${M.cartes.map((c,i)=>
+      `<button class="mcarte ${c.type}" data-i="${i}"><span class="dos">?</span><span class="face">${c.face}</span></button>`).join("")}</div>`;
+  mp.querySelectorAll(".mcarte").forEach(b=>{b.onclick=()=>memoClic(+b.dataset.i,b);});
+}
+function memoClic(i,btn){
+  if(M.bloque||btn.classList.contains("vue")||btn.classList.contains("prise"))return;
+  btn.classList.add("vue");
+  if(M.ouverte===null){M.ouverte={i,btn};return;}
+  M.essais++;$("#mes").textContent=M.essais;
+  const a=M.ouverte, b={i,btn};
+  M.ouverte=null;
+  if(M.cartes[a.i].p===M.cartes[b.i].p&&a.i!==b.i){
+    a.btn.classList.add("prise");b.btn.classList.add("prise");
+    M.trouve++;$("#mtr").textContent=M.trouve;
+    if(M.trouve===6)setTimeout(memoEnd,450);
+  }else{
+    M.bloque=true;
+    setTimeout(()=>{a.btn.classList.remove("vue");b.btn.classList.remove("vue");M.bloque=false;},750);
+  }
+}
+function memoEnd(){
+  M.secs=Math.round((Date.now()-M.t0)/1000);
+  logResult("memo",Math.max(0,120-M.essais*5),6,6,M.secs);
+  const mot=M.essais<=8?"🏆 Mémoire de champion !":M.essais<=12?"🌟 Très bien joué !":"👍 Toutes les paires y sont !";
+  mp.innerHTML=`<div class="bilan">
+    <h2>${mot}</h2>
+    <p class="bigscore">${M.essais}<span style="font-size:24px;color:var(--ink-soft)"> essais</span></p>
+    <p class="meta">Six paires retrouvées en ${chrono(M.secs)}.</p>
+    <p class="section-title">Les paires de cette partie</p>
+    <ul class="errlist">${M.paires.map(p=>`<li><span class="rep">${esc(p.nom)}</span> ${esc(p.court)}</li>`).join("")}</ul>
+    <div class="row-end"><button class="btn ghost" id="again">Nouvelle partie</button></div>
+  </div>`;
+  $("#again",mp).onclick=memoStart;
+}
+
+/* ============ 4. cartes ============ */
+const C={boites:[[],[],[]],courante:null,vue:false,tours:0,ratees:[],taille:0,t0:0,secs:0};
+const cp=$("#cartes");
+function cartesIntro(){
+  cp.innerHTML=`<div class="intro">
+    <h2>Réviser en cartes</h2>
+    <p>Douze personnages, recto le nom, verso le rôle. Tu réponds dans ta tête, tu retournes, puis tu dis si tu savais. Ce que tu rates revient tout de suite.</p>
+    <button class="btn" id="cgo">Commencer la manche</button>
+  </div>`;
+  $("#cgo").onclick=cartesStart;
+}
+function cartesStart(){
+  const tirage=pick(PERSONNAGES,12);
+  C.boites=[shuffle(tirage),[],[]];
+  C.taille=tirage.length;C.tours=0;C.ratees=[];C.vue=false;C.t0=Date.now();
+  cartesStep();
+}
+function cartesTire(){
+  for(const b of C.boites.slice(0,2))if(b.length)return b;
+  return null;
+}
+function cartesStep(){
+  const boite=cartesTire();
+  if(!boite)return cartesEnd();
+  const idx=C.boites.indexOf(boite);
+  C.courante={carte:boite[0],idx};
+  C.vue=false;
+  const restants=C.boites[0].length+C.boites[1].length;
+  cp.innerHTML=`
+    <div class="status"><span>Boîte <b>${idx+1}</b>/3</span><span class="grow"></span><span>Reste <b>${restants}</b></span></div>
+    <div class="flash" id="cflash">
+      <p class="recto">${esc(C.courante.carte.nom)}</p>
+      <p class="verso hidden" id="cverso">${esc(C.courante.carte.court)}<span class="detail">${esc(C.courante.carte.role)}</span></p>
+    </div>
+    <div class="row-end" id="cactions"><button class="btn" id="cflip">Retourner</button></div>`;
+  $("#cflip").onclick=()=>{
+    C.vue=true;
+    $("#cverso").classList.remove("hidden");
+    $("#cactions").innerHTML=`<button class="btn" id="csu">Je savais</button><button class="btn no" id="cnon">Pas su</button>`;
+    $("#csu").onclick=()=>cartesJuge(true);
+    $("#cnon").onclick=()=>cartesJuge(false);
+  };
+}
+function cartesJuge(su){
+  const {carte,idx}=C.courante;
+  C.tours++;
+  C.boites[idx].shift();
+  if(su)C.boites[idx+1].push(carte);
+  else{C.boites[0].push(carte);if(!C.ratees.includes(carte))C.ratees.push(carte);}
+  cartesStep();
+}
+function cartesEnd(){
+  C.secs=Math.round((Date.now()-C.t0)/1000);
+  const sues=C.taille-C.ratees.length;
+  logResult("cartes",C.tours,sues,C.taille,C.secs);
+  cp.innerHTML=`<div class="bilan">
+    <h2>${C.ratees.length===0?"🏆 Les douze du premier coup !":C.ratees.length<=3?"🌟 Belle révision !":"💪 Elles rentrent, continue !"}</h2>
+    <p class="bigscore">${C.tours}<span style="font-size:24px;color:var(--ink-soft)"> retournements</span></p>
+    <p class="meta">${sues} personnage${sues>1?"s":""} su${sues>1?"s":""} du premier coup sur ${C.taille}, en ${chrono(C.secs)}.</p>
+    ${C.ratees.length?`<p class="section-title">À revoir</p><ul class="errlist">${C.ratees.map(c=>
+      `<li><span class="rep">${esc(c.nom)}</span> ${esc(c.court)}</li>`).join("")}</ul>`
+     :`<p class="section-title">Sans faute</p><p style="margin-top:8px">Les vingt et un sont dans ta tête.</p>`}
+    <div class="row-end"><button class="btn ghost" id="again">Nouvelle manche</button></div>
+  </div>`;
+  $("#again",cp).onclick=cartesStart;
+}
+
+quiIntro();
+</script>
+</body>
+</html>
