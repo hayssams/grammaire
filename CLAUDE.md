@@ -32,7 +32,17 @@ Site statique sans build, sans dépendances, sans tests : chaque page est un fic
   - Les zones `inerte` sont du décor et ne réagissent jamais au clic.
 
   **La loupe** existe parce que viser au doigt est physiquement impossible sur une carte dense : 8 px pour le Luxembourg, 1 px pour la Guadeloupe. Un premier appui resserre le cadre, un second désigne. Le facteur de zoom se calcule pour que les deux zones les plus proches atteignent 44 px : 6 pour l'Europe. Là où même cela ne suffirait pas, le fond déclare des **cadres nommés** : le planisphère demanderait un zoom de 33, il porte donc trois cadres géographiques.
-- `histoire-memo.html` et `geo-memo.html` : fiches mémo statiques sur le modèle d'`astuces.html` (deux onglets, pas de score, pas d'appel Google Sheets). Elles recopient à la main les données des carnets : **toute modification d'une donnée dans un carnet doit être reportée dans la fiche correspondante.**
+- `histoire-memo.html` et `geo-memo.html` : fiches mémo statiques sur le modèle d'`astuces.html` (deux onglets, pas de score, pas d'appel Google Sheets). Elles recopient les données des carnets, qui font foi. **Toute modification d'une donnée dans un carnet doit être reportée dans la fiche**, et le contrôle se fait par script plutôt qu'à l'œil :
+
+  ```bash
+  node outils/coherence.mjs histoire-dates.html DATES d,label histoire-memo.html
+  node outils/coherence.mjs histoire-personnages.html PERSONNAGES nom,annees,role histoire-memo.html
+  node outils/coherence.mjs geo-france.html REGIONS nom,capitale geo-memo.html
+  node outils/coherence.mjs geo-france.html DROM nom,chef geo-memo.html
+  node outils/coherence.mjs geo-europe.html PAYS nom geo-memo.html
+  ```
+
+  Le script charge le tableau du carnet et vérifie que chaque valeur figure dans la fiche, en tenant compte des entités HTML et des apostrophes typographiques. Chaque appel doit se terminer par `la fiche est à jour.`
 - `astuces.html` : fiche mémo statique (astuce de reconnaissance + 3 à 5 exemples par classe et par fonction, sections « Ne confonds pas ») ; deux onglets, pas de score ni d'appel Google Sheets, contenu écrit directement dans le HTML.
 - `docs/superpowers/` : specs et plans d'implémentation.
 
