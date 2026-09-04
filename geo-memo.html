@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Le mémo de géo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F5F6F1;
+  --paper-2:#FCFCFA;
+  --rule:#BFD3E4;
+  --rule-soft:#DDE7F0;
+  --marge:#DE5B4A;
+  --ink:#16233B;
+  --ink-soft:#5E6E85;
+  --geo:#17697B;
+  --serif:"Instrument Serif", Georgia, "Times New Roman", serif;
+  --sans:"Karla", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:16px;
+  line-height:1.5;
+  min-height:100vh;
+  padding:0 0 40px;
+}
+.wrap{max-width:560px;margin:0 auto;padding:0 14px}
+
+/* ---------- en-tete ---------- */
+header{padding:26px 0 14px}
+.topbar{display:flex;align-items:center;gap:14px;margin:0 0 6px}
+.topbar .eyebrow{margin:0}
+.home{
+  font-family:var(--sans);font-size:13px;font-weight:700;text-decoration:none;color:var(--ink);
+  border:1px solid var(--rule);border-radius:999px;padding:6px 12px;background:var(--paper,transparent);
+  transition:background .2s,transform .2s
+}
+.home:hover{background:var(--rule-soft);transform:translateY(-1px)}
+.eyebrow{
+  font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-soft);font-weight:700;margin:0 0 6px
+}
+h1{
+  font-family:var(--serif);font-weight:400;font-size:34px;line-height:1.05;
+  margin:0 0 4px;letter-spacing:-.01em
+}
+h1 em{font-style:italic;color:var(--geo)}
+.sub{margin:0;color:var(--ink-soft);font-size:14px}
+
+/* ---------- onglets ---------- */
+nav{display:flex;gap:6px;margin:18px 0 0;align-items:flex-end}
+.tab{
+  flex:1;border:1px solid var(--rule);border-bottom:none;
+  background:#EDEFE9;color:var(--ink-soft);
+  font-family:var(--sans);font-size:12.5px;font-weight:700;
+  padding:11px 3px 10px;border-radius:9px 9px 0 0;cursor:pointer;
+  letter-spacing:.01em;transition:background .15s,color .15s,transform .15s
+}
+.tab:hover{color:var(--ink)}
+.tab[aria-selected="true"]{background:var(--paper-2);color:var(--ink);transform:translateY(1px);box-shadow:0 -2px 0 var(--geo) inset}
+
+/* ---------- feuille ---------- */
+.sheet{
+  position:relative;background:var(--paper-2);
+  border:1px solid var(--rule);border-radius:0 0 10px 10px;
+  padding:22px 16px 20px 30px;overflow:hidden;
+  background-image:repeating-linear-gradient(to bottom,transparent 0 31px,var(--rule-soft) 31px 32px);
+  background-position:0 8px;
+}
+.sheet::before{
+  content:"";position:absolute;top:0;bottom:0;left:20px;width:1px;background:var(--marge);opacity:.5
+}
+.panel{display:none}
+.panel.on{display:block}
+
+/* ---------- groupes ---------- */
+.groupe{border:1px solid var(--rule);border-left:3px solid var(--geo);background:var(--paper-2);
+  border-radius:8px;padding:14px 14px 12px;margin:0 0 12px;overflow-x:auto}
+.groupe h2{font-family:var(--serif);font-weight:400;font-size:20px;margin:0 0 10px;color:var(--geo)}
+
+/* ---------- tableau regions ---------- */
+.regions{width:100%;border-collapse:collapse}
+.regions td{padding:7px 4px;border-bottom:1px solid var(--rule-soft);font-size:14px;line-height:1.3}
+.regions tr:last-child td{border-bottom:none}
+.regions td:first-child{font-weight:700}
+.regions td:last-child{text-align:right;color:var(--ink-soft);white-space:nowrap;padding-left:10px}
+
+/* ---------- fleuves / mers / drom ---------- */
+.item{margin:0 0 10px;font-size:14.5px}
+.item:last-child{margin-bottom:0}
+.item b{font-family:var(--serif);font-size:17px;color:var(--geo);display:block;margin-bottom:1px}
+.item .w{display:block;font-size:13px;color:var(--ink-soft);margin-top:1px}
+
+/* ---------- reliefs (sous-groupes) ---------- */
+.sousgroupe{margin:0 0 14px}
+.sousgroupe:last-child{margin-bottom:0}
+.st{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 6px}
+.relieflist{margin:0;padding:0;list-style:none}
+.relieflist li{font-size:14.5px;padding:3px 0}
+
+/* ---------- europe ---------- */
+.paysgrid{display:grid;grid-template-columns:1fr 1fr;gap:2px 14px;margin:0;padding:0;list-style:none}
+.paysgrid li{font-size:14.5px;padding:4px 0;border-bottom:1px solid var(--rule-soft)}
+@media (max-width:360px){
+  .paysgrid{grid-template-columns:1fr}
+}
+.horsue{margin:0 0 10px;font-size:14.5px}
+.horsue:last-child{margin-bottom:0}
+.horsue b{font-family:var(--serif);font-size:16px;color:var(--geo);display:block;margin-bottom:1px}
+.horsue .w{display:block;font-size:13px;color:var(--ink-soft);margin-top:1px}
+
+/* ---------- ne confonds pas ---------- */
+.section-title{font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-soft);margin:22px 0 10px}
+.vs{border:1px dashed var(--rule);border-radius:8px;background:var(--paper-2);
+  padding:14px 14px 12px;margin:0 0 12px}
+.vs h3{font-family:var(--serif);font-weight:400;font-size:19px;margin:0 0 8px}
+.vs p{margin:0 0 8px;font-size:14.5px;line-height:1.42}
+.vs p:last-child{margin-bottom:0}
+.vs b{color:var(--ink)}
+
+@media (max-width:420px){
+  h1{font-size:29px}
+  .sheet{padding-left:26px}
+}
+@media (max-width:360px){
+  .item b{font-size:16px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition-duration:.01ms !important;animation-duration:.01ms !important}
+}
+:focus-visible{outline:2px solid var(--geo);outline-offset:2px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="topbar"><a class="home" href="geographie.html">🏠 Géographie</a><p class="eyebrow">Géographie, 3<sup>e</sup></p></div>
+    <h1>Le mémo <em>de géo</em></h1>
+    <p class="sub">Les listes à connaître par cœur, France et Europe.</p>
+    <nav role="tablist">
+      <button class="tab" role="tab" aria-selected="true" data-panel="france">France</button>
+      <button class="tab" role="tab" aria-selected="false" data-panel="europe">Europe</button>
+    </nav>
+  </header>
+
+  <div class="sheet">
+    <section class="panel on" id="france">
+
+      <div class="groupe">
+        <h2>Les 13 régions et leur capitale</h2>
+        <table class="regions">
+          <tr><td>Auvergne-Rhône-Alpes</td><td>Lyon</td></tr>
+          <tr><td>Bourgogne-Franche-Comté</td><td>Dijon</td></tr>
+          <tr><td>Bretagne</td><td>Rennes</td></tr>
+          <tr><td>Centre-Val de Loire</td><td>Orléans</td></tr>
+          <tr><td>Corse</td><td>Ajaccio</td></tr>
+          <tr><td>Grand Est</td><td>Strasbourg</td></tr>
+          <tr><td>Hauts-de-France</td><td>Lille</td></tr>
+          <tr><td>Île-de-France</td><td>Paris</td></tr>
+          <tr><td>Normandie</td><td>Rouen</td></tr>
+          <tr><td>Nouvelle-Aquitaine</td><td>Bordeaux</td></tr>
+          <tr><td>Occitanie</td><td>Toulouse</td></tr>
+          <tr><td>Pays de la Loire</td><td>Nantes</td></tr>
+          <tr><td>Provence-Alpes-Côte d'Azur</td><td>Marseille</td></tr>
+        </table>
+      </div>
+
+      <div class="groupe">
+        <h2>Les 4 fleuves</h2>
+        <div class="item"><b>la Seine</b><span class="w">Bourgogne, Paris, Rouen, la Manche.</span></div>
+        <div class="item"><b>la Loire</b><span class="w">Massif Central, Orléans, Nantes, l'Atlantique.</span></div>
+        <div class="item"><b>la Garonne</b><span class="w">Pyrénées, Toulouse, Bordeaux, la Gironde.</span></div>
+        <div class="item"><b>le Rhône</b><span class="w">lac Léman, Lyon, Avignon, la Méditerranée.</span></div>
+      </div>
+
+      <div class="groupe">
+        <h2>Les 8 ensembles de relief</h2>
+        <div class="sousgroupe">
+          <p class="st">Massifs anciens et bas</p>
+          <ul class="relieflist">
+            <li>le Massif Armoricain</li>
+            <li>le Massif Central</li>
+            <li>les Vosges</li>
+          </ul>
+        </div>
+        <div class="sousgroupe">
+          <p class="st">Chaînes jeunes et hautes</p>
+          <ul class="relieflist">
+            <li>les Alpes</li>
+            <li>les Pyrénées</li>
+            <li>le Jura</li>
+          </ul>
+        </div>
+        <div class="sousgroupe">
+          <p class="st">Bassins sédimentaires</p>
+          <ul class="relieflist">
+            <li>le Bassin parisien</li>
+            <li>le Bassin aquitain</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="groupe">
+        <h2>Les mers et l'océan</h2>
+        <div class="item"><b>la mer du Nord</b><span class="w">Elle borde les côtes des Hauts-de-France, entre la France, la Belgique et l'Angleterre.</span></div>
+        <div class="item"><b>la Manche</b><span class="w">Elle sépare la Normandie de l'Angleterre, entre mer du Nord et Atlantique.</span></div>
+        <div class="item"><b>l'océan Atlantique</b><span class="w">Il borde toute la façade ouest, de la Bretagne au Pays basque.</span></div>
+        <div class="item"><b>la mer Méditerranée</b><span class="w">Elle borde le Languedoc, la Provence et la Corse, au sud du pays.</span></div>
+      </div>
+
+      <div class="groupe">
+        <h2>Les 5 DROM</h2>
+        <div class="item"><b>la Guadeloupe</b><span class="w">Aux Antilles, dans la mer des Caraïbes. Chef-lieu : Basse-Terre.</span></div>
+        <div class="item"><b>la Martinique</b><span class="w">Aux Antilles également, juste au sud de la Guadeloupe. Chef-lieu : Fort-de-France.</span></div>
+        <div class="item"><b>la Guyane</b><span class="w">Chef-lieu : Cayenne. En Amérique du Sud, entre le Brésil et le Suriname. C'est le plus vaste des DROM.</span></div>
+        <div class="item"><b>Mayotte</b><span class="w">Chef-lieu : Mamoudzou. Dans l'océan Indien, entre l'Afrique et Madagascar. Département depuis 2011.</span></div>
+        <div class="item"><b>La Réunion</b><span class="w">Dans l'océan Indien, à l'est de Madagascar. Chef-lieu : Saint-Denis.</span></div>
+      </div>
+
+      <p class="section-title">Ne confonds pas</p>
+
+      <div class="vs">
+        <h3>Région ou département ?</h3>
+        <p>La France compte <b>13 régions</b> et <b>101 départements</b>. La région regroupe plusieurs départements.</p>
+      </div>
+
+      <div class="vs">
+        <h3>Capitale de région ou plus grande ville ?</h3>
+        <p>La <b>capitale de région</b> est le chef-lieu, où siège la préfecture de région : ce n'est pas forcément la ville la plus peuplée. En Normandie, le chef-lieu est <b>Rouen</b>, alors que <b>Le Havre</b> est très peuplée.</p>
+      </div>
+
+      <div class="vs">
+        <h3>DROM ou COM ?</h3>
+        <p>Les <b>DROM</b> (départements et régions d'outre-mer) sont des départements de plein exercice, comme ceux de métropole. Les <b>COM</b> (collectivités d'outre-mer) ont un statut particulier, différent.</p>
+      </div>
+
+      <div class="vs">
+        <h3>La Manche ou l'océan Atlantique ?</h3>
+        <p><b>La Manche</b> est une mer, entre la Normandie et l'Angleterre. <b>L'océan Atlantique</b> borde toute la façade ouest, de la Bretagne au Pays basque : ce n'est pas la même étendue d'eau.</p>
+      </div>
+
+    </section>
+    <section class="panel" id="europe">
+
+      <div class="groupe">
+        <h2>Les 27 pays de l'Union européenne</h2>
+        <ul class="paysgrid">
+          <li>Allemagne</li>
+          <li>Autriche</li>
+          <li>Belgique</li>
+          <li>Bulgarie</li>
+          <li>Chypre</li>
+          <li>Croatie</li>
+          <li>Danemark</li>
+          <li>Espagne</li>
+          <li>Estonie</li>
+          <li>Finlande</li>
+          <li>France</li>
+          <li>Grèce</li>
+          <li>Hongrie</li>
+          <li>Irlande</li>
+          <li>Italie</li>
+          <li>Lettonie</li>
+          <li>Lituanie</li>
+          <li>Luxembourg</li>
+          <li>Malte</li>
+          <li>Pays-Bas</li>
+          <li>Pologne</li>
+          <li>Portugal</li>
+          <li>Roumanie</li>
+          <li>Slovaquie</li>
+          <li>Slovénie</li>
+          <li>Suède</li>
+          <li>Tchéquie</li>
+        </ul>
+      </div>
+
+      <div class="groupe">
+        <h2>En Europe, mais pas dans l'Union</h2>
+        <div class="horsue"><b>Albanie</b><span class="w">Elle est candidate depuis 2014, mais les négociations n'ont pas encore abouti.</span></div>
+        <div class="horsue"><b>Biélorussie</b><span class="w">Son régime, autoritaire et proche de la Russie, l'exclut de toute perspective d'adhésion.</span></div>
+        <div class="horsue"><b>Bosnie-Herzégovine</b><span class="w">Elle n'est candidate à l'adhésion que depuis 2022.</span></div>
+        <div class="horsue"><b>Islande</b><span class="w">Elle avait posé sa candidature en 2009, mais l'a retirée en 2015.</span></div>
+        <div class="horsue"><b>Macédoine du Nord</b><span class="w">Elle est candidate depuis 2005, mais les négociations n'ont pas encore abouti.</span></div>
+        <div class="horsue"><b>Moldavie</b><span class="w">Elle est candidate à l'adhésion depuis 2022, mais n'a pas encore rejoint l'Union.</span></div>
+        <div class="horsue"><b>Monténégro</b><span class="w">Il est candidat depuis 2010, le plus avancé des Balkans occidentaux dans les négociations.</span></div>
+        <div class="horsue"><b>Norvège</b><span class="w">Elle a rejeté l'adhésion par référendum, à deux reprises, en 1972 puis en 1994.</span></div>
+        <div class="horsue"><b>Royaume-Uni</b><span class="w">Il a quitté l'Union par le Brexit en 2020, après y avoir adhéré en 1973.</span></div>
+        <div class="horsue"><b>Serbie</b><span class="w">Elle est candidate depuis 2012, mais les négociations n'ont pas encore abouti.</span></div>
+        <div class="horsue"><b>Suisse</b><span class="w">Elle a toujours refusé d'y adhérer, en gardant sa neutralité et ses propres accords avec l'Union.</span></div>
+        <div class="horsue"><b>Turquie</b><span class="w">Sa candidature, déposée en 1987, est bloquée depuis des années sur les droits humains et la démocratie.</span></div>
+        <div class="horsue"><b>Ukraine</b><span class="w">Elle est candidate à l'adhésion depuis 2022, mais les négociations sont encore en cours.</span></div>
+      </div>
+
+      <p class="section-title">Ne confonds pas</p>
+
+      <div class="vs">
+        <h3>Europe ou Union européenne ?</h3>
+        <p><b>L'Europe</b> est un continent. <b>L'Union européenne</b> est une organisation de 27 États qui en font partie : ce n'est pas la même chose.</p>
+      </div>
+
+      <div class="vs">
+        <h3>Union européenne ou zone euro ?</h3>
+        <p><b>L'Union européenne</b> compte 27 pays. <b>La zone euro</b> est plus petite : elle ne regroupe que les pays qui utilisent l'euro. La Suède, par exemple, est dans l'Union sans être dans l'euro.</p>
+      </div>
+
+      <div class="vs">
+        <h3>Union européenne ou espace Schengen ?</h3>
+        <p><b>L'Union européenne</b> et <b>l'espace Schengen</b>, qui supprime les contrôles aux frontières, ne se recouvrent pas exactement. La Suisse et la Norvège sont dans Schengen sans être dans l'Union.</p>
+      </div>
+
+    </section>
+  </div>
+</div>
+
+<script>
+document.querySelectorAll(".tab").forEach(t=>{
+  t.addEventListener("click",()=>{
+    document.querySelectorAll(".tab").forEach(x=>x.setAttribute("aria-selected",x===t));
+    document.querySelectorAll(".panel").forEach(p=>p.classList.toggle("on",p.id===t.dataset.panel));
+    window.scrollTo({top:0});
+  });
+});
+</script>
+</body>
+</html>

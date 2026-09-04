@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Le mémo d'histoire</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F5F6F1;
+  --paper-2:#FCFCFA;
+  --rule:#BFD3E4;
+  --rule-soft:#DDE7F0;
+  --marge:#DE5B4A;
+  --ink:#16233B;
+  --ink-soft:#5E6E85;
+  --histoire:#8C4A2F;
+  --t1:#7C3A2E;
+  --t2:#A6702B;
+  --t3:#4A5F8A;
+  --t4:#8C4A2F;
+  --t5:#1B6F55;
+  --gm1:#7C3A2E;
+  --totalitarismes:#5B2333;
+  --allies:#2F5D62;
+  --resistance:#1B6F55;
+  --vichy:#6B6257;
+  --froide:#4A5F8A;
+  --deco:#A6702B;
+  --europe:#1D4E89;
+  --serif:"Instrument Serif", Georgia, "Times New Roman", serif;
+  --sans:"Karla", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:16px;
+  line-height:1.5;
+  min-height:100vh;
+  padding:0 0 40px;
+}
+.wrap{max-width:560px;margin:0 auto;padding:0 14px}
+
+/* ---------- en-tete ---------- */
+header{padding:26px 0 14px}
+.topbar{display:flex;align-items:center;gap:14px;margin:0 0 6px}
+.topbar .eyebrow{margin:0}
+.home{
+  font-family:var(--sans);font-size:13px;font-weight:700;text-decoration:none;color:var(--ink);
+  border:1px solid var(--rule);border-radius:999px;padding:6px 12px;background:var(--paper,transparent);
+  transition:background .2s,transform .2s
+}
+.home:hover{background:var(--rule-soft);transform:translateY(-1px)}
+.eyebrow{
+  font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-soft);font-weight:700;margin:0 0 6px
+}
+h1{
+  font-family:var(--serif);font-weight:400;font-size:34px;line-height:1.05;
+  margin:0 0 4px;letter-spacing:-.01em
+}
+h1 em{font-style:italic;color:var(--histoire)}
+.sub{margin:0;color:var(--ink-soft);font-size:14px}
+
+/* ---------- onglets ---------- */
+nav{display:flex;gap:6px;margin:18px 0 0;align-items:flex-end}
+.tab{
+  flex:1;border:1px solid var(--rule);border-bottom:none;
+  background:#EDEFE9;color:var(--ink-soft);
+  font-family:var(--sans);font-size:12.5px;font-weight:700;
+  padding:11px 3px 10px;border-radius:9px 9px 0 0;cursor:pointer;
+  letter-spacing:.01em;transition:background .15s,color .15s,transform .15s
+}
+.tab:hover{color:var(--ink)}
+.tab[aria-selected="true"]{background:var(--paper-2);color:var(--ink);transform:translateY(1px);box-shadow:0 -2px 0 var(--histoire) inset}
+
+/* ---------- feuille ---------- */
+.sheet{
+  position:relative;background:var(--paper-2);
+  border:1px solid var(--rule);border-radius:0 0 10px 10px;
+  padding:22px 16px 20px 30px;overflow:hidden;
+  background-image:repeating-linear-gradient(to bottom,transparent 0 31px,var(--rule-soft) 31px 32px);
+  background-position:0 8px;
+}
+.sheet::before{
+  content:"";position:absolute;top:0;bottom:0;left:20px;width:1px;background:var(--marge);opacity:.5
+}
+.panel{display:none}
+.panel.on{display:block}
+
+/* ---------- groupes (periodes / roles / rubriques geo) ---------- */
+.groupe{border:1px solid var(--rule);border-left:3px solid var(--c,var(--histoire));background:var(--paper-2);
+  border-radius:8px;padding:14px 14px 12px;margin:0 0 12px}
+.groupe h2{font-family:var(--serif);font-weight:400;font-size:20px;margin:0 0 10px;color:var(--c,var(--histoire))}
+
+/* ---------- dates ---------- */
+.dt{margin:0 0 11px}
+.dt:last-child{margin-bottom:0}
+.dt .date{font-family:var(--serif);font-size:17px;color:var(--ink);margin-right:6px}
+.dt .lbl{font-size:14.5px}
+.dt .w{display:block;font-size:12.5px;color:var(--ink-soft);margin-top:2px}
+
+/* ---------- personnages ---------- */
+.pers{margin:0 0 13px}
+.pers:last-child{margin-bottom:0}
+.pers .nom{font-family:var(--serif);font-size:18px;color:var(--c,var(--histoire))}
+.pers .annees{font-size:12.5px;color:var(--ink-soft);font-weight:700;margin-left:5px}
+.pers .role{margin:3px 0 0;font-size:14px}
+
+/* ---------- ne confonds pas ---------- */
+.section-title{font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-soft);margin:22px 0 10px}
+.vs{border:1px dashed var(--rule);border-radius:8px;background:var(--paper-2);
+  padding:14px 14px 12px;margin:0 0 12px}
+.vs h3{font-family:var(--serif);font-weight:400;font-size:19px;margin:0 0 8px}
+.vs p{margin:0 0 8px;font-size:14.5px;line-height:1.42}
+.vs p:last-child{margin-bottom:0}
+.vs b{color:var(--ink)}
+
+@media (max-width:420px){
+  h1{font-size:29px}
+  .sheet{padding-left:26px}
+}
+@media (max-width:360px){
+  .pers .nom{font-size:17px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition-duration:.01ms !important;animation-duration:.01ms !important}
+}
+:focus-visible{outline:2px solid var(--histoire);outline-offset:2px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="topbar"><a class="home" href="histoire.html">🏠 Histoire</a><p class="eyebrow">Histoire, 3<sup>e</sup></p></div>
+    <h1>Le mémo <em>d'histoire</em></h1>
+    <p class="sub">Tout ce qu'il faut savoir pour l'évaluation de rentrée, sur une seule page.</p>
+    <nav role="tablist">
+      <button class="tab" role="tab" aria-selected="true" data-panel="dates">Les 23 dates</button>
+      <button class="tab" role="tab" aria-selected="false" data-panel="personnages">Les 21 personnages</button>
+    </nav>
+  </header>
+
+  <div class="sheet">
+    <section class="panel on" id="dates">
+
+      <div class="groupe" style="--c:var(--t1)">
+        <h2>1914-1918 · la Grande Guerre</h2>
+        <div class="dt"><span class="date"><b>1914</b></span><span class="lbl">début de la Première Guerre mondiale</span><span class="w">L'attentat de Sarajevo entraîne toute l'Europe dans la guerre en août 1914.</span></div>
+        <div class="dt"><span class="date"><b>1916</b></span><span class="lbl">bataille de Verdun</span><span class="w">Dix mois de combats, la bataille la plus longue de la guerre, symbole de l'enfer des tranchées.</span></div>
+        <div class="dt"><span class="date"><b>1917</b></span><span class="lbl">révolutions russes</span><span class="w">En février le tsar tombe, en octobre les bolcheviks de Lénine prennent le pouvoir.</span></div>
+        <div class="dt"><span class="date"><b>11 novembre 1918</b></span><span class="lbl">armistice</span><span class="w">L'armistice arrête les combats. Ce n'est pas encore la paix : le traité de Versailles est signé en 1919.</span></div>
+      </div>
+
+      <div class="groupe" style="--c:var(--t2)">
+        <h2>1919-1938 · l'entre-deux-guerres</h2>
+        <div class="dt"><span class="date"><b>1929</b></span><span class="lbl">crise économique mondiale</span><span class="w">Le krach de Wall Street en octobre 1929 jette des millions de gens au chômage et fragilise les démocraties.</span></div>
+        <div class="dt"><span class="date"><b>1933</b></span><span class="lbl">arrivée d'Hitler au pouvoir</span><span class="w">Hitler devient chancelier en janvier 1933 et installe en quelques mois une dictature raciste.</span></div>
+        <div class="dt"><span class="date"><b>1936</b></span><span class="lbl">élection du Front populaire en France</span><span class="w">La gauche unie gagne les élections : congés payés, semaine de 40 heures, conventions collectives.</span></div>
+      </div>
+
+      <div class="groupe" style="--c:var(--t3)">
+        <h2>1939-1945 · la Seconde Guerre mondiale</h2>
+        <div class="dt"><span class="date"><b>1939-1945</b></span><span class="lbl">Seconde Guerre mondiale</span><span class="w">Six ans de guerre mondiale, déclenchée par l'invasion de la Pologne le 1er septembre 1939.</span></div>
+        <div class="dt"><span class="date"><b>18 juin 1940</b></span><span class="lbl">appel du général de Gaulle</span><span class="w">Depuis Londres, de Gaulle refuse la défaite et appelle à continuer le combat. C'est l'acte de naissance de la France libre.</span></div>
+        <div class="dt"><span class="date"><b>6 juin 1944</b></span><span class="lbl">débarquement en Normandie</span><span class="w">Les Alliés débarquent sur les plages normandes et ouvrent enfin un front à l'ouest.</span></div>
+        <div class="dt"><span class="date"><b>1944</b></span><span class="lbl">Libération de la France</span><span class="w">Paris est libéré en août 1944 ; la France retrouve sa souveraineté et rétablit la République.</span></div>
+        <div class="dt"><span class="date"><b>8 mai 1945</b></span><span class="lbl">capitulation allemande</span><span class="w">L'Allemagne se rend sans condition. La guerre s'achève en Europe, mais continue en Asie.</span></div>
+        <div class="dt"><span class="date"><b>août 1945</b></span><span class="lbl">bombardements atomiques du Japon</span><span class="w">Hiroshima le 6 août, Nagasaki le 9 août : le Japon capitule et le monde entre dans l'âge nucléaire.</span></div>
+        <div class="dt"><span class="date"><b>1945</b></span><span class="lbl">création de l'Organisation des Nations unies</span><span class="w">L'ONU remplace la SDN avec une mission : maintenir la paix et faire respecter les droits humains.</span></div>
+      </div>
+
+      <div class="groupe" style="--c:var(--t4)">
+        <h2>1946-1975 · la guerre froide s'installe</h2>
+        <div class="dt"><span class="date"><b>1947</b></span><span class="lbl">début de la guerre froide</span><span class="w">Doctrine Truman et plan Marshall d'un côté, réplique soviétique de l'autre : le monde se coupe en deux blocs.</span></div>
+        <div class="dt"><span class="date"><b>1948-1949</b></span><span class="lbl">blocus de Berlin</span><span class="w">Staline coupe les accès à Berlin-Ouest ; les Occidentaux ravitaillent la ville par un pont aérien pendant onze mois.</span></div>
+        <div class="dt"><span class="date"><b>1957</b></span><span class="lbl">traité de Rome</span><span class="w">Six pays créent la Communauté économique européenne, l'ancêtre de l'Union européenne.</span></div>
+        <div class="dt"><span class="date"><b>1961</b></span><span class="lbl">construction du mur de Berlin</span><span class="w">En une nuit, la RDA mure sa frontière pour empêcher ses habitants de fuir à l'Ouest.</span></div>
+        <div class="dt"><span class="date"><b>1962</b></span><span class="lbl">crise de Cuba</span><span class="w">Des missiles soviétiques à Cuba amènent le monde au bord de la guerre nucléaire. Khrouchtchev recule.</span></div>
+      </div>
+
+      <div class="groupe" style="--c:var(--t5)">
+        <h2>1976-2002 · la fin de la guerre froide et l'Europe</h2>
+        <div class="dt"><span class="date"><b>1989</b></span><span class="lbl">chute du mur de Berlin</span><span class="w">Le 9 novembre, le mur s'ouvre. C'est la fin du partage de l'Europe en deux blocs.</span></div>
+        <div class="dt"><span class="date"><b>1991</b></span><span class="lbl">disparition de l'Union soviétique</span><span class="w">L'URSS se dissout en quinze États indépendants. La guerre froide est finie.</span></div>
+        <div class="dt"><span class="date"><b>1992</b></span><span class="lbl">traité de Maastricht</span><span class="w">Il crée l'Union européenne, la citoyenneté européenne et prépare la monnaie unique.</span></div>
+        <div class="dt"><span class="date"><b>2002</b></span><span class="lbl">mise en circulation de l'euro</span><span class="w">Les pièces et les billets en euros remplacent les monnaies nationales dans douze pays.</span></div>
+      </div>
+
+      <p class="section-title">Ne confonds pas</p>
+
+      <div class="vs">
+        <h3>Armistice ou capitulation ?</h3>
+        <p><b>L'armistice</b> (11 novembre 1918) arrête les combats, sans que la guerre soit officiellement finie. <b>La capitulation</b> (8 mai 1945) est une reddition sans condition : l'Allemagne se rend.</p>
+      </div>
+
+      <div class="vs">
+        <h3>Révolutions russes ou création de l'URSS ?</h3>
+        <p>Les <b>révolutions russes de 1917</b> renversent le tsar puis portent les bolcheviks au pouvoir. <b>L'URSS</b> n'est créée qu'en <b>1922</b>, une fois la guerre civile terminée.</p>
+      </div>
+
+      <div class="vs">
+        <h3>Chute du mur de Berlin ou disparition de l'URSS ?</h3>
+        <p>La <b>chute du mur de Berlin</b>, en <b>1989</b>, met fin au partage de l'Europe en deux blocs. La <b>disparition de l'URSS</b>, en <b>1991</b>, est la fin du pays lui-même : ce sont deux événements distincts, à deux dates différentes.</p>
+      </div>
+
+      <div class="vs">
+        <h3>Traité de Rome ou traité de Maastricht ?</h3>
+        <p>Le <b>traité de Rome</b>, en <b>1957</b>, crée la CEE. Le <b>traité de Maastricht</b>, en <b>1992</b>, crée l'Union européenne.</p>
+      </div>
+
+    </section>
+    <section class="panel" id="personnages">
+
+      <div class="groupe" style="--c:var(--gm1)">
+        <h2>Première Guerre mondiale</h2>
+        <div class="pers"><span class="nom">Georges Clemenceau</span><span class="annees">1841-1929</span>
+          <p class="role">Surnommé « le Tigre », il devient président du Conseil en 1917 et redresse le moral du pays. Il mène la France à la victoire de 1918 puis négocie le traité de Versailles.</p></div>
+        <div class="pers"><span class="nom">Jean Jaurès</span><span class="annees">1859-1914</span>
+          <p class="role">Député socialiste, fondateur du journal L'Humanité, il se bat jusqu'au bout pour empêcher la guerre. Il est assassiné le 31 juillet 1914, la veille de la mobilisation.</p></div>
+      </div>
+
+      <div class="groupe" style="--c:var(--totalitarismes)">
+        <h2>Régimes totalitaires</h2>
+        <div class="pers"><span class="nom">Vladimir Lénine</span><span class="annees">1870-1924</span>
+          <p class="role">Chef des bolcheviks, il prend le pouvoir lors de la révolution d'Octobre 1917 et fonde le premier État communiste, qui devient l'URSS en 1922.</p></div>
+        <div class="pers"><span class="nom">Joseph Staline</span><span class="annees">1878-1953</span>
+          <p class="role">Successeur de Lénine, il dirige l'URSS d'une main de fer : collectivisation forcée, goulag, culte de la personnalité. Allié des Occidentaux contre Hitler, il devient leur adversaire dès 1947.</p></div>
+        <div class="pers"><span class="nom">Benito Mussolini</span><span class="annees">1883-1945</span>
+          <p class="role">Fondateur du fascisme, il prend le pouvoir en Italie en 1922 après la marche sur Rome et installe une dictature. Il devient l'allié de Hitler dans la guerre.</p></div>
+        <div class="pers"><span class="nom">Adolf Hitler</span><span class="annees">1889-1945</span>
+          <p class="role">Chef du parti nazi, chancelier en 1933, il installe une dictature raciste et antisémite. Il déclenche la Seconde Guerre mondiale et organise le génocide des Juifs et des Tsiganes.</p></div>
+      </div>
+
+      <div class="groupe" style="--c:var(--allies)">
+        <h2>Les Alliés</h2>
+        <div class="pers"><span class="nom">Franklin D. Roosevelt</span><span class="annees">1882-1945</span>
+          <p class="role">Président des États-Unis de 1933 à 1945, il lance le New Deal contre la crise de 1929, puis engage son pays dans la guerre après Pearl Harbor en décembre 1941.</p></div>
+        <div class="pers"><span class="nom">Winston Churchill</span><span class="annees">1874-1965</span>
+          <p class="role">Premier ministre britannique à partir de 1940, il refuse tout compromis avec Hitler et incarne la résistance des Alliés. En 1946, il popularise l'expression « rideau de fer ».</p></div>
+      </div>
+
+      <div class="groupe" style="--c:var(--resistance)">
+        <h2>France libre et Résistance</h2>
+        <div class="pers"><span class="nom">Charles de Gaulle</span><span class="annees">1890-1970</span>
+          <p class="role">Général, il refuse l'armistice et lance l'appel du 18 juin 1940 depuis Londres. Il dirige la France libre, puis fonde et préside la Ve République de 1958 à 1969.</p></div>
+        <div class="pers"><span class="nom">Jean Moulin</span><span class="annees">1899-1943</span>
+          <p class="role">Envoyé par de Gaulle, il unifie les mouvements de la Résistance intérieure au sein du Conseil national de la Résistance en mai 1943. Arrêté et torturé, il meurt sans avoir parlé.</p></div>
+        <div class="pers"><span class="nom">Lucie Aubrac</span><span class="annees">1912-2007</span>
+          <p class="role">Résistante française, cofondatrice du mouvement Libération-Sud. En 1943, elle organise l'évasion de son mari Raymond, prisonnier de la Gestapo de Lyon.</p></div>
+        <div class="pers"><span class="nom">Germaine Tillion</span><span class="annees">1907-2008</span>
+          <p class="role">Ethnologue, elle entre dès 1940 dans le réseau du Musée de l'Homme, l'un des tout premiers de la Résistance. Déportée à Ravensbrück, elle est entrée au Panthéon en 2015.</p></div>
+      </div>
+
+      <div class="groupe" style="--c:var(--vichy)">
+        <h2>Vichy et la collaboration</h2>
+        <div class="pers"><span class="nom">Philippe Pétain</span><span class="annees">1856-1951</span>
+          <p class="role">Vainqueur de Verdun en 1916, il devient en juillet 1940 chef de l'État français. Son régime de Vichy supprime la République et collabore avec l'Allemagne nazie.</p></div>
+      </div>
+
+      <div class="groupe" style="--c:var(--froide)">
+        <h2>Guerre froide</h2>
+        <div class="pers"><span class="nom">Harry S. Truman</span><span class="annees">1884-1972</span>
+          <p class="role">Président des États-Unis, il décide des bombardements d'Hiroshima et Nagasaki en août 1945. En 1947, sa doctrine d'endiguement ouvre la guerre froide.</p></div>
+        <div class="pers"><span class="nom">Nikita Khrouchtchev</span><span class="annees">1894-1971</span>
+          <p class="role">Dirigeant de l'URSS, il dénonce les crimes de Staline en 1956, fait construire le mur de Berlin en 1961, puis recule lors de la crise de Cuba en 1962.</p></div>
+        <div class="pers"><span class="nom">Mikhaïl Gorbatchev</span><span class="annees">1931-2022</span>
+          <p class="role">Dernier dirigeant de l'URSS. Ses réformes, la perestroïka et la glasnost, mènent à la fin de la guerre froide et à la disparition de l'Union soviétique en 1991.</p></div>
+      </div>
+
+      <div class="groupe" style="--c:var(--deco)">
+        <h2>Décolonisation</h2>
+        <div class="pers"><span class="nom">Nehru</span><span class="annees">1889-1964</span>
+          <p class="role">Premier ministre de l'Inde à partir de son indépendance en 1947. Figure de la décolonisation, il est l'un des artisans du non-alignement à la conférence de Bandung en 1955.</p></div>
+        <div class="pers"><span class="nom">Nasser</span><span class="annees">1918-1970</span>
+          <p class="role">Président de l'Égypte, il nationalise le canal de Suez en 1956 face aux Occidentaux. Il devient une grande figure du nationalisme arabe et du non-alignement.</p></div>
+      </div>
+
+      <div class="groupe" style="--c:var(--europe)">
+        <h2>Construction européenne</h2>
+        <div class="pers"><span class="nom">Robert Schuman</span><span class="annees">1886-1963</span>
+          <p class="role">Ministre français des Affaires étrangères, sa déclaration du 9 mai 1950 propose de mettre en commun le charbon et l'acier. C'est l'acte de naissance de la construction européenne.</p></div>
+        <div class="pers"><span class="nom">Simone Veil</span><span class="annees">1927-2017</span>
+          <p class="role">Rescapée d'Auschwitz, ministre de la Santé, elle fait adopter en 1975 la loi dépénalisant l'IVG. En 1979, elle devient la première présidente du Parlement européen élu au suffrage universel.</p></div>
+        <div class="pers"><span class="nom">François Mitterrand</span><span class="annees">1916-1996</span>
+          <p class="role">Président de la République de 1981 à 1995. Avec le chancelier allemand Helmut Kohl, il relance l'Europe et fait adopter le traité de Maastricht par référendum en 1992.</p></div>
+      </div>
+
+      <p class="section-title">Ne confonds pas</p>
+
+      <div class="vs">
+        <h3>Pétain ou de Gaulle ?</h3>
+        <p><b>Pétain</b>, chef de l'État français, collabore avec l'Allemagne nazie. <b>De Gaulle</b>, chef de la France libre, refuse l'armistice et continue le combat depuis Londres.</p>
+      </div>
+
+      <div class="vs">
+        <h3>Lénine ou Staline ?</h3>
+        <p><b>Lénine</b> fonde l'URSS. <b>Staline</b>, son successeur, la transforme en dictature totalitaire.</p>
+      </div>
+
+      <div class="vs">
+        <h3>Truman ou Gorbatchev ?</h3>
+        <p><b>Truman</b> lance l'endiguement, au tout début de la guerre froide. <b>Gorbatchev</b>, dernier dirigeant soviétique, met fin à la guerre froide.</p>
+      </div>
+
+      <div class="vs">
+        <h3>Schuman ou Simone Veil ?</h3>
+        <p><b>Schuman</b> lance la construction européenne en 1950. <b>Simone Veil</b> devient la première présidente du Parlement européen élu, en 1979.</p>
+      </div>
+
+    </section>
+  </div>
+</div>
+
+<script>
+document.querySelectorAll(".tab").forEach(t=>{
+  t.addEventListener("click",()=>{
+    document.querySelectorAll(".tab").forEach(x=>x.setAttribute("aria-selected",x===t));
+    document.querySelectorAll(".panel").forEach(p=>p.classList.toggle("on",p.id===t.dataset.panel));
+    window.scrollTo({top:0});
+  });
+});
+</script>
+</body>
+</html>
