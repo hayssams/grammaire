@@ -149,14 +149,14 @@ après la réponse.
 
 ### Les quatre manches
 
-1. **Frise** (`#frise`) — un événement s'affiche, l'élève clique la tranche qui lui
+1. **Frise** (`#frise`) : un événement s'affiche, l'élève clique la tranche qui lui
    correspond sur la frise SVG.
-2. **En contexte** (`#quiz`) — QCM tiré dans les deux sens : soit la date est donnée et il
+2. **En contexte** (`#quiz`) : QCM tiré dans les deux sens : soit la date est donnée et il
    faut choisir l'événement, soit l'inverse. Quatre propositions, distracteurs pris dans la
    même tranche quand c'est possible, pour que la question ne se résolve pas au flair.
-3. **Mémo** (`#memo`) — memory qui apparie date et événement, même mécanique que les
+3. **Mémo** (`#memo`) : memory qui apparie date et événement, même mécanique que les
    carnets de grammaire.
-4. **Cartes** (`#cartes`) — flashcards Leitner à trois boîtes : recto la date, verso
+4. **Cartes** (`#cartes`) : flashcards Leitner à trois boîtes : recto la date, verso
    l'événement, auto-évaluation « Je savais / Pas su ».
 
 ## Carnet 2 : `histoire-personnages.html`
@@ -205,11 +205,11 @@ fichier ; ce sont eux qui alimentent la manche 1, le mémo et les flashcards.
 
 ### Les quatre manches
 
-1. **Qui est-ce ?** (`#quiz`) — le rôle s'affiche sans le nom, QCM sur quatre noms.
-2. **Frise** (`#frise`) — le personnage et son fait déterminant s'affichent, l'élève clique
+1. **Qui est-ce ?** (`#quiz`) : le rôle s'affiche sans le nom, QCM sur quatre noms.
+2. **Frise** (`#frise`) : le personnage et son fait déterminant s'affichent, l'élève clique
    la tranche. Même helper `friseSVG` que le carnet des dates.
-3. **Mémo** (`#memo`) — memory appariant le nom et une formule courte du rôle.
-4. **Cartes** (`#cartes`) — flashcards Leitner : recto le nom, verso le rôle complet,
+3. **Mémo** (`#memo`) : memory appariant le nom et une formule courte du rôle.
+4. **Cartes** (`#cartes`) : flashcards Leitner : recto le nom, verso le rôle complet,
    auto-évaluation.
 
 ## Le moteur de cartes
@@ -231,14 +231,14 @@ sinon elles sont injouables au doigt sur un téléphone.
 
 ### Données
 
-- `REGIONS` : les 13 régions métropolitaines et leur capitale — Auvergne-Rhône-Alpes / Lyon,
+- `REGIONS` : les 13 régions métropolitaines et leur capitale : Auvergne-Rhône-Alpes / Lyon,
   Bourgogne-Franche-Comté / Dijon, Bretagne / Rennes, Centre-Val de Loire / Orléans, Corse /
   Ajaccio, Grand Est / Strasbourg, Hauts-de-France / Lille, Île-de-France / Paris, Normandie /
   Rouen, Nouvelle-Aquitaine / Bordeaux, Occitanie / Toulouse, Pays de la Loire / Nantes,
   Provence-Alpes-Côte d'Azur / Marseille.
 - `FLEUVES` : Seine, Loire, Garonne, Rhône.
 - `RELIEFS` : Massif Armoricain, Bassin parisien, Bassin aquitain, Massif Central, Vosges,
-  Jura, Alpes, Pyrénées — les ensembles figurant sur la carte physique du PDF.
+  Jura, Alpes, Pyrénées : les ensembles figurant sur la carte physique du PDF.
 - `MERS` : mer du Nord, la Manche, océan Atlantique, mer Méditerranée.
 - `DROM` : Guadeloupe / Basse-Terre, Martinique / Fort-de-France, Guyane / Cayenne,
   Mayotte / Mamoudzou, La Réunion / Saint-Denis.
@@ -249,38 +249,38 @@ contour), plus un planisphère très simplifié pour les DROM.
 
 ### Les quatre manches
 
-1. **Les régions** (`#regions`) — « Clique sur Nouvelle-Aquitaine » sur la carte
+1. **Les régions** (`#regions`) : « Clique sur Nouvelle-Aquitaine » sur la carte
    administrative.
-2. **Les capitales** (`#capitales`) — la région est surlignée sur la carte, QCM sur quatre
+2. **Les capitales** (`#capitales`) : la région est surlignée sur la carte, QCM sur quatre
    villes. Les distracteurs sont des capitales de régions voisines.
-3. **Fleuves et reliefs** (`#relief`) — carte physique, « Clique sur la Garonne », « Clique
+3. **Fleuves et reliefs** (`#relief`) : carte physique, « Clique sur la Garonne », « Clique
    sur le Jura ».
-4. **Mers et DROM** (`#outremer`) — les quatre façades maritimes sur la carte de France,
+4. **Mers et DROM** (`#outremer`) : les quatre façades maritimes sur la carte de France,
    puis les cinq DROM à repérer sur le planisphère.
 
 ## Carnet 4 : `geo-europe.html`
 
 ### Données
 
-- `UE` : les 27 États membres — Allemagne, Autriche, Belgique, Bulgarie, Chypre, Croatie,
+- `UE` : les 27 États membres : Allemagne, Autriche, Belgique, Bulgarie, Chypre, Croatie,
   Danemark, Espagne, Estonie, Finlande, France, Grèce, Hongrie, Irlande, Italie, Lettonie,
   Lituanie, Luxembourg, Malte, Pays-Bas, Pologne, Portugal, Roumanie, Slovaquie, Slovénie,
   Suède, Tchéquie.
-- `HORS_UE` : pays européens présents sur la carte mais non membres, avec la raison —
+- `HORS_UE` : pays européens présents sur la carte mais non membres, avec la raison :
   Royaume-Uni (sorti en 2020), Suisse, Norvège, Islande, Serbie, Bosnie-Herzégovine,
   Albanie, Macédoine du Nord, Monténégro, Ukraine, Moldavie, Biélorussie, Turquie.
-- `VOISINS` : les pays qui bordent la France sur la carte du PDF — Belgique, Luxembourg,
+- `VOISINS` : les pays qui bordent la France sur la carte du PDF : Belgique, Luxembourg,
   Allemagne, Suisse, Italie, Espagne, plus le Royaume-Uni de l'autre côté de la Manche.
 
 ### Les quatre manches
 
-1. **Placer** (`#placer`) — « Clique sur la Croatie » sur la carte d'Europe.
-2. **Reconnaître** (`#nommer`) — un pays est surligné, QCM sur quatre noms : le sens inverse
+1. **Placer** (`#placer`) : « Clique sur la Croatie » sur la carte d'Europe.
+2. **Reconnaître** (`#nommer`) : un pays est surligné, QCM sur quatre noms : le sens inverse
    de la manche 1.
-3. **Dans l'UE ou pas ?** (`#membre`) — un pays est surligné, réponse Oui / Non. C'est là que
+3. **Dans l'UE ou pas ?** (`#membre`) : un pays est surligné, réponse Oui / Non. C'est là que
    se jouent le Royaume-Uni, la Suisse, la Norvège et les Balkans ; l'explication rappelle
    pourquoi.
-4. **Les voisins de la France** (`#voisins`) — repérer les pays qui bordent la France.
+4. **Les voisins de la France** (`#voisins`) : repérer les pays qui bordent la France.
 
 Les capitales européennes sont explicitement hors périmètre : le PDF ne demande que de
 nommer et placer les pays de l'Union.
