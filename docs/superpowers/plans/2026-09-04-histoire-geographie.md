@@ -2546,16 +2546,34 @@ Attendu : `Tout est bon.` Plus aucun lien mort nulle part.
 
 - [ ] **Step 4 : Contrôler la cohérence des données**
 
-Les fiches recopient à la main ce que les carnets contiennent en JavaScript : la moindre divergence est un piège pour l'élève. Contrôler que les nombres annoncés sont les bons :
+Les fiches recopient à la main ce que les carnets contiennent en JavaScript : la moindre
+divergence est un piège pour l'élève, et une relecture côte à côte de 23 dates, 21 rôles,
+13 capitales et 27 pays ne tient pas. Utiliser le détecteur de dérive, qui charge le tableau
+de données du carnet et vérifie que chaque valeur figure bien dans la fiche, en tenant compte
+des entités HTML et des apostrophes typographiques :
 
 ```bash
-grep -c 'capitale:' geo-france.html   # attendu : 13
-node -e 'for(const [f,m] of [["geo-europe.html",/ue:true/g],["geo-europe.html",/ue:false/g],["histoire-dates.html",/^ \{d:"/gm],["histoire-personnages.html",/^ \{nom:"/gm]]){const h=require("fs").readFileSync(f,"utf8");console.log(f,m,(h.match(m)||[]).length)}'
+node /tmp/verif-grammaire/coherence.mjs histoire-dates.html DATES d,label histoire-memo.html
+node /tmp/verif-grammaire/coherence.mjs histoire-personnages.html PERSONNAGES nom,annees,role histoire-memo.html
+node /tmp/verif-grammaire/coherence.mjs geo-france.html REGIONS nom,capitale geo-memo.html
+node /tmp/verif-grammaire/coherence.mjs geo-france.html DROM nom,chef geo-memo.html
+node /tmp/verif-grammaire/coherence.mjs geo-france.html FLEUVES nom geo-memo.html
+node /tmp/verif-grammaire/coherence.mjs geo-france.html RELIEFS nom geo-memo.html
+node /tmp/verif-grammaire/coherence.mjs geo-france.html MERS nom geo-memo.html
+node /tmp/verif-grammaire/coherence.mjs geo-europe.html PAYS nom geo-memo.html
 ```
 
-Attendu, dans l'ordre : 27 membres de l'Union, 13 pays européens non membres, 23 dates, 21 personnages.
+Chacune doit se terminer par `la fiche est à jour.`. Toute ligne `ABSENT de` nomme une donnée
+du carnet que la fiche a oubliée ou déformée : corriger la fiche, jamais le carnet, qui fait
+foi.
 
-Puis relire côte à côte les treize couples région / capitale dans `geo-france.html` et dans `geo-memo.html`, et les vingt et un rôles dans `histoire-personnages.html` et dans `histoire-memo.html`. Corriger toute divergence dans la fiche, en prenant le carnet pour référence.
+Contrôler enfin les effectifs :
+
+```bash
+node -e 'const f=require("fs");for(const [n,fi,re] of [["membres UE","geo-europe.html",/ue:true/g],["non membres","geo-europe.html",/ue:false/g],["régions","geo-france.html",/capitale:/g],["dates","histoire-dates.html",/^ \{d:"/gm],["personnages","histoire-personnages.html",/^ \{nom:"/gm]])console.log(n.padEnd(12),(f.readFileSync(fi,"utf8").match(re)||[]).length)'
+```
+
+Attendu : 27 membres de l'Union, 13 non membres, 13 régions, 23 dates, 21 personnages.
 
 - [ ] **Step 5 : Vérifier dans le navigateur**
 
