@@ -102,7 +102,7 @@ partagées par les deux carnets d'histoire.
 | `t2` | 1919-1938 · l'entre-deux-guerres | 1929, 1933, 1936 |
 | `t3` | 1939-1945 · la Seconde Guerre mondiale | 1939-45, 18 juin 1940, 6 juin 1944, Libération 1944, 8 mai 1945, août 1945, ONU 1945 |
 | `t4` | 1946-1975 · la guerre froide s'installe | 1947, 1948-49, 1957, 1961, 1962 |
-| `t5` | 1976-2002 · la détente et l'Europe | 1989, 1991, 1992, 2002 |
+| `t5` | 1976-2002 · la fin de la guerre froide et l'Europe | 1989, 1991, 1992, 2002 |
 
 Chaque tranche reçoit d'abord une largeur plancher de 46 unités, puis le reste de l'axe est
 réparti au prorata de la durée : `t1` et `t3`, très courtes, restent cliquables au doigt
