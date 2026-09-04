@@ -1492,16 +1492,30 @@ function mapSVG(fond,opts={}){
    offre 8 px et la Guadeloupe 1 px. Un premier appui resserre donc le viewBox
    autour du point vise, un second designe la zone. `cadreSur` sert aussi a montrer
    de pres un pays surligne dans les manches ou l'eleve repond par un bouton. */
-const ZOOM=2.8;
+/* Le facteur de zoom se calcule, il ne se devine pas : il faut que les deux zones
+   les plus rapprochees de la carte atteignent 44 px une fois zoomees. Mesure faite,
+   l'Europe demande 6 (l'Albanie et la Macedoine du Nord passent alors de 7 a 44 px).
+   La ou meme cela ne suffit pas, le fond porte des cadres nommes : le planisphere
+   demanderait un zoom de 33 pour separer la Guadeloupe de la Martinique, ce qui est
+   absurde, donc il declare a la place trois cadres geographiques. */
+const ZOOM_DEFAUT=2.8;
 function cadre(fond){return fond.viewBox.split(/\s+/).map(Number);}
 function loupeVB(fond,cx,cy){
-  const [x0,y0,w,h]=cadre(fond), nw=w/ZOOM, nh=h/ZOOM;
+  const z=fond.zoom||ZOOM_DEFAUT;
+  const [x0,y0,w,h]=cadre(fond), nw=w/z, nh=h/z;
   const x=Math.max(x0,Math.min(x0+w-nw,cx-nw/2)), y=Math.max(y0,Math.min(y0+h-nh,cy-nh/2));
   return `${x.toFixed(1)} ${y.toFixed(1)} ${nw.toFixed(1)} ${nh.toFixed(1)}`;
 }
 function cadreSur(fond,id){
   const z=fond.zones.find(v=>v.id===id);
   return z?loupeVB(fond,z.cx,z.cy):fond.viewBox;
+}
+/* cadre nomme contenant un point, s'il y en a un : sert au planisphere */
+function cadreNomme(fond,x,y){
+  return (fond.cadres||[]).find(c=>{
+    const [a,b,w,h]=c.vb.split(/\s+/).map(Number);
+    return x>=a&&x<=a+w&&y>=b&&y<=b+h;
+  })||null;
 }
 /* convertit un clic en coordonnees du viewBox courant */
 function pointCarte(svg,ev){
@@ -1928,11 +1942,25 @@ Compléter `mapSVG` pour les zones inertes, juste après le calcul de `cls` :
 `0 0 360 180` : les continents en une zone inerte, les cinq DROM en `type:"point"` à
 leurs vraies coordonnées, et la France métropolitaine en repère inerte.
 
-**La loupe est obligatoire ici.** Mesure faite sur les vraies positions : la Guadeloupe
-et la Martinique ne sont qu'à 1,7 unité l'une de l'autre, soit environ 1 px sur un
-téléphone. Sans loupe la manche est injouable. Un premier appui sur le planisphère
-resserre le cadre autour du point visé, un second désigne le territoire, et un bouton
-« Vue d'ensemble » revient en arrière.
+**Le planisphère se joue en deux appuis, par cadres nommés.** Mesure faite sur les
+vraies positions : la Guadeloupe et la Martinique ne sont qu'à 1,7 unité l'une de
+l'autre, soit environ 1 px sur un téléphone. Un zoom centré sur le doigt ne suffirait
+pas : il faudrait un facteur 33, et le premier appui devrait alors tomber à 4 px près.
+
+`FOND_MONDE` déclare donc trois **cadres géographiques**, sous la clé `cadres` :
+
+| id | nom | ce qu'il contient | écartement obtenu |
+|---|---|---|---|
+| `antilles` | les Antilles | Guadeloupe, Martinique | 49 px |
+| `guyane` | la Guyane | Guyane | seule |
+| `indien` | l'océan Indien | Mayotte, La Réunion | 222 px |
+
+Le premier appui sur le planisphère ouvre, via `cadreNomme`, le cadre qui contient le
+point visé ; le second désigne le territoire. Un appui hors de tout cadre ne fait rien.
+Un bouton « Vue d'ensemble » revient en arrière.
+
+C'est pédagogiquement juste : l'élève doit d'abord savoir dans quel océan chercher,
+puis reconnaître le territoire.
 
 **Critère d'acceptation** :
 `node /tmp/verif-grammaire/cartes.mjs geo-france.html FOND_MERS` puis la même chose sur
