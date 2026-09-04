@@ -202,9 +202,9 @@ nav{display:flex;gap:6px;margin:18px 0 0;align-items:flex-end}
   background:var(--histoire);color:#fff;font-family:var(--serif);font-size:26px;
   transition:opacity .2s
 }
-.mcarte .face{display:block;opacity:0;transition:opacity .2s}
+.mcarte .face{display:block;opacity:0;visibility:hidden;transition:opacity .2s,visibility .2s}
 .mcarte.vue .dos,.mcarte.prise .dos{opacity:0;pointer-events:none}
-.mcarte.vue .face,.mcarte.prise .face{opacity:1}
+.mcarte.vue .face,.mcarte.prise .face{opacity:1;visibility:visible}
 .mcarte.date .face{font-family:var(--serif);font-size:17px;color:var(--histoire)}
 .mcarte.prise{border-color:var(--histoire);box-shadow:0 2px 0 var(--histoire);cursor:default}
 @media (max-width:360px){
@@ -228,9 +228,6 @@ nav{display:flex;gap:6px;margin:18px 0 0;align-items:flex-end}
   .flash .recto{font-size:27px}
 }
 
-@media (max-width:360px){
-  .choice{font-size:16px}
-}
 @media (prefers-reduced-motion:reduce){
   *{transition-duration:.01ms !important;animation-duration:.01ms !important}
 }
