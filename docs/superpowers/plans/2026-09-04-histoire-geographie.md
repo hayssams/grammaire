@@ -1457,16 +1457,29 @@ const OOPS=[["😅","Oups, presque !"],["🙈","Pas cette fois !"],["🤔","Hmm,
    type "trait" : polyligne (un fleuve), cliquable via un halo.
    type "point" : repere ponctuel (une ville, une ile), cliquable via un halo.
    La cible tactile depend du type, et c'est ce qui rend la carte jouable au doigt :
-     - "aire"  : le polygone lui-meme, plus un halo circulaire pour les petites zones ;
+     - "aire"  : le polygone lui-meme, plus un halo pour les seules zones marquees
+                 "petit", c'est-a-dire celles dont le polygone rendu fait moins de
+                 44 px ; en poser un partout ferait deborder les grandes zones sur
+                 leurs voisines, mesure faite 4,3 % des clics resolvaient a cote ;
      - "trait" : le trace repris en transparent avec une forte epaisseur, si bien
                  qu'un fleuve se tape n'importe ou sur sa longueur ;
-     - "point" : un halo circulaire centre sur cx,cy.
-   Mesure faite sur les vrais fonds : sans cela l'Ile-de-France tombe a 34 px, le
-   Luxembourg a 8 px et la Guadeloupe a 1 px. */
-const HALO=22, EPAISSEUR_CIBLE=11;
+     - "point" : un cercle, toujours accompagne de son halo.
+   Le rayon du halo et celui d'un point se calculent en pixels rendus, pas en unites
+   de viewBox : sinon un halo minuscule en vue d'ensemble devient enorme une fois
+   zoome. Il reste borne par la moitie de la distance a l'ancre voisine, donnee par
+   `dmin`, pour ne jamais voler le clic du voisin. */
+const HALO_PX=22, POINT_PX=4.5;
+/* unites de viewBox par pixel rendu, la carte occupant environ 284 px sur un telephone */
+function unite(vb){return vb.split(/\s+/).map(Number)[2]/284;}
+function rayonHalo(z,u){return Math.min(HALO_PX*u,(z.dmin||99)/2*0.9);}
 function mapSVG(fond,opts={}){
   const {bonne,choisie,surligne,etiquettes}=opts;
-  const corps=fond.zones.map(z=>{
+  const vb=opts.vb||fond.viewBox, u=unite(vb);
+  /* les zones "petites" passent en dernier, donc au-dessus : sinon leur halo est
+     recouvert par les voisines dessinees apres, et il ne repond plus. Mesure faite,
+     celui de l'Ile-de-France ne captait que 7 % de sa surface. */
+  const ordre=[...fond.zones].sort((a,b)=>(a.petit?1:0)-(b.petit?1:0));
+  const corps=ordre.map(z=>{
     let cls="z "+z.type;
     if(surligne&&z.id===surligne)cls+=" vise";
     if(bonne&&z.id===bonne)cls+=" good";
@@ -1479,13 +1492,14 @@ function mapSVG(fond,opts={}){
       ? `<path class="cible-trait" d="${z.d}" fill="none"></path>`+
         `<path d="${z.d}" fill="none"></path>`
       : z.type==="point"
-        ? `<circle cx="${z.cx}" cy="${z.cy}" r="4.5"></circle>`
+        ? `<circle cx="${z.cx}" cy="${z.cy}" r="${(POINT_PX*u).toFixed(1)}"></circle>`
         : `<path d="${z.d}"></path>`;
     const nom=etiquettes?`<text x="${z.cx}" y="${z.cy+3}" text-anchor="middle" class="zlab">${esc(z.nom)}</text>`:"";
+    const halo=z.petit?`<circle class="halo" cx="${z.cx}" cy="${z.cy}" r="${rayonHalo(z,u).toFixed(1)}"></circle>`:"";
     return `<g class="${cls}" data-z="${z.id}" role="button" tabindex="0" aria-label="${esc(z.nom)}">
-      ${forme}<circle class="halo" cx="${z.cx}" cy="${z.cy}" r="${HALO}"></circle>${nom}</g>`;
+      ${forme}${halo}${nom}</g>`;
   }).join("");
-  return `<svg viewBox="${opts.vb||fond.viewBox}" role="img" aria-label="Carte cliquable">${corps}</svg>`;
+  return `<svg viewBox="${vb}" role="img" aria-label="Carte cliquable">${corps}</svg>`;
 }
 /* ---- la loupe ----
    Sur une carte dense, viser au doigt est impossible : mesure faite, le Luxembourg
