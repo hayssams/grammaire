@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Les 23 dates</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F5F6F1;
+  --paper-2:#FCFCFA;
+  --rule:#BFD3E4;
+  --rule-soft:#DDE7F0;
+  --marge:#DE5B4A;
+  --ink:#16233B;
+  --ink-soft:#5E6E85;
+  --histoire:#8C4A2F;
+  --t1:#7C3A2E;
+  --t2:#A6702B;
+  --t3:#4A5F8A;
+  --t4:#8C4A2F;
+  --t5:#1B6F55;
+  --serif:"Instrument Serif", Georgia, "Times New Roman", serif;
+  --sans:"Karla", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:16px;
+  line-height:1.5;
+  min-height:100vh;
+  padding:0 0 40px;
+}
+.wrap{max-width:560px;margin:0 auto;padding:0 14px}
+
+/* ---------- en-tete ---------- */
+header{padding:26px 0 14px}
+.topbar{display:flex;align-items:center;gap:14px;margin:0 0 6px}
+.topbar .eyebrow{margin:0}
+.home{
+  font-family:var(--sans);font-size:13px;font-weight:700;text-decoration:none;color:var(--ink);
+  border:1px solid var(--rule);border-radius:999px;padding:6px 12px;background:var(--paper,transparent);
+  transition:background .2s,transform .2s
+}
+.home:hover{background:var(--rule-soft);transform:translateY(-1px)}
+.eyebrow{
+  font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-soft);font-weight:700;margin:0 0 6px
+}
+h1{
+  font-family:var(--serif);font-weight:400;font-size:34px;line-height:1.05;
+  margin:0 0 4px;letter-spacing:-.01em
+}
+h1 em{font-style:italic;color:var(--histoire)}
+.sub{margin:0;color:var(--ink-soft);font-size:14px}
+
+/* ---------- onglets ---------- */
+nav{display:flex;gap:6px;margin:18px 0 0;align-items:flex-end}
+.tab{
+  flex:1;border:1px solid var(--rule);border-bottom:none;
+  background:#EDEFE9;color:var(--ink-soft);
+  font-family:var(--sans);font-size:12.5px;font-weight:700;
+  padding:11px 3px 10px;border-radius:9px 9px 0 0;cursor:pointer;
+  letter-spacing:.01em;transition:background .15s,color .15s,transform .15s
+}
+.tab:hover{color:var(--ink)}
+.tab[aria-selected="true"]{background:var(--paper-2);color:var(--ink);transform:translateY(1px);box-shadow:0 -2px 0 var(--histoire) inset}
+
+/* ---------- feuille ---------- */
+.sheet{
+  position:relative;background:var(--paper-2);
+  border:1px solid var(--rule);border-radius:0 0 10px 10px;
+  padding:22px 16px 20px 30px;overflow:hidden;
+  background-image:repeating-linear-gradient(to bottom,transparent 0 31px,var(--rule-soft) 31px 32px);
+  background-position:0 8px;
+}
+.sheet::before{
+  content:"";position:absolute;top:0;bottom:0;left:20px;width:1px;background:var(--marge);opacity:.5
+}
+.panel{display:none}
+.panel.on{display:block}
+
+/* ---------- barre d'etat ---------- */
+.status{
+  display:flex;align-items:center;gap:12px;
+  font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--ink-soft);margin-bottom:14px
+}
+.status .grow{flex:1}
+.status b{color:var(--ink);font-size:14px;letter-spacing:0}
+
+/* ---------- frise ---------- */
+.fig{margin:14px 0 4px;text-align:center}
+.fig svg{width:100%;max-width:340px;height:auto;overflow:visible}
+.fig .axe{stroke:var(--ink-soft);stroke-width:1}
+.fig .tr rect{cursor:pointer;opacity:.82;transition:opacity .15s,transform .15s}
+.fig .tr:hover rect,.fig .tr:focus rect{opacity:1}
+.fig .tr:focus{outline:none}
+.fig .tr:focus rect{stroke:var(--ink);stroke-width:2}
+.fig .trlab{font-family:var(--sans);font-size:9.5px;font-weight:700;fill:#fff;pointer-events:none}
+.fig .good rect{opacity:1;stroke:var(--ink);stroke-width:2}
+.fig .bad rect{opacity:.35;stroke:var(--marge);stroke-width:2;stroke-dasharray:3 2}
+.fig .dim rect{opacity:.3}
+.fig .repere line{stroke:var(--ink);stroke-width:1.5;stroke-dasharray:2 2}
+.fig .rlab{font-family:var(--sans);font-size:10px;font-weight:700;fill:var(--ink)}
+.fig .borne{font-family:var(--sans);font-size:9px;fill:var(--ink-soft)}
+.revealed .fig .tr rect{cursor:default}
+@media (prefers-reduced-motion:reduce){
+  .fig .tr rect{transition:none}
+}
+.hyp{font-size:14.5px;margin:0 0 6px}
+.hyp em{font-style:normal;font-weight:700}
+.annot{
+  font-family:var(--sans);font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-soft);transition:color .3s ease;margin:0 0 4px
+}
+.revealed .annot{color:var(--histoire)}
+
+/* ---------- reactions ---------- */
+.react{text-align:center;min-height:78px;margin:0 0 8px;position:relative}
+.react .emo{display:inline-block;font-size:48px;line-height:52px;animation:pop .45s cubic-bezier(.2,1.6,.4,1)}
+.react .msg{display:block;font-family:var(--sans);font-weight:800;font-size:16px;line-height:22px;letter-spacing:.02em;animation:pop .45s .1s both cubic-bezier(.2,1.6,.4,1)}
+.react.yes .msg{color:var(--histoire)}
+.react.no .msg{color:var(--marge)}
+.react.no .emo{animation:shake .5s ease}
+.react .streak{display:block;font-family:var(--sans);font-size:12px;font-weight:700;color:var(--ink-soft);margin-top:2px;animation:pop .4s .25s both}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px) rotate(-8deg)}40%,80%{transform:translateX(8px) rotate(8deg)}}
+.confetti{position:absolute;left:50%;top:26px;width:9px;height:9px;border-radius:2px;pointer-events:none;animation:fly .9s ease-out forwards}
+@keyframes fly{0%{transform:translate(0,0) rotate(0);opacity:1}100%{transform:translate(var(--dx),var(--dy)) rotate(540deg);opacity:0}}
+@keyframes pop{from{transform:scale(.3);opacity:0}to{transform:scale(1);opacity:1}}
+.why{font-size:14px;color:var(--ink-soft);margin:8px 0 0;opacity:0;transition:opacity .3s .3s}
+.revealed .why{opacity:1}
+.why em{font-style:normal;color:var(--ink);font-weight:700}
+.why .frac{font-size:15px}
+
+/* ---------- choix ---------- */
+.judge{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px}
+.judge .btn{width:100%;text-align:center}
+.judge .no{background:transparent;color:var(--marge);border-color:var(--marge)}
+.judge .btn.good{background:var(--histoire);border-color:var(--histoire);color:#fff;opacity:1}
+.judge .btn.bad{background:transparent;border-color:var(--marge);color:var(--marge);text-decoration:line-through;opacity:1}
+.judge .btn.dim{opacity:.35}
+.choices-eq{display:grid;gap:8px;margin-top:16px}
+.choice{
+  border:1px solid var(--rule);background:var(--paper-2);color:var(--ink);
+  font-family:var(--serif);font-size:18px;
+  padding:12px 6px;border-radius:7px;cursor:pointer;text-align:center;
+  transition:background .12s,border-color .12s,color .12s,opacity .2s
+}
+.choice:hover:not(:disabled){border-color:var(--ink);background:#F1F3EE}
+.choice:disabled{cursor:default}
+.choice.dim{opacity:.32}
+.choice.good{background:var(--histoire);border-color:var(--histoire);color:#fff;opacity:1}
+.choice.bad{background:transparent;border-color:var(--marge);color:var(--marge);opacity:1;text-decoration:line-through}
+
+/* ---------- boutons ---------- */
+.btn{
+  display:inline-block;border:1px solid var(--ink);background:var(--ink);color:var(--paper-2);
+  font-family:var(--sans);font-size:15px;font-weight:700;padding:12px 22px;border-radius:8px;cursor:pointer;
+  transition:opacity .15s
+}
+.btn:hover{opacity:.86}
+.btn:disabled{cursor:default}
+.btn.ghost{background:transparent;color:var(--ink)}
+.row-end{display:flex;justify-content:flex-end;gap:8px;margin-top:18px;min-height:46px;align-items:center}
+.hidden{display:none !important}
+
+/* ---------- accueil de manche ---------- */
+.intro{padding:6px 0 4px}
+.intro h2{font-family:var(--serif);font-weight:400;font-size:27px;margin:0 0 8px;line-height:1.15}
+.intro p{margin:0 0 18px;color:var(--ink-soft);font-size:15px;max-width:44ch}
+
+/* ---------- bilan ---------- */
+.bilan h2{font-family:var(--serif);font-weight:400;font-size:30px;margin:0 0 2px}
+.bigscore{font-family:var(--serif);font-size:56px;line-height:1;margin:10px 0 2px}
+.bilan .meta{color:var(--ink-soft);font-size:14px;margin:0 0 18px}
+.errlist{border-top:1px solid var(--rule-soft);margin:14px 0 0;padding:0;list-style:none}
+.errlist li{border-bottom:1px solid var(--rule-soft);padding:11px 0;font-size:14px;color:var(--ink-soft)}
+.errlist .rep{font-weight:700;color:var(--histoire)}
+.section-title{
+  font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);
+  margin:22px 0 0
+}
+
+@media (max-width:360px){
+  .choice{font-size:16px}
+  .ratios{font-size:16px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition-duration:.01ms !important;animation-duration:.01ms !important}
+}
+:focus-visible{outline:2px solid var(--histoire);outline-offset:2px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="topbar"><a class="home" href="histoire.html">🏠 Histoire</a><p class="eyebrow">Histoire, 3<sup>e</sup></p></div>
+    <h1>Les 23 dates <em>et leur place</em></h1>
+    <p class="sub">Quatre entraînements : situer sur la frise, relier date et événement, apparier, réviser en cartes.</p>
+    <nav role="tablist">
+      <button class="tab" role="tab" aria-selected="true" data-panel="frise">Frise</button>
+      <button class="tab" role="tab" aria-selected="false" data-panel="quiz">En contexte</button>
+      <button class="tab" role="tab" aria-selected="false" data-panel="memo">Mémo</button>
+      <button class="tab" role="tab" aria-selected="false" data-panel="cartes">Cartes</button>
+    </nav>
+  </header>
+
+  <div class="sheet">
+    <section class="panel on" id="frise"></section>
+    <section class="panel" id="quiz"></section>
+    <section class="panel" id="memo"></section>
+    <section class="panel" id="cartes"></section>
+  </div>
+</div>
+
+<script>
+/* ============ outils ============ */
+const $ = (sel,root=document)=>root.querySelector(sel);
+const shuffle = a => {const c=[...a];for(let i=c.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[c[i],c[j]]=[c[j],c[i]];}return c;};
+const pick = (a,n) => shuffle(a).slice(0,n);
+const esc = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;");
+function chrono(sec){return sec<60?sec+" s":Math.floor(sec/60)+" min "+String(sec%60).padStart(2,"0");}
+const rnd=a=>a[Math.floor(Math.random()*a.length)];
+
+/* ============ donnees ============ */
+const TRANCHES={
+  t1:{label:"1914-1918 · la Grande Guerre",court:"1914-1918",de:1914,a:1918,v:"--t1"},
+  t2:{label:"1919-1938 · l'entre-deux-guerres",court:"1919-1938",de:1919,a:1938,v:"--t2"},
+  t3:{label:"1939-1945 · la Seconde Guerre mondiale",court:"1939-1945",de:1939,a:1945,v:"--t3"},
+  t4:{label:"1946-1975 · la guerre froide s'installe",court:"1946-1975",de:1946,a:1975,v:"--t4"},
+  t5:{label:"1976-2002 · la détente et l'Europe",court:"1976-2002",de:1976,a:2002,v:"--t5"}
+};
+const TORDRE=["t1","t2","t3","t4","t5"];
+
+/* an = année servant au repère sur l'axe ; d = la date telle qu'elle est écrite sur la feuille */
+const DATES=[
+ {d:"1914",an:1914,t:"t1",label:"début de la Première Guerre mondiale",w:"L'attentat de Sarajevo entraîne toute l'Europe dans la guerre en août 1914."},
+ {d:"1916",an:1916,t:"t1",label:"bataille de Verdun",w:"Dix mois de combats, la bataille la plus longue de la guerre, symbole de l'enfer des tranchées."},
+ {d:"1917",an:1917,t:"t1",label:"révolutions russes",w:"En février le tsar tombe, en octobre les bolcheviks de Lénine prennent le pouvoir."},
+ {d:"11 novembre 1918",an:1918,t:"t1",label:"armistice",w:"L'armistice arrête les combats. Ce n'est pas encore la paix : le traité de Versailles est signé en 1919."},
+ {d:"1929",an:1929,t:"t2",label:"crise économique mondiale",w:"Le krach de Wall Street en octobre 1929 jette des millions de gens au chômage et fragilise les démocraties."},
+ {d:"1933",an:1933,t:"t2",label:"arrivée d'Hitler au pouvoir",w:"Hitler devient chancelier en janvier 1933 et installe en quelques mois une dictature raciste."},
+ {d:"1936",an:1936,t:"t2",label:"élection du Front populaire en France",w:"La gauche unie gagne les élections : congés payés, semaine de 40 heures, conventions collectives."},
+ {d:"1939-1945",an:1942,t:"t3",label:"Seconde Guerre mondiale",w:"Six ans de guerre mondiale, déclenchée par l'invasion de la Pologne le 1er septembre 1939."},
+ {d:"18 juin 1940",an:1940,t:"t3",label:"appel du général de Gaulle",w:"Depuis Londres, de Gaulle refuse la défaite et appelle à continuer le combat. C'est l'acte de naissance de la France libre."},
+ {d:"6 juin 1944",an:1944,t:"t3",label:"débarquement en Normandie",w:"Les Alliés débarquent sur les plages normandes et ouvrent enfin un front à l'ouest."},
+ {d:"1944",an:1944,t:"t3",label:"Libération de la France",w:"Paris est libéré en août 1944 ; la France retrouve sa souveraineté et rétablit la République."},
+ {d:"8 mai 1945",an:1945,t:"t3",label:"capitulation allemande",w:"L'Allemagne se rend sans condition. La guerre s'achève en Europe, mais continue en Asie."},
+ {d:"août 1945",an:1945,t:"t3",label:"bombardements atomiques du Japon",w:"Hiroshima le 6 août, Nagasaki le 9 août : le Japon capitule et le monde entre dans l'âge nucléaire."},
+ {d:"1945",an:1945,t:"t3",label:"création de l'Organisation des Nations unies",w:"L'ONU remplace la SDN avec une mission : maintenir la paix et faire respecter les droits humains."},
+ {d:"1947",an:1947,t:"t4",label:"début de la guerre froide",w:"Doctrine Truman et plan Marshall d'un côté, réplique soviétique de l'autre : le monde se coupe en deux blocs."},
+ {d:"1948-1949",an:1948,t:"t4",label:"blocus de Berlin",w:"Staline coupe les accès à Berlin-Ouest ; les Occidentaux ravitaillent la ville par un pont aérien pendant onze mois."},
+ {d:"1957",an:1957,t:"t4",label:"traité de Rome",w:"Six pays créent la Communauté économique européenne, l'ancêtre de l'Union européenne."},
+ {d:"1961",an:1961,t:"t4",label:"construction du mur de Berlin",w:"En une nuit, la RDA mure sa frontière pour empêcher ses habitants de fuir à l'Ouest."},
+ {d:"1962",an:1962,t:"t4",label:"crise de Cuba",w:"Des missiles soviétiques à Cuba amènent le monde au bord de la guerre nucléaire. Khrouchtchev recule."},
+ {d:"1989",an:1989,t:"t5",label:"chute du mur de Berlin",w:"Le 9 novembre, le mur s'ouvre. C'est la fin du partage de l'Europe en deux blocs."},
+ {d:"1991",an:1991,t:"t5",label:"disparition de l'Union soviétique",w:"L'URSS se dissout en quinze États indépendants. La guerre froide est finie."},
+ {d:"1992",an:1992,t:"t5",label:"traité de Maastricht",w:"Il crée l'Union européenne, la citoyenneté européenne et prépare la monnaie unique."},
+ {d:"2002",an:2002,t:"t5",label:"mise en circulation de l'euro",w:"Les pièces et les billets en euros remplacent les monnaies nationales dans douze pays."}
+];
+
+/* ============ la frise ============ */
+/* Axe 1910 -> 2010 sur 300 px utiles. Les tranches courtes (t1, t3) seraient
+   des traits fins si la largeur était strictement proportionnelle : chacune
+   reçoit donc une largeur minimale de 44 px, cliquable au doigt. */
+const FRISE_X0=20, FRISE_X1=320, FRISE_AN0=1910, FRISE_AN1=2010, FRISE_MIN=44;
+const FRISE_GEO=(()=>{
+  const brut=TORDRE.map(id=>{
+    const t=TRANCHES[id];
+    return {id,px:(t.a-t.de+1)/(FRISE_AN1-FRISE_AN0)*(FRISE_X1-FRISE_X0)};
+  });
+  const total=FRISE_X1-FRISE_X0;
+  const plancher=brut.reduce((s,b)=>s+Math.max(b.px,FRISE_MIN),0);
+  let x=FRISE_X0;
+  const geo={};
+  brut.forEach(b=>{
+    const w=Math.max(b.px,FRISE_MIN)/plancher*total;
+    geo[b.id]={x,w};
+    x+=w;
+  });
+  return geo;
+})();
+/* position exacte d'une annee sur l'axe, pour le repere affiche apres reponse */
+function friseX(an){
+  const id=TORDRE.find(k=>an>=TRANCHES[k].de&&an<=TRANCHES[k].a)||"t5";
+  const t=TRANCHES[id], g=FRISE_GEO[id];
+  return g.x+(an-t.de+.5)/(t.a-t.de+1)*g.w;
+}
+/* opts : {bonne, choisie, an} tous optionnels */
+function friseSVG(opts={}){
+  const {bonne,choisie,an}=opts;
+  const bandes=TORDRE.map((id,i)=>{
+    const t=TRANCHES[id], g=FRISE_GEO[id];
+    let cls="tr";
+    if(bonne&&id===bonne)cls+=" good";
+    else if(choisie&&id===choisie)cls+=" bad";
+    else if(bonne)cls+=" dim";
+    return `<g class="${cls}" data-tr="${id}" role="button" tabindex="0" aria-label="${esc(t.label)}">
+      <rect x="${g.x.toFixed(1)}" y="34" width="${(g.w-2).toFixed(1)}" height="52" rx="5" fill="var(${t.v})"></rect>
+      <text x="${(g.x+g.w/2-1).toFixed(1)}" y="64" text-anchor="middle" class="trlab">${t.court.replace("-","‑")}</text>
+    </g>`;
+  }).join("");
+  const repere=(bonne&&an!=null)
+    ? `<g class="repere"><line x1="${friseX(an).toFixed(1)}" y1="26" x2="${friseX(an).toFixed(1)}" y2="94"></line>
+       <text x="${friseX(an).toFixed(1)}" y="18" text-anchor="middle" class="rlab">${an}</text></g>`
+    : "";
+  return `<svg viewBox="0 0 340 110" role="img" aria-label="Frise chronologique de 1910 à 2010">
+    <line class="axe" x1="${FRISE_X0}" y1="94" x2="${FRISE_X1}" y2="94"></line>
+    ${bandes}${repere}
+    <text x="${FRISE_X0}" y="107" class="borne">1910</text>
+    <text x="${FRISE_X1}" y="107" text-anchor="end" class="borne">2010</text>
+  </svg>`;
+}
+
+/* ============ gamification ============ */
+const SHEET_URL="https://script.google.com/macros/s/AKfycbwB53nfh6Xk_z1Gn4ck_WL8aX0gPxDzQ2MpxWVnpsdunmWR_IKj-tHPHOEVkP614jQJ/exec";
+function logResult(game,score,good,total,secs){
+  try{fetch(SHEET_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({page:"histoire-dates",game,score,good,total,secs})});}catch(e){}
+}
+const CHEERS=[["🎉","Bravo !"],["⭐","Super !"],["🚀","Excellent !"],["🏆","Champion !"],["📜","L'Histoire retient ton nom !"],["🔥","Trop fort !"],["🌟","Génial !"],["⏳","Pile au bon moment !"]];
+const OOPS=[["😅","Oups, presque !"],["🙈","Pas cette fois !"],["🤔","Hmm, regarde la frise..."],["🐢","On y va doucement !"],["🧐","Presque ! Lis la correction."]];
+function confetti(host){
+  const cols=["#e63946","#f4a261","#2a9d8f","#457b9d","#ffd166","#9b5de5","#06d6a0"];
+  for(let i=0;i<22;i++){
+    const p=document.createElement("i");p.className="confetti";
+    const ang=Math.random()*Math.PI*2, d=60+Math.random()*90;
+    p.style.setProperty("--dx",Math.cos(ang)*d+"px");
+    p.style.setProperty("--dy",(Math.sin(ang)*d-40)+"px");
+    p.style.background=rnd(cols);
+    p.style.animationDelay=(Math.random()*.15)+"s";
+    host.appendChild(p);
+  }
+}
+function showVerdict(ok,sel,st){
+  const v=$(sel);
+  const [emo,msg]=ok?rnd(CHEERS):rnd(OOPS);
+  st.streak=ok?st.streak+1:0;
+  v.className="react "+(ok?"yes":"no");
+  v.innerHTML=`<span class="emo" role="img" aria-label="${ok?"Bonne réponse":"Mauvaise réponse"}">${emo}</span><span class="msg">${msg}</span>`+
+    (st.streak>=3?`<span class="streak">🔥 ${st.streak} d'affilée !</span>`:"");
+  if(ok)confetti(v);
+}
+function bilanHTML(st,titreOk){
+  const good=st.list.length-st.errs.length;
+  return `<div class="bilan">
+    <h2>${good===st.list.length?"🏆 Sans faute, incroyable !":good>=st.list.length*.8?"🌟 Bravo, belle manche !":good>=st.list.length/2?"👍 Pas mal du tout !":"💪 Continue, tu progresses !"}</h2>
+    <p class="bigscore">${st.score}</p>
+    <p class="meta">${good} bonnes réponses sur ${st.list.length}, en ${chrono(st.secs)}.</p>
+    ${st.errs.length?`<p class="section-title">À revoir</p><ul class="errlist">${st.errs.map(e=>`
+      <li><span class="rep">${e.rep}</span> ${e.w}</li>`).join("")}</ul>`
+    :`<p class="section-title">Sans faute</p><p style="margin-top:8px">${titreOk}</p>`}
+    <div class="row-end"><button class="btn ghost" id="again">Nouvelle manche</button></div>
+  </div>`;
+}
+
+/* onglets */
+document.querySelectorAll(".tab").forEach(t=>{
+  t.addEventListener("click",()=>{
+    document.querySelectorAll(".tab").forEach(x=>x.setAttribute("aria-selected",x===t));
+    document.querySelectorAll(".panel").forEach(p=>p.classList.toggle("on",p.id===t.dataset.panel));
+    if(t.dataset.panel==="frise")friIntro();
+    if(t.dataset.panel==="quiz")quizIntro();
+    if(t.dataset.panel==="memo")memoIntro();
+    if(t.dataset.panel==="cartes")cartesIntro();
+    window.scrollTo({top:0,behavior:"smooth"});
+  });
+});
+
+/* ============ 1. la frise ============ */
+const F1={list:[],i:0,score:0,errs:[],t0:0,streak:0,secs:0};
+const fp=$("#frise");
+function friIntro(){
+  fp.innerHTML=`<div class="intro">
+    <h2>Où tombe cette date ?</h2>
+    <p>Dix événements, tirés au hasard dans les vingt-trois dates du programme. Pour chacun, clique la période de la frise où il se place. On ne te demande pas l'année exacte, seulement la bonne époque.</p>
+    <button class="btn" id="fgo">Commencer la manche</button>
+  </div>`;
+  $("#fgo").onclick=friStart;
+}
+function friStart(){
+  F1.list=pick(DATES,10);F1.i=0;F1.score=0;F1.errs=[];F1.streak=0;F1.t0=Date.now();friStep();
+}
+function friStep(){
+  if(F1.i>=F1.list.length)return friEnd();
+  const q=F1.list[F1.i];
+  fp.innerHTML=`
+    <div class="status"><span>Événement <b>${F1.i+1}</b>/${F1.list.length}</span><span class="grow"></span><span>Points <b id="fsc">${F1.score}</b></span></div>
+    <div id="fcard">
+      <div class="react" id="fv"></div>
+      <p class="annot" id="fan">À quelle période cet événement appartient-il ?</p>
+      <p class="hyp">${esc(q.label.charAt(0).toUpperCase()+q.label.slice(1))}</p>
+      <div class="fig" id="ffig">${friseSVG()}</div>
+      <p class="why" id="fwhy"></p>
+    </div>
+    <div class="row-end"><button class="btn hidden" id="fnext">Suivant</button></div>`;
+  const repondre=id=>{
+    const ok=id===q.t;
+    if(ok)F1.score+=10;
+    else F1.errs.push({rep:`${q.d} : ${q.label}`,w:`C'est la période ${TRANCHES[q.t].label}. ${q.w}`});
+    $("#ffig").innerHTML=friseSVG({bonne:q.t,choisie:id,an:q.an});
+    showVerdict(ok,"#fv",F1);
+    $("#fcard").classList.add("revealed");
+    $("#fan").textContent=`${q.d} : ${q.label}`;
+    $("#fwhy").innerHTML=(ok?"":`<em>Non, c'était ${TRANCHES[q.t].court}. </em>`)+q.w;
+    $("#fsc").textContent=F1.score;
+    const n=$("#fnext");n.classList.remove("hidden");
+    n.textContent=F1.i===F1.list.length-1?"Voir le bilan":"Suivant";
+    n.onclick=()=>{F1.i++;friStep();};
+    n.focus({preventScroll:true});
+  };
+  fp.querySelectorAll("#ffig .tr").forEach(g=>{
+    g.onclick=()=>repondre(g.dataset.tr);
+    g.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();repondre(g.dataset.tr);}};
+  });
+}
+function friEnd(){
+  F1.secs=Math.round((Date.now()-F1.t0)/1000);
+  logResult("frise",F1.score,F1.list.length-F1.errs.length,F1.list.length,F1.secs);
+  fp.innerHTML=bilanHTML(F1,"Tu situes tes dates. Passe à « En contexte » pour les relier à leur événement.");
+  $("#again",fp).onclick=friStart;
+}
+
+function quizIntro(){$("#quiz").innerHTML=`<div class="intro"><h2>Bientôt</h2><p>Cette manche arrive à la tâche suivante.</p></div>`;}
+function memoIntro(){$("#memo").innerHTML=`<div class="intro"><h2>Bientôt</h2><p>Cette manche arrive à la tâche suivante.</p></div>`;}
+function cartesIntro(){$("#cartes").innerHTML=`<div class="intro"><h2>Bientôt</h2><p>Cette manche arrive à la tâche suivante.</p></div>`;}
+
+friIntro();
+</script>
+</body>
+</html>
