@@ -38,6 +38,9 @@ Site statique sans build, sans dépendances, sans tests : chaque page est un fic
   node outils/coherence.mjs histoire-dates.html DATES d,label histoire-memo.html
   node outils/coherence.mjs histoire-personnages.html PERSONNAGES nom,annees,role histoire-memo.html
   node outils/coherence.mjs geo-france.html REGIONS nom,capitale geo-memo.html
+  node outils/coherence.mjs geo-france.html RELIEFS nom geo-memo.html
+  node outils/coherence.mjs geo-france.html FLEUVES nom geo-memo.html
+  node outils/coherence.mjs geo-france.html MERS nom geo-memo.html
   node outils/coherence.mjs geo-france.html DROM nom,chef geo-memo.html
   node outils/coherence.mjs geo-europe.html PAYS nom geo-memo.html
   ```
