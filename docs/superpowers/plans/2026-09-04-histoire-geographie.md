@@ -1472,8 +1472,11 @@ function mapSVG(fond,opts={}){
     if(bonne&&z.id===bonne)cls+=" good";
     else if(choisie&&z.id===choisie)cls+=" bad";
     else if(bonne)cls+=" dim";
+    /* l'epaisseur de la cible se met dans le CSS, pas en attribut : une regle CSS
+       l'emporte toujours sur un attribut de presentation, quelle que soit sa
+       specificite, donc un stroke-width inline serait purement decoratif. */
     const forme=z.type==="trait"
-      ? `<path class="cible-trait" d="${z.d}" fill="none" stroke-width="${EPAISSEUR_CIBLE}"></path>`+
+      ? `<path class="cible-trait" d="${z.d}" fill="none"></path>`+
         `<path d="${z.d}" fill="none"></path>`
       : z.type==="point"
         ? `<circle cx="${z.cx}" cy="${z.cy}" r="4.5"></circle>`
@@ -1541,18 +1544,20 @@ carnet Europe, puis ajoute le CSS des cartes.
 .fig{margin:14px 0 4px;text-align:center}
 .fig svg{width:100%;max-width:340px;height:auto;background:var(--eau);border-radius:8px}
 .fig .z path{fill:var(--terre);stroke:var(--paper-2);stroke-width:1.2;cursor:pointer;transition:fill .15s}
-.fig .z.trait path{stroke:#3E7CA8;stroke-width:2.4;stroke-linejoin:round;stroke-linecap:round;fill:none}
+.fig .z.trait path:not(.cible-trait){stroke:#3E7CA8;stroke-width:2.4;stroke-linejoin:round;stroke-linecap:round;fill:none}
+/* la cible d'un fleuve : invisible, epaisse, pour qu'on le tape sur toute sa longueur */
+.fig .z.trait path.cible-trait{stroke:transparent;stroke-width:11;fill:none;cursor:pointer}
 .fig .z.point circle:not(.halo){fill:var(--ink);stroke:var(--paper-2);stroke-width:1.5}
 .fig .halo{fill:transparent;cursor:pointer}
 .fig .z:hover path{fill:var(--terre-2)}
 .fig .z:focus{outline:none}
 .fig .z:focus path{stroke:var(--ink);stroke-width:2}
 .fig .z.vise path{fill:var(--geo)}
-.fig .z.vise.trait path,.fig .z.vise.point circle:not(.halo){stroke:var(--geo);fill:var(--geo)}
+.fig .z.vise.trait path:not(.cible-trait),.fig .z.vise.point circle:not(.halo){stroke:var(--geo);fill:var(--geo)}
 .fig .z.good path{fill:var(--geo);stroke:var(--ink);stroke-width:2}
-.fig .z.good.trait path{stroke:var(--geo);stroke-width:4;fill:none}
+.fig .z.good.trait path:not(.cible-trait){stroke:var(--geo);stroke-width:4;fill:none}
 .fig .z.bad path{fill:var(--marge);opacity:.55}
-.fig .z.bad.trait path{stroke:var(--marge);stroke-width:4;fill:none}
+.fig .z.bad.trait path:not(.cible-trait){stroke:var(--marge);stroke-width:4;fill:none}
 .fig .z.dim path{opacity:.75}
 .fig .zlab{font-family:var(--sans);font-size:7.5px;font-weight:700;fill:var(--ink-soft);pointer-events:none}
 .revealed .fig .z path,.revealed .fig .halo{cursor:default}
