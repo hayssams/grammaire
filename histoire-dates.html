@@ -96,22 +96,23 @@ nav{display:flex;gap:6px;margin:18px 0 0;align-items:flex-end}
 
 /* ---------- frise ---------- */
 .fig{margin:14px 0 4px;text-align:center}
-.fig svg{width:100%;max-width:340px;height:auto;overflow:visible}
+.fig svg{width:100%;max-width:320px;height:auto;overflow:visible}
 .fig .axe{stroke:var(--ink-soft);stroke-width:1}
-.fig .tr rect{cursor:pointer;opacity:.82;transition:opacity .15s,transform .15s}
-.fig .tr:hover rect,.fig .tr:focus rect{opacity:1}
+.fig .tr .cible{fill:transparent;cursor:pointer}
+.fig .tr rect:not(.cible){cursor:pointer;opacity:.82;transition:opacity .15s,transform .15s}
+.fig .tr:hover rect:not(.cible),.fig .tr:focus rect:not(.cible){opacity:1}
 .fig .tr:focus{outline:none}
-.fig .tr:focus rect{stroke:var(--ink);stroke-width:2}
+.fig .tr:focus rect:not(.cible){stroke:var(--ink);stroke-width:2}
 .fig .trlab{font-family:var(--sans);font-size:9.5px;font-weight:700;fill:#fff;pointer-events:none}
-.fig .good rect{opacity:1;stroke:var(--ink);stroke-width:2}
-.fig .bad rect{opacity:.35;stroke:var(--marge);stroke-width:2;stroke-dasharray:3 2}
-.fig .dim rect{opacity:.3}
+.fig .good rect:not(.cible){opacity:1;stroke:var(--ink);stroke-width:2}
+.fig .bad rect:not(.cible){opacity:.35;stroke:var(--marge);stroke-width:2;stroke-dasharray:3 2}
+.fig .dim rect:not(.cible){opacity:.3}
 .fig .repere line{stroke:var(--ink);stroke-width:1.5;stroke-dasharray:2 2}
 .fig .rlab{font-family:var(--sans);font-size:10px;font-weight:700;fill:var(--ink)}
 .fig .borne{font-family:var(--sans);font-size:9px;fill:var(--ink-soft)}
-.revealed .fig .tr rect{cursor:default}
+.revealed .fig .tr rect:not(.cible){cursor:default}
 @media (prefers-reduced-motion:reduce){
-  .fig .tr rect{transition:none}
+  .fig .tr rect:not(.cible){transition:none}
 }
 .hyp{font-size:14.5px;margin:0 0 6px}
 .hyp em{font-style:normal;font-weight:700}
@@ -305,6 +306,7 @@ function friseSVG(opts={}){
     else if(choisie&&id===choisie)cls+=" bad";
     else if(bonne)cls+=" dim";
     return `<g class="${cls}" data-tr="${id}" role="button" tabindex="0" aria-label="${esc(t.label)}">
+      <rect class="cible" x="${g.x.toFixed(1)}" y="34" width="${g.w.toFixed(1)}" height="60"></rect>
       <rect x="${g.x.toFixed(1)}" y="34" width="${(g.w-2).toFixed(1)}" height="60" rx="5" fill="var(${t.v})"></rect>
       <text x="${(g.x+g.w/2-1).toFixed(1)}" y="68" text-anchor="middle" class="trlab">${t.court.replace("-","‑")}</text>
     </g>`;
@@ -313,7 +315,7 @@ function friseSVG(opts={}){
     ? `<g class="repere"><line x1="${friseX(an).toFixed(1)}" y1="26" x2="${friseX(an).toFixed(1)}" y2="102"></line>
        <text x="${friseX(an).toFixed(1)}" y="18" text-anchor="middle" class="rlab">${an}</text></g>`
     : "";
-  return `<svg viewBox="0 0 340 118" role="img" aria-label="Frise chronologique de 1910 à 2010">
+  return `<svg viewBox="20 0 300 118" role="img" aria-label="Frise chronologique de 1910 à 2010">
     <line class="axe" x1="${FRISE_X0}" y1="102" x2="${FRISE_X1}" y2="102"></line>
     ${bandes}${repere}
     <text x="${FRISE_X0}" y="115" class="borne">1910</text>
