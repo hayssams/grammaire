@@ -146,11 +146,11 @@ nav{display:flex;gap:6px;margin:18px 0 0;align-items:flex-end}
 .judge .btn.good{background:var(--histoire);border-color:var(--histoire);color:#fff;opacity:1}
 .judge .btn.bad{background:transparent;border-color:var(--marge);color:var(--marge);text-decoration:line-through;opacity:1}
 .judge .btn.dim{opacity:.35}
-.choices-eq{display:grid;gap:8px;margin-top:16px}
+.choices{display:grid;gap:8px;margin:18px 0 0}
 .choice{
   border:1px solid var(--rule);background:var(--paper-2);color:var(--ink);
-  font-family:var(--serif);font-size:18px;
-  padding:12px 6px;border-radius:7px;cursor:pointer;text-align:center;
+  font-family:var(--sans);font-size:14.5px;font-weight:700;line-height:1.3;
+  padding:13px 12px;border-radius:7px;cursor:pointer;text-align:left;
   transition:background .12s,border-color .12s,color .12s,opacity .2s
 }
 .choice:hover:not(:disabled){border-color:var(--ink);background:#F1F3EE}
@@ -158,6 +158,7 @@ nav{display:flex;gap:6px;margin:18px 0 0;align-items:flex-end}
 .choice.dim{opacity:.32}
 .choice.good{background:var(--histoire);border-color:var(--histoire);color:#fff;opacity:1}
 .choice.bad{background:transparent;border-color:var(--marge);color:var(--marge);opacity:1;text-decoration:line-through}
+.enonce{font-family:var(--serif);font-size:26px;line-height:1.15;color:var(--histoire);margin:6px 0 14px}
 
 /* ---------- boutons ---------- */
 .btn{
@@ -186,6 +187,45 @@ nav{display:flex;gap:6px;margin:18px 0 0;align-items:flex-end}
 .section-title{
   font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);
   margin:22px 0 0
+}
+
+/* ---------- memory ---------- */
+.grille{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0 4px}
+.mcarte{
+  position:relative;min-height:76px;padding:8px 6px;
+  border:1px solid var(--rule);border-radius:8px;background:var(--paper-2);
+  font-family:var(--sans);font-size:12px;font-weight:700;line-height:1.25;color:var(--ink);
+  cursor:pointer;overflow:hidden
+}
+.mcarte .dos{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  background:var(--histoire);color:#fff;font-family:var(--serif);font-size:26px;
+  transition:opacity .2s
+}
+.mcarte .face{display:block;opacity:0;transition:opacity .2s}
+.mcarte.vue .dos,.mcarte.prise .dos{opacity:0;pointer-events:none}
+.mcarte.vue .face,.mcarte.prise .face{opacity:1}
+.mcarte.date .face{font-family:var(--serif);font-size:17px;color:var(--histoire)}
+.mcarte.prise{border-color:var(--histoire);box-shadow:0 2px 0 var(--histoire);cursor:default}
+@media (max-width:360px){
+  .grille{grid-template-columns:repeat(2,1fr)}
+}
+@media (prefers-reduced-motion:reduce){
+  .mcarte .dos,.mcarte .face{transition:none}
+}
+
+/* ---------- flashcards ---------- */
+.flash{
+  border:1px solid var(--rule);border-left:3px solid var(--histoire);border-radius:8px;
+  background:var(--paper-2);padding:26px 18px;margin:14px 0 4px;min-height:150px;
+  display:flex;flex-direction:column;justify-content:center;text-align:center
+}
+.flash .recto{font-family:var(--serif);font-size:32px;line-height:1.1;margin:0;color:var(--histoire)}
+.flash .verso{margin:16px 0 0;font-size:16px;font-weight:700;line-height:1.35;border-top:1px solid var(--rule-soft);padding-top:14px}
+.flash .verso.hidden{display:none}
+.flash .detail{display:block;margin-top:8px;font-weight:400;font-size:13.5px;color:var(--ink-soft)}
+@media (max-width:420px){
+  .flash .recto{font-size:27px}
 }
 
 @media (max-width:360px){
@@ -440,9 +480,195 @@ function friEnd(){
   $("#again",fp).onclick=friStart;
 }
 
-function quizIntro(){$("#quiz").innerHTML=`<div class="intro"><h2>Bientôt</h2><p>Cette manche arrive à la tâche suivante.</p></div>`;}
-function memoIntro(){$("#memo").innerHTML=`<div class="intro"><h2>Bientôt</h2><p>Cette manche arrive à la tâche suivante.</p></div>`;}
-function cartesIntro(){$("#cartes").innerHTML=`<div class="intro"><h2>Bientôt</h2><p>Cette manche arrive à la tâche suivante.</p></div>`;}
+/* ============ 2. en contexte ============ */
+const Q={list:[],i:0,score:0,errs:[],t0:0,streak:0,secs:0};
+const qp=$("#quiz");
+/* trois distracteurs, pris d'abord dans la meme tranche puis ailleurs */
+function leurres(bonne){
+  const meme=shuffle(DATES.filter(x=>x!==bonne&&x.t===bonne.t));
+  const autres=shuffle(DATES.filter(x=>x!==bonne&&x.t!==bonne.t));
+  return [...meme,...autres].slice(0,3);
+}
+function quizIntro(){
+  qp.innerHTML=`<div class="intro">
+    <h2>La date et l'événement</h2>
+    <p>Dix questions, tirées dans les deux sens : parfois on te donne la date et tu choisis l'événement, parfois l'inverse. Attention, les propositions se ressemblent souvent : elles viennent de la même époque.</p>
+    <button class="btn" id="qgo">Commencer la manche</button>
+  </div>`;
+  $("#qgo").onclick=quizStart;
+}
+function quizStart(){
+  Q.list=pick(DATES,10).map(d=>({d,sens:Math.random()<.5?"date":"evt"}));
+  Q.i=0;Q.score=0;Q.errs=[];Q.streak=0;Q.t0=Date.now();quizStep();
+}
+function quizStep(){
+  if(Q.i>=Q.list.length)return quizEnd();
+  const {d:q,sens}=Q.list[Q.i];
+  const props=shuffle([q,...leurres(q)]);
+  const enonce=sens==="date"?esc(q.d):esc(q.label.charAt(0).toUpperCase()+q.label.slice(1));
+  const consigne=sens==="date"?"Que s'est-il passé cette année-là ?":"En quelle année ?";
+  qp.innerHTML=`
+    <div class="status"><span>Question <b>${Q.i+1}</b>/${Q.list.length}</span><span class="grow"></span><span>Points <b id="qsc">${Q.score}</b></span></div>
+    <div id="qcard">
+      <div class="react" id="qv"></div>
+      <p class="annot">${consigne}</p>
+      <p class="hyp enonce">${enonce}</p>
+      <div class="choices">${props.map((p,i)=>
+        `<button class="choice" data-i="${i}">${sens==="date"?esc(p.label):esc(p.d)}</button>`).join("")}</div>
+      <p class="why" id="qwhy"></p>
+    </div>
+    <div class="row-end"><button class="btn hidden" id="qnext">Suivante</button></div>`;
+  qp.querySelectorAll(".choice").forEach((b,i)=>{
+    b.onclick=()=>{
+      const choisi=props[i], ok=choisi===q;
+      if(ok)Q.score+=10;else Q.errs.push({rep:`${q.d} : ${q.label}`,w:q.w});
+      qp.querySelectorAll(".choice").forEach((x,j)=>{
+        x.disabled=true;
+        if(props[j]===q)x.classList.add("good");
+        else if(j===i)x.classList.add("bad");
+        else x.classList.add("dim");
+      });
+      showVerdict(ok,"#qv",Q);
+      $("#qcard").classList.add("revealed");
+      $("#qwhy").innerHTML=`<b>${esc(q.d)} : ${esc(q.label)}.</b> ${q.w}`;
+      $("#qsc").textContent=Q.score;
+      const n=$("#qnext");n.classList.remove("hidden");
+      n.textContent=Q.i===Q.list.length-1?"Voir le bilan":"Suivante";
+      n.onclick=()=>{Q.i++;quizStep();};
+      n.focus({preventScroll:true});
+    };
+  });
+}
+function quizEnd(){
+  Q.secs=Math.round((Date.now()-Q.t0)/1000);
+  logResult("quiz",Q.score,Q.list.length-Q.errs.length,Q.list.length,Q.secs);
+  qp.innerHTML=bilanHTML(Q,"Tu relies date et événement sans hésiter. Va voir le mémo pour les apparier plus vite encore.");
+  $("#again",qp).onclick=quizStart;
+}
+
+/* ============ 3. memo ============ */
+const M={paires:[],cartes:[],ouverte:null,trouve:0,essais:0,t0:0,bloque:false,secs:0};
+const mp=$("#memo");
+function memoIntro(){
+  mp.innerHTML=`<div class="intro">
+    <h2>Six paires à retrouver</h2>
+    <p>Douze cartes face cachée : six dates et les six événements qui vont avec. Retourne-les deux par deux. Moins tu fais d'essais, meilleur est ton score.</p>
+    <button class="btn" id="mgo">Commencer la partie</button>
+  </div>`;
+  $("#mgo").onclick=memoStart;
+}
+function memoStart(){
+  M.paires=pick(DATES,6);
+  M.cartes=shuffle(M.paires.flatMap((p,i)=>[
+    {p:i,face:esc(p.d),type:"date"},
+    {p:i,face:esc(p.label),type:"evt"}
+  ]));
+  M.ouverte=null;M.trouve=0;M.essais=0;M.bloque=false;M.t0=Date.now();memoRender();
+}
+function memoRender(){
+  mp.innerHTML=`
+    <div class="status"><span>Paires <b id="mtr">${M.trouve}</b>/6</span><span class="grow"></span><span>Essais <b id="mes">${M.essais}</b></span></div>
+    <div class="grille">${M.cartes.map((c,i)=>
+      `<button class="mcarte ${c.type}" data-i="${i}"><span class="dos">?</span><span class="face">${c.face}</span></button>`).join("")}</div>`;
+  mp.querySelectorAll(".mcarte").forEach(b=>{b.onclick=()=>memoClic(+b.dataset.i,b);});
+}
+function memoClic(i,btn){
+  if(M.bloque||btn.classList.contains("vue")||btn.classList.contains("prise"))return;
+  btn.classList.add("vue");
+  if(M.ouverte===null){M.ouverte={i,btn};return;}
+  M.essais++;$("#mes").textContent=M.essais;
+  const a=M.ouverte, b={i,btn};
+  M.ouverte=null;
+  if(M.cartes[a.i].p===M.cartes[b.i].p&&a.i!==b.i){
+    a.btn.classList.add("prise");b.btn.classList.add("prise");
+    M.trouve++;$("#mtr").textContent=M.trouve;
+    if(M.trouve===6)setTimeout(memoEnd,450);
+  }else{
+    M.bloque=true;
+    setTimeout(()=>{a.btn.classList.remove("vue");b.btn.classList.remove("vue");M.bloque=false;},750);
+  }
+}
+function memoEnd(){
+  M.secs=Math.round((Date.now()-M.t0)/1000);
+  logResult("memo",Math.max(0,120-M.essais*5),6,6,M.secs);
+  const mot=M.essais<=8?"🏆 Mémoire de champion !":M.essais<=12?"🌟 Très bien joué !":"👍 Toutes les paires y sont !";
+  mp.innerHTML=`<div class="bilan">
+    <h2>${mot}</h2>
+    <p class="bigscore">${M.essais}<span style="font-size:24px;color:var(--ink-soft)"> essais</span></p>
+    <p class="meta">Six paires retrouvées en ${chrono(M.secs)}.</p>
+    <p class="section-title">Les paires de cette partie</p>
+    <ul class="errlist">${M.paires.map(p=>`<li><span class="rep">${esc(p.d)}</span> ${esc(p.label)}</li>`).join("")}</ul>
+    <div class="row-end"><button class="btn ghost" id="again">Nouvelle partie</button></div>
+  </div>`;
+  $("#again",mp).onclick=memoStart;
+}
+
+/* ============ 4. cartes ============ */
+const C={boites:[[],[],[]],courante:null,vue:false,tours:0,ratees:[],taille:0,t0:0,secs:0};
+const cp=$("#cartes");
+function cartesIntro(){
+  cp.innerHTML=`<div class="intro">
+    <h2>Réviser en cartes</h2>
+    <p>Douze dates, recto la date, verso l'événement. Tu réponds dans ta tête, tu retournes, puis tu dis si tu savais. Ce que tu sais part dans la boîte suivante, ce que tu rates revient tout de suite. La manche s'arrête quand les douze sont dans la dernière boîte.</p>
+    <button class="btn" id="cgo">Commencer la manche</button>
+  </div>`;
+  $("#cgo").onclick=cartesStart;
+}
+function cartesStart(){
+  const tirage=pick(DATES,12);
+  C.boites=[shuffle(tirage),[],[]];
+  C.taille=tirage.length;C.tours=0;C.ratees=[];C.vue=false;C.t0=Date.now();
+  cartesStep();
+}
+function cartesTire(){
+  for(const b of C.boites.slice(0,2))if(b.length)return b;
+  return null;
+}
+function cartesStep(){
+  const boite=cartesTire();
+  if(!boite)return cartesEnd();
+  const idx=C.boites.indexOf(boite);
+  C.courante={carte:boite[0],idx};
+  C.vue=false;
+  const restants=C.boites[0].length+C.boites[1].length;
+  cp.innerHTML=`
+    <div class="status"><span>Boîte <b>${idx+1}</b>/3</span><span class="grow"></span><span>Reste <b>${restants}</b></span></div>
+    <div class="flash" id="cflash">
+      <p class="recto">${esc(C.courante.carte.d)}</p>
+      <p class="verso hidden" id="cverso">${esc(C.courante.carte.label)}<span class="detail">${C.courante.carte.w}</span></p>
+    </div>
+    <div class="row-end" id="cactions"><button class="btn" id="cflip">Retourner</button></div>`;
+  $("#cflip").onclick=()=>{
+    C.vue=true;
+    $("#cverso").classList.remove("hidden");
+    $("#cactions").innerHTML=`<button class="btn" id="csu">Je savais</button><button class="btn no" id="cnon">Pas su</button>`;
+    $("#csu").onclick=()=>cartesJuge(true);
+    $("#cnon").onclick=()=>cartesJuge(false);
+  };
+}
+function cartesJuge(su){
+  const {carte,idx}=C.courante;
+  C.tours++;
+  C.boites[idx].shift();
+  if(su)C.boites[idx+1].push(carte);
+  else{C.boites[0].push(carte);if(!C.ratees.includes(carte))C.ratees.push(carte);}
+  cartesStep();
+}
+function cartesEnd(){
+  C.secs=Math.round((Date.now()-C.t0)/1000);
+  const sues=C.taille-C.ratees.length;
+  logResult("cartes",C.tours,sues,C.taille,C.secs);
+  cp.innerHTML=`<div class="bilan">
+    <h2>${C.ratees.length===0?"🏆 Les douze du premier coup !":C.ratees.length<=3?"🌟 Belle révision !":"💪 Elles rentrent, continue !"}</h2>
+    <p class="bigscore">${C.tours}<span style="font-size:24px;color:var(--ink-soft)"> retournements</span></p>
+    <p class="meta">${sues} date${sues>1?"s":""} sue${sues>1?"s":""} du premier coup sur ${C.taille}, en ${chrono(C.secs)}.</p>
+    ${C.ratees.length?`<p class="section-title">À revoir</p><ul class="errlist">${C.ratees.map(c=>
+      `<li><span class="rep">${esc(c.d)}</span> ${esc(c.label)}</li>`).join("")}</ul>`
+     :`<p class="section-title">Sans faute</p><p style="margin-top:8px">Tu peux passer aux personnages.</p>`}
+    <div class="row-end"><button class="btn ghost" id="again">Nouvelle manche</button></div>
+  </div>`;
+  $("#again",cp).onclick=cartesStart;
+}
 
 friIntro();
 </script>
