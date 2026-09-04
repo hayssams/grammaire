@@ -744,16 +744,16 @@ function quizStep(){
       <div class="react" id="qv"></div>
       <p class="annot">${consigne}</p>
       <p class="hyp enonce">${enonce}</p>
-      <div class="choix">${props.map((p,i)=>
-        `<button class="opt" data-i="${i}">${sens==="date"?esc(p.label):esc(p.d)}</button>`).join("")}</div>
+      <div class="choices">${props.map((p,i)=>
+        `<button class="choice" data-i="${i}">${sens==="date"?esc(p.label):esc(p.d)}</button>`).join("")}</div>
       <p class="why" id="qwhy"></p>
     </div>
     <div class="row-end"><button class="btn hidden" id="qnext">Suivante</button></div>`;
-  qp.querySelectorAll(".opt").forEach((b,i)=>{
+  qp.querySelectorAll(".choice").forEach((b,i)=>{
     b.onclick=()=>{
       const choisi=props[i], ok=choisi===q;
       if(ok)Q.score+=10;else Q.errs.push({rep:`${q.d} : ${q.label}`,w:q.w});
-      qp.querySelectorAll(".opt").forEach((x,j)=>{
+      qp.querySelectorAll(".choice").forEach((x,j)=>{
         x.disabled=true;
         if(props[j]===q)x.classList.add("good");
         else if(j===i)x.classList.add("bad");
@@ -778,11 +778,30 @@ function quizEnd(){
 }
 ```
 
-Le style des propositions est déjà dans le fichier (bloc CSS `/* ---------- choix ---------- */` hérité de `thales.html`). Ajouter seulement, à la fin de ce bloc :
+Le bloc CSS `/* ---------- choix ---------- */` hérité de `thales.html` définit `.choice` en
+serif 18 px centré, taillé pour des expressions mathématiques. Ici les propositions sont des
+phrases. **Remplace donc le conteneur `.choices-eq` et la règle `.choice` de ce bloc** par une
+pile d'une colonne, alignée à gauche, en Karla, et ajoute `.enonce` à la suite. Garde `.judge`
+et ses états, qui servent aux manches à réponse oui ou non :
 
 ```css
+.choices{display:grid;gap:8px;margin:18px 0 0}
+.choice{
+  border:1px solid var(--rule);background:var(--paper-2);color:var(--ink);
+  font-family:var(--sans);font-size:14.5px;font-weight:700;line-height:1.3;
+  padding:13px 12px;border-radius:7px;cursor:pointer;text-align:left;
+  transition:background .12s,border-color .12s,color .12s,opacity .2s
+}
+.choice:hover:not(:disabled){border-color:var(--ink);background:#F1F3EE}
+.choice:disabled{cursor:default}
+.choice.dim{opacity:.32}
+.choice.good{background:var(--histoire);border-color:var(--histoire);color:#fff;opacity:1}
+.choice.bad{background:transparent;border-color:var(--marge);color:var(--marge);opacity:1;text-decoration:line-through}
 .enonce{font-family:var(--serif);font-size:26px;line-height:1.15;color:var(--histoire);margin:6px 0 14px}
 ```
+
+Une proposition fait ainsi au moins 45 px de haut, cible tactile comprise, et une phrase longue
+passe à la ligne au lieu de déborder.
 
 - [ ] **Step 2 : La manche Mémo**
 
@@ -1202,15 +1221,15 @@ function quiStep(){
       <div class="react" id="pv"></div>
       <p class="annot">De qui parle-t-on ?</p>
       <p class="hyp">${esc(q.role)}</p>
-      <div class="choix">${props.map((x,i)=>`<button class="opt" data-i="${i}">${esc(x.nom)}</button>`).join("")}</div>
+      <div class="choices">${props.map((x,i)=>`<button class="choice" data-i="${i}">${esc(x.nom)}</button>`).join("")}</div>
       <p class="why" id="pwhy"></p>
     </div>
     <div class="row-end"><button class="btn hidden" id="pnext">Suivant</button></div>`;
-  pp.querySelectorAll(".opt").forEach((b,i)=>{
+  pp.querySelectorAll(".choice").forEach((b,i)=>{
     b.onclick=()=>{
       const ok=props[i]===q;
       if(ok)P.score+=10;else P.errs.push({rep:q.nom,w:q.court+"."});
-      pp.querySelectorAll(".opt").forEach((x,j)=>{
+      pp.querySelectorAll(".choice").forEach((x,j)=>{
         x.disabled=true;
         if(props[j]===q)x.classList.add("good");
         else if(j===i)x.classList.add("bad");
@@ -1470,7 +1489,26 @@ function mapBrancher(hote,repondre){
 
 - [ ] **Step 3 : Écrire le CSS des cartes**
 
+Le bloc `/* ---------- choix ---------- */` hérité de `thales.html` définit `.choice` en serif
+centré, taillé pour des expressions mathématiques. Les propositions de ce carnet sont des noms
+de villes et de pays : remplace le conteneur `.choices-eq` et la règle `.choice` par la pile
+d'une colonne ci-dessous, garde `.judge` et ses états pour la manche à réponse oui ou non du
+carnet Europe, puis ajoute le CSS des cartes.
+
 ```css
+.choices{display:grid;gap:8px;margin:18px 0 0}
+.choice{
+  border:1px solid var(--rule);background:var(--paper-2);color:var(--ink);
+  font-family:var(--sans);font-size:14.5px;font-weight:700;line-height:1.3;
+  padding:13px 12px;border-radius:7px;cursor:pointer;text-align:left;
+  transition:background .12s,border-color .12s,color .12s,opacity .2s
+}
+.choice:hover:not(:disabled){border-color:var(--ink);background:#F1F3EE}
+.choice:disabled{cursor:default}
+.choice.dim{opacity:.32}
+.choice.good{background:var(--geo);border-color:var(--geo);color:#fff;opacity:1}
+.choice.bad{background:transparent;border-color:var(--marge);color:var(--marge);opacity:1;text-decoration:line-through}
+
 /* ---------- cartes ---------- */
 .enonce{font-family:var(--serif);font-size:26px;line-height:1.15;color:var(--geo);margin:6px 0 14px}
 .fig{margin:14px 0 4px;text-align:center}
@@ -1658,15 +1696,15 @@ function capStep(){
       <p class="annot">Quelle est la capitale de cette région ?</p>
       <p class="hyp enonce">${esc(q.nom)}</p>
       <div class="fig">${mapSVG(FOND_ADMIN,{surligne:q.id})}</div>
-      <div class="choix">${props.map((p,i)=>`<button class="opt" data-i="${i}">${esc(p.capitale)}</button>`).join("")}</div>
+      <div class="choices">${props.map((p,i)=>`<button class="choice" data-i="${i}">${esc(p.capitale)}</button>`).join("")}</div>
       <p class="why" id="kwhy"></p>
     </div>
     <div class="row-end"><button class="btn hidden" id="knext">Suivante</button></div>`;
-  kp.querySelectorAll(".opt").forEach((b,i)=>{
+  kp.querySelectorAll(".choice").forEach((b,i)=>{
     b.onclick=()=>{
       const ok=props[i]===q;
       if(ok)K.score+=10;else K.errs.push({rep:q.nom,w:`Sa capitale est ${q.capitale}.`});
-      kp.querySelectorAll(".opt").forEach((x,j)=>{
+      kp.querySelectorAll(".choice").forEach((x,j)=>{
         x.disabled=true;
         if(props[j]===q)x.classList.add("good");
         else if(j===i)x.classList.add("bad");
@@ -2263,15 +2301,15 @@ function nomStep(){
       <div class="react" id="nv"></div>
       <p class="annot">Quel est ce pays ?</p>
       <div class="fig">${mapSVG(FOND_EUROPE,{surligne:q.id})}</div>
-      <div class="choix">${props.map((p,i)=>`<button class="opt" data-i="${i}">${esc(p.nom)}</button>`).join("")}</div>
+      <div class="choices">${props.map((p,i)=>`<button class="choice" data-i="${i}">${esc(p.nom)}</button>`).join("")}</div>
       <p class="why" id="nwhy"></p>
     </div>
     <div class="row-end"><button class="btn hidden" id="nnext">Suivant</button></div>`;
-  np.querySelectorAll(".opt").forEach((b,i)=>{
+  np.querySelectorAll(".choice").forEach((b,i)=>{
     b.onclick=()=>{
       const ok=props[i]===q;
       if(ok)N.score+=10;else N.errs.push({rep:q.nom,w:"Revois sa position sur la carte."});
-      np.querySelectorAll(".opt").forEach((x,j)=>{
+      np.querySelectorAll(".choice").forEach((x,j)=>{
         x.disabled=true;
         if(props[j]===q)x.classList.add("good");
         else if(j===i)x.classList.add("bad");
