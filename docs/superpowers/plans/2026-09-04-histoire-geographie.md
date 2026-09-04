@@ -488,21 +488,24 @@ const DATES=[
 ```js
 /* ============ la frise ============ */
 /* Axe 1910 -> 2010 sur 300 px utiles. Les tranches courtes (t1, t3) seraient
-   des traits fins si la largeur était strictement proportionnelle : chacune
-   reçoit donc une largeur minimale de 44 px, cliquable au doigt. */
-const FRISE_X0=20, FRISE_X1=320, FRISE_AN0=1910, FRISE_AN1=2010, FRISE_MIN=44;
+   des traits fins si la largeur etait strictement proportionnelle. Chaque
+   tranche recoit donc d'abord le plancher, cliquable au doigt, puis le reste
+   est reparti au prorata de la duree : la somme fait exactement la largeur
+   utile, et la proportionnalite chronologique reste lisible (t4, trente ans,
+   reste 1,4 fois plus large que t1, cinq ans).
+   Ne pas normaliser apres coup : diviser par la somme des planchers annule
+   le plancher lui-meme et ramene la bande la plus etroite a 41 unites. */
+const FRISE_X0=20, FRISE_X1=320, FRISE_AN0=1910, FRISE_AN1=2010, FRISE_MIN=46;
 const FRISE_GEO=(()=>{
-  const brut=TORDRE.map(id=>{
-    const t=TRANCHES[id];
-    return {id,px:(t.a-t.de+1)/(FRISE_AN1-FRISE_AN0)*(FRISE_X1-FRISE_X0)};
-  });
-  const total=FRISE_X1-FRISE_X0;
-  const plancher=brut.reduce((s,b)=>s+Math.max(b.px,FRISE_MIN),0);
+  const duree=TORDRE.map(id=>TRANCHES[id].a-TRANCHES[id].de+1);
+  const totalDuree=duree.reduce((s,d)=>s+d,0);
+  const utile=FRISE_X1-FRISE_X0;
+  const reste=utile-TORDRE.length*FRISE_MIN;
   let x=FRISE_X0;
   const geo={};
-  brut.forEach(b=>{
-    const w=Math.max(b.px,FRISE_MIN)/plancher*total;
-    geo[b.id]={x,w};
+  TORDRE.forEach((id,i)=>{
+    const w=FRISE_MIN+duree[i]/totalDuree*reste;
+    geo[id]={x,w};
     x+=w;
   });
   return geo;
@@ -523,19 +526,19 @@ function friseSVG(opts={}){
     else if(choisie&&id===choisie)cls+=" bad";
     else if(bonne)cls+=" dim";
     return `<g class="${cls}" data-tr="${id}" role="button" tabindex="0" aria-label="${esc(t.label)}">
-      <rect x="${g.x.toFixed(1)}" y="34" width="${(g.w-2).toFixed(1)}" height="52" rx="5" fill="var(${t.v})"></rect>
-      <text x="${(g.x+g.w/2-1).toFixed(1)}" y="64" text-anchor="middle" class="trlab">${t.court.replace("-","‑")}</text>
+      <rect x="${g.x.toFixed(1)}" y="34" width="${(g.w-2).toFixed(1)}" height="60" rx="5" fill="var(${t.v})"></rect>
+      <text x="${(g.x+g.w/2-1).toFixed(1)}" y="68" text-anchor="middle" class="trlab">${t.court.replace("-","‑")}</text>
     </g>`;
   }).join("");
   const repere=(bonne&&an!=null)
-    ? `<g class="repere"><line x1="${friseX(an).toFixed(1)}" y1="26" x2="${friseX(an).toFixed(1)}" y2="94"></line>
+    ? `<g class="repere"><line x1="${friseX(an).toFixed(1)}" y1="26" x2="${friseX(an).toFixed(1)}" y2="102"></line>
        <text x="${friseX(an).toFixed(1)}" y="18" text-anchor="middle" class="rlab">${an}</text></g>`
     : "";
-  return `<svg viewBox="0 0 340 110" role="img" aria-label="Frise chronologique de 1910 à 2010">
-    <line class="axe" x1="${FRISE_X0}" y1="94" x2="${FRISE_X1}" y2="94"></line>
+  return `<svg viewBox="0 0 340 118" role="img" aria-label="Frise chronologique de 1910 à 2010">
+    <line class="axe" x1="${FRISE_X0}" y1="102" x2="${FRISE_X1}" y2="102"></line>
     ${bandes}${repere}
-    <text x="${FRISE_X0}" y="107" class="borne">1910</text>
-    <text x="${FRISE_X1}" y="107" text-anchor="end" class="borne">2010</text>
+    <text x="${FRISE_X0}" y="115" class="borne">1910</text>
+    <text x="${FRISE_X1}" y="115" text-anchor="end" class="borne">2010</text>
   </svg>`;
 }
 ```

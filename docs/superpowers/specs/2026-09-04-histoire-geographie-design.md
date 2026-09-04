@@ -104,9 +104,12 @@ partagées par les deux carnets d'histoire.
 | `t4` | 1946-1975 · la guerre froide s'installe | 1947, 1948-49, 1957, 1961, 1962 |
 | `t5` | 1976-2002 · la détente et l'Europe | 1989, 1991, 1992, 2002 |
 
-La largeur des tranches est proportionnelle à leur durée, mais chaque tranche reçoit une
-largeur minimale pour rester cliquable au doigt : `t1` et `t3`, très courtes, seraient
-sinon deux traits fins. La légende sous l'axe rappelle les bornes.
+Chaque tranche reçoit d'abord une largeur plancher de 46 unités, puis le reste de l'axe est
+réparti au prorata de la durée : `t1` et `t3`, très courtes, restent cliquables au doigt
+sans que la frise cesse d'être proportionnelle. Largeurs obtenues, en unités de viewBox :
+`t1` 49,9, `t2` 61,7, `t3` 51,5, `t4` 69,6, `t5` 67,2, soit 46 px rendus à 390 px de large
+et 42 px à 360 px, avec des bandes hautes de 60 unités. La légende sous l'axe rappelle les
+bornes.
 
 Après réponse, la tranche choisie et la bonne tranche sont colorées, et un repère marque la
 position exacte de la date sur l'axe.
