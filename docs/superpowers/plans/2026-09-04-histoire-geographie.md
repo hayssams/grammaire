@@ -1456,9 +1456,14 @@ const OOPS=[["😅","Oups, presque !"],["🙈","Pas cette fois !"],["🤔","Hmm,
    type "aire"  : polygone plein, cliquable sur toute sa surface.
    type "trait" : polyligne (un fleuve), cliquable via un halo.
    type "point" : repere ponctuel (une ville, une ile), cliquable via un halo.
-   Toute zone recoit en plus un halo circulaire de 22 px de rayon centre sur
-   cx,cy : sans lui, l'Ile-de-France ou la Corse sont injouables au doigt. */
-const HALO=22;
+   La cible tactile depend du type, et c'est ce qui rend la carte jouable au doigt :
+     - "aire"  : le polygone lui-meme, plus un halo circulaire pour les petites zones ;
+     - "trait" : le trace repris en transparent avec une forte epaisseur, si bien
+                 qu'un fleuve se tape n'importe ou sur sa longueur ;
+     - "point" : un halo circulaire centre sur cx,cy.
+   Mesure faite sur les vrais fonds : sans cela l'Ile-de-France tombe a 34 px, le
+   Luxembourg a 8 px et la Guadeloupe a 1 px. */
+const HALO=22, EPAISSEUR_CIBLE=11;
 function mapSVG(fond,opts={}){
   const {bonne,choisie,surligne,etiquettes}=opts;
   const corps=fond.zones.map(z=>{
@@ -1468,7 +1473,8 @@ function mapSVG(fond,opts={}){
     else if(choisie&&z.id===choisie)cls+=" bad";
     else if(bonne)cls+=" dim";
     const forme=z.type==="trait"
-      ? `<path d="${z.d}" fill="none"></path>`
+      ? `<path class="cible-trait" d="${z.d}" fill="none" stroke-width="${EPAISSEUR_CIBLE}"></path>`+
+        `<path d="${z.d}" fill="none"></path>`
       : z.type==="point"
         ? `<circle cx="${z.cx}" cy="${z.cy}" r="4.5"></circle>`
         : `<path d="${z.d}"></path>`;
@@ -1476,7 +1482,28 @@ function mapSVG(fond,opts={}){
     return `<g class="${cls}" data-z="${z.id}" role="button" tabindex="0" aria-label="${esc(z.nom)}">
       ${forme}<circle class="halo" cx="${z.cx}" cy="${z.cy}" r="${HALO}"></circle>${nom}</g>`;
   }).join("");
-  return `<svg viewBox="${fond.viewBox}" role="img" aria-label="Carte cliquable">${corps}</svg>`;
+  return `<svg viewBox="${opts.vb||fond.viewBox}" role="img" aria-label="Carte cliquable">${corps}</svg>`;
+}
+/* ---- la loupe ----
+   Sur une carte dense, viser au doigt est impossible : mesure faite, le Luxembourg
+   offre 8 px et la Guadeloupe 1 px. Un premier appui resserre donc le viewBox
+   autour du point vise, un second designe la zone. `cadreSur` sert aussi a montrer
+   de pres un pays surligne dans les manches ou l'eleve repond par un bouton. */
+const ZOOM=2.8;
+function cadre(fond){return fond.viewBox.split(/\s+/).map(Number);}
+function loupeVB(fond,cx,cy){
+  const [x0,y0,w,h]=cadre(fond), nw=w/ZOOM, nh=h/ZOOM;
+  const x=Math.max(x0,Math.min(x0+w-nw,cx-nw/2)), y=Math.max(y0,Math.min(y0+h-nh,cy-nh/2));
+  return `${x.toFixed(1)} ${y.toFixed(1)} ${nw.toFixed(1)} ${nh.toFixed(1)}`;
+}
+function cadreSur(fond,id){
+  const z=fond.zones.find(v=>v.id===id);
+  return z?loupeVB(fond,z.cx,z.cy):fond.viewBox;
+}
+/* convertit un clic en coordonnees du viewBox courant */
+function pointCarte(svg,ev){
+  const r=svg.getBoundingClientRect(), [x0,y0,w,h]=(svg.getAttribute("viewBox")).split(/\s+/).map(Number);
+  return [x0+(ev.clientX-r.left)/r.width*w, y0+(ev.clientY-r.top)/r.height*h];
 }
 /* branche les gestionnaires de clic et de clavier sur une carte deja rendue */
 function mapBrancher(hote,repondre){
@@ -1534,77 +1561,50 @@ carnet Europe, puis ajoute le CSS des cartes.
 }
 ```
 
-- [ ] **Step 4 : Écrire le fond administratif**
+- [ ] **Step 4 : Reprendre le fond administratif**
 
-Le tracé est schématique et dessiné à la main : ce qui compte, ce sont les **positions relatives**, données ici par les ancres `cx`/`cy`. Le repère est l'hexagone dans un `viewBox` de `0 0 320 340`, Lille en haut vers (196, 30), Brest à l'ouest vers (18, 120), Strasbourg à l'est vers (300, 105), Perpignan en bas vers (175, 322).
+Les tracés ne se dessinent plus à la main. Ils sont déjà fabriqués, vérifiés, et
+attendent dans `docs/superpowers/outils/geo/fonds.json`, sous la clé `FOND_ADMIN` :
+les 13 régions métropolitaines aux vraies frontières de l'IGN, simplifiées, dans le
+repère `0 0 320 340`. Lire ce fichier et le `README.md` du même répertoire avant de
+commencer.
 
-Dessiner les treize polygones en respectant ces ancres, qui sont aussi le centre du halo cliquable :
+Chaque zone y porte déjà `id`, `nom`, `capitale`, `type`, le tracé `d` et l'ancre
+`cx`/`cy`. Les ancres ont été contrôlées : chacune tombe dans sa propre région et
+dans aucune autre.
 
-| id | Région | Capitale | cx | cy |
-|---|---|---|---|---|
-| `hdf` | Hauts-de-France | Lille | 190 | 40 |
-| `nor` | Normandie | Rouen | 110 | 78 |
-| `idf` | Île-de-France | Paris | 168 | 96 |
-| `ge` | Grand Est | Strasbourg | 255 | 90 |
-| `bre` | Bretagne | Rennes | 42 | 118 |
-| `pdl` | Pays de la Loire | Nantes | 86 | 140 |
-| `cvl` | Centre-Val de Loire | Orléans | 150 | 145 |
-| `bfc` | Bourgogne-Franche-Comté | Dijon | 232 | 152 |
-| `naq` | Nouvelle-Aquitaine | Bordeaux | 92 | 225 |
-| `ara` | Auvergne-Rhône-Alpes | Lyon | 215 | 215 |
-| `occ` | Occitanie | Toulouse | 150 | 280 |
-| `pac` | Provence-Alpes-Côte d'Azur | Marseille | 255 | 275 |
-| `cor` | Corse | Ajaccio | 305 | 315 |
+Recopier ces données dans le `<script>` du carnet, en clair, sous la forme :
 
 ```js
 /* ============ donnees ============ */
-/* Trace schematique : les formes sont reconnaissables et bien placees les unes
-   par rapport aux autres, elles ne sont pas cartographiques. cx,cy est l'ancre
-   de l'etiquette et du halo cliquable. */
+/* Traces reels, IGN Admin Express, simplifies puis figes ici. Le site reste sans
+   dependance et sans acces reseau : les traces sont du texte dans le fichier, au
+   meme titre que les figures SVG de thales.html. */
 const REGIONS=[
- {id:"hdf",nom:"Hauts-de-France",capitale:"Lille",cx:190,cy:40},
- {id:"nor",nom:"Normandie",capitale:"Rouen",cx:110,cy:78},
- {id:"idf",nom:"Île-de-France",capitale:"Paris",cx:168,cy:96},
- {id:"ge",nom:"Grand Est",capitale:"Strasbourg",cx:255,cy:90},
- {id:"bre",nom:"Bretagne",capitale:"Rennes",cx:42,cy:118},
- {id:"pdl",nom:"Pays de la Loire",capitale:"Nantes",cx:86,cy:140},
- {id:"cvl",nom:"Centre-Val de Loire",capitale:"Orléans",cx:150,cy:145},
- {id:"bfc",nom:"Bourgogne-Franche-Comté",capitale:"Dijon",cx:232,cy:152},
- {id:"naq",nom:"Nouvelle-Aquitaine",capitale:"Bordeaux",cx:92,cy:225},
- {id:"ara",nom:"Auvergne-Rhône-Alpes",capitale:"Lyon",cx:215,cy:215},
- {id:"occ",nom:"Occitanie",capitale:"Toulouse",cx:150,cy:280},
- {id:"pac",nom:"Provence-Alpes-Côte d'Azur",capitale:"Marseille",cx:255,cy:275},
- {id:"cor",nom:"Corse",capitale:"Ajaccio",cx:305,cy:315}
+ {id:"idf",nom:"Île-de-France",capitale:"Paris",type:"aire",cx:...,cy:...,d:"M..."},
+ /* ... les douze autres, repris tels quels depuis fonds.json ... */
 ];
-/* d : a completer region par region, polygones jointifs formant l'hexagone.
-   Chaque entree de REGIONS recoit son trace ici. */
-const FOND_ADMIN={viewBox:"0 0 320 340",zones:REGIONS.map(r=>({...r,type:"aire",d:TRACES_ADMIN[r.id]}))};
+const FOND_ADMIN={viewBox:"0 0 320 340",zones:REGIONS};
 ```
 
-Écrire `TRACES_ADMIN` juste au-dessus : un objet `{id: "M ... Z"}` portant les treize tracés.
+**L'attribution est obligatoire.** La Licence Ouverte d'Etalab autorise la
+réutilisation à la seule condition de citer la source. Ajouter en pied de la feuille,
+après le dernier panneau :
 
-**Méthode, dans cet ordre.** Ouvrir l'atelier de tracé décrit dans les contraintes globales, viewBox `0 0 320 340`, pas de grille 20.
-
-1. Poser d'abord le **contour de l'hexagone** comme un seul polygone jetable, en passant par les points de côte : Dunkerque (205, 22), frontière belge (232, 48), Luxembourg (262, 60), Strasbourg (300, 92), Bâle (296, 130), Genève (272, 160), Alpes du nord (282, 198), Alpes du sud (292, 250), Nice (272, 292), delta du Rhône (215, 305), Perpignan (175, 322), Pyrénées ouest (128, 302), Hendaye (95, 296), côte landaise (60, 246), Gironde (48, 205), Charente (42, 170), Vendée (52, 152), Loire-Atlantique (30, 140), pointe du Raz (10, 128), Brest nord (24, 100), Saint-Malo (62, 92), Cotentin ouest (92, 62), Cotentin nord (110, 52), baie de Seine (130, 62), Somme (150, 40), Calais (178, 26), retour à Dunkerque.
-2. **Découper** ce contour de proche en proche, région par région, en partant du nord. Chaque région est un polygone fermé de cinq à huit points dont l'ancre `cx`/`cy` du tableau ci-dessus tombe à l'intérieur. Les régions voisines **partagent leurs sommets** : recopier les coordonnées d'un sommet déjà posé plutôt que d'en saisir un approchant, sinon des liserés apparaissent entre les régions.
-3. La **Corse** est le seul polygone détaché : un ovale allongé du nord au sud, autour de (305, 315), entièrement à l'écart du contour.
-
-**Exemple complet, à la bonne échelle**, pour les Hauts-de-France, qui s'appuient sur quatre points de côte et trois sommets intérieurs partagés avec la Normandie, l'Île-de-France et le Grand Est :
-
-```js
-const TRACES_ADMIN={
-  hdf:"M178 26 L205 22 L232 48 L212 74 L168 66 L150 40 Z",
-  /* ... les douze autres ... */
-  cor:"M298 296 L312 302 L314 326 L303 336 L296 322 Z"
-};
+```html
+  <p class="credit">Fonds de carte : IGN, Admin Express, sous Licence Ouverte (Etalab).</p>
 ```
 
-**Critères d'acceptation**, à vérifier dans l'atelier avant de recopier dans le carnet :
+```css
+.credit{margin:14px 0 0;font-size:11px;color:var(--ink-soft);text-align:center}
+```
 
-- les treize polygones dessinent ensemble une France reconnaissable, sans trou visible ni chevauchement ;
-- chaque ancre rouge tombe bien dans sa région ;
-- l'Île-de-France est petite mais visible, entourée par le Centre-Val de Loire, la Normandie, les Hauts-de-France et le Grand Est ;
-- la Corse est détachée, au sud-est.
+**Critères d'acceptation**, avant de passer à la suite :
+
+- `node /tmp/verif-grammaire/cartes.mjs geo-france.html FOND_ADMIN` se termine par
+  `ancres dans leur zone, aucun recouvrement d'ancre.` ;
+- la carte est reconnaissable comme la France, Bretagne, Cotentin et Corse compris ;
+- les 13 régions sont présentes, sans trou entre elles.
 
 - [ ] **Step 5 : La manche Les régions**
 
@@ -1791,84 +1791,43 @@ manches."
 - Consomme : `mapSVG`, `mapBrancher`, `FOND_ADMIN`, `HALO`, et le CSS des cartes, tous écrits à la tâche 5.
 - Produit : rien pour les tâches suivantes.
 
-- [ ] **Step 1 : Écrire le fond physique**
+- [ ] **Step 1 : Reprendre le fond physique**
 
-Même repère que `FOND_ADMIN` (`viewBox "0 0 320 340"`), pour que les deux cartes soient superposables mentalement. Ancres à respecter :
+Déjà fabriqué et vérifié, sous la clé `FOND_PHYSIQUE` de
+`docs/superpowers/outils/geo/fonds.json`, dans le même repère `0 0 320 340` que le
+fond administratif, donc superposable mentalement.
 
-| id | Élément | type | cx | cy |
-|---|---|---|---|---|
-| `seine` | la Seine | trait | 150 | 82 |
-| `loire` | la Loire | trait | 118 | 148 |
-| `garonne` | la Garonne | trait | 96 | 258 |
-| `rhone` | le Rhône | trait | 224 | 240 |
-| `armoricain` | le Massif Armoricain | aire | 60 | 120 |
-| `parisien` | le Bassin parisien | aire | 150 | 105 |
-| `aquitain` | le Bassin aquitain | aire | 90 | 240 |
-| `central` | le Massif Central | aire | 175 | 225 |
-| `vosges` | les Vosges | aire | 268 | 110 |
-| `jura` | le Jura | aire | 262 | 168 |
-| `alpes` | les Alpes | aire | 255 | 235 |
-| `pyrenees` | les Pyrénées | aire | 135 | 310 |
+Il contient douze zones :
 
-Les quatre fleuves sont des `<path>` ouverts qui suivent ces parcours :
+- **quatre fleuves**, `type:"trait"`, tracés réels tirés de Natural Earth : la Seine,
+  la Loire, la Garonne et le Rhône, chacun suivant son cours véritable de la source à
+  l'embouchure ;
+- **huit reliefs**, `type:"aire"`, ellipses schématiques mais posées aux vraies
+  coordonnées géographiques : Massif Armoricain, Bassin parisien, Bassin aquitain,
+  Massif Central, Vosges, Jura, Alpes, Pyrénées.
 
-- **Seine** : source en Bourgogne (215, 140) puis (185, 112), Paris (168, 92), Rouen (118, 68), embouchure dans la Manche (92, 58).
-- **Loire** : source au Massif Central (190, 215) puis (168, 165), Orléans (150, 130), Tours (120, 145), Nantes (72, 152), embouchure atlantique (40, 158).
-- **Garonne** : Pyrénées (140, 300), Toulouse (128, 285), (105, 255), Bordeaux (78, 232), estuaire de la Gironde (52, 220).
-- **Rhône** : lac Léman (272, 168), Lyon (215, 200), (218, 240), Avignon (218, 270), delta méditerranéen (215, 305).
+Recopier ces douze zones dans le `<script>`, **les reliefs d'abord, les fleuves
+ensuite**, pour que les fleuves se dessinent par-dessus les aplats :
 
 ```js
-const FLEUVES=[
- {id:"seine",nom:"la Seine",type:"trait",cx:150,cy:82,d:"M215 140 L185 112 L168 92 L118 68 L92 58"},
- {id:"loire",nom:"la Loire",type:"trait",cx:118,cy:148,d:"M190 215 L168 165 L150 130 L120 145 L72 152 L40 158"},
- {id:"garonne",nom:"la Garonne",type:"trait",cx:96,cy:258,d:"M140 300 L128 285 L105 255 L78 232 L52 220"},
- {id:"rhone",nom:"le Rhône",type:"trait",cx:224,cy:240,d:"M272 168 L215 200 L218 240 L218 270 L215 305"}
-];
-const RELIEFS=[
- {id:"armoricain",nom:"le Massif Armoricain",cx:60,cy:120},
- {id:"parisien",nom:"le Bassin parisien",cx:150,cy:105},
- {id:"aquitain",nom:"le Bassin aquitain",cx:90,cy:240},
- {id:"central",nom:"le Massif Central",cx:175,cy:225},
- {id:"vosges",nom:"les Vosges",cx:268,cy:110},
- {id:"jura",nom:"le Jura",cx:262,cy:168},
- {id:"alpes",nom:"les Alpes",cx:255,cy:235},
- {id:"pyrenees",nom:"les Pyrénées",cx:135,cy:310}
-];
-/* TRACES_RELIEF : un ovale ou une bande allongee par relief, centre sur cx,cy.
-   Les massifs (Vosges, Jura, Alpes, Pyrenees) sont des bandes etroites orientees
-   comme sur la carte du PDF ; les bassins sont de larges aplats. */
-const FOND_PHYSIQUE={viewBox:"0 0 320 340",zones:[
-  ...RELIEFS.map(r=>({...r,type:"aire",d:TRACES_RELIEF[r.id]})),
-  ...FLEUVES
-]};
+const FOND_PHYSIQUE={viewBox:"0 0 320 340",zones:[ /* les 8 reliefs, puis les 4 fleuves */ ]};
 ```
 
-Écrire `TRACES_RELIEF` au-dessus, dans l'atelier, même viewBox que le fond administratif.
-
-**Méthode.** Deux familles de formes, et aucune contrainte de jointivité cette fois : les reliefs sont des taches posées sur la carte, elles peuvent se toucher ou laisser du vide.
-
-- Les **bassins** (`parisien`, `aquitain`) et les **massifs anciens** (`armoricain`, `central`) sont de larges aplats arrondis, cinq à sept points, débordant largement autour de leur ancre.
-- Les **chaînes** (`vosges`, `jura`, `alpes`, `pyrenees`) sont des bandes étroites, longues d'environ 70 px et larges de 22 px, orientées comme sur la carte du PDF : Vosges et Jura verticales, Alpes en diagonale du nord-est au sud-ouest, Pyrénées horizontales.
-
-**Exemple complet, à la bonne échelle**, une chaîne étroite et un large bassin :
-
-```js
-const TRACES_RELIEF={
-  pyrenees:"M104 306 L168 314 L172 328 L106 320 Z",
-  aquitain:"M62 208 L118 214 L126 258 L88 276 L58 250 Z",
-  /* ... les six autres ... */
-};
-```
-
-Les reliefs sont listés **avant** les fleuves dans le tableau `zones`, pour que les fleuves se dessinent par-dessus les aplats.
-
-**Critères d'acceptation :** chaque bande de chaîne est assez épaisse pour être visible, chaque ancre rouge tombe dans sa forme, et les quatre fleuves du step suivant restent lisibles par-dessus. Ajouter au CSS le remplissage propre aux reliefs :
+Le style propre à cette manche, à ajouter au CSS des cartes :
 
 ```css
-.fig .z.aire path{fill:var(--terre)}
 #relief .fig .z.aire path{fill:var(--relief);opacity:.75}
 #relief .fig .z.aire.good path{opacity:1}
 ```
+
+Un fleuve se tape n'importe où sur sa longueur grâce au tracé transparent épaissi
+que `mapSVG` pose sous le trait visible. C'est nécessaire : l'ancre de la Garonne et
+celle du Bassin aquitain ne sont qu'à 11 px l'une de l'autre, un halo circulaire les
+mettrait en concurrence.
+
+**Critère d'acceptation** :
+`node /tmp/verif-grammaire/cartes.mjs geo-france.html FOND_PHYSIQUE` se termine par
+`ancres dans leur zone, aucun recouvrement d'ancre.`
 
 - [ ] **Step 2 : La manche Fleuves et reliefs**
 
@@ -1925,89 +1884,54 @@ function relEnd(){
 }
 ```
 
-- [ ] **Step 3 : Écrire le fond du monde et les données mers et DROM**
+- [ ] **Step 3 : Les mers, puis le fond du monde**
 
-La manche enchaîne deux cartes : d'abord les quatre façades maritimes sur l'hexagone, puis les cinq DROM sur un planisphère très simplifié.
+La manche enchaîne deux cartes : les façades maritimes sur l'hexagone, puis les cinq
+DROM sur le planisphère.
+
+**Les mers restent schématiques**, parce qu'aucune donnée ne les délimite : ce sont
+quatre aplats d'eau posés dans les marges autour de la France, à dessiner dans
+l'atelier de tracé, repère `0 0 320 340`, chacun large d'au moins 44 unités.
+
+- `nord` : en haut à droite, au-dessus des Hauts-de-France ;
+- `manche` : en haut à gauche, au-dessus de la Normandie et du Cotentin ;
+- `atlantique` : le long du flanc ouest, de la Bretagne aux Landes ;
+- `mediterranee` : en bas, sous l'Occitanie et Provence-Alpes-Côte d'Azur, en
+  laissant la Corse à l'intérieur.
+
+Le fond `FOND_MERS` empile les 13 régions en zones **inertes**, pour servir de repère
+sans réagir au clic, puis les quatre mers :
 
 ```js
-const MERS=[
- {id:"nord",nom:"la mer du Nord",cx:215,cy:12,
-  w:"Elle borde le nord des Hauts-de-France, au-delà du détroit du Pas-de-Calais."},
- {id:"manche",nom:"la Manche",cx:110,cy:28,
-  w:"Entre la Normandie, la Bretagne et l'Angleterre. C'est une mer, pas un océan."},
- {id:"atlantique",nom:"l'océan Atlantique",cx:22,cy:205,
-  w:"Il borde la Bretagne, les Pays de la Loire et la Nouvelle-Aquitaine."},
- {id:"mediterranee",nom:"la mer Méditerranée",cx:210,cy:332,
-  w:"Elle borde l'Occitanie, la Provence-Alpes-Côte d'Azur et la Corse."}
-];
-/* les quatre facades sont des aplats d'eau autour de l'hexagone, ajoutes au fond
-   administratif : les regions restent visibles dessous comme reperes */
 const FOND_MERS={viewBox:"0 0 320 340",zones:[
-  ...REGIONS.map(r=>({...r,type:"aire",d:TRACES_ADMIN[r.id],inerte:true})),
-  ...MERS.map(m=>({...m,type:"aire",d:TRACES_MERS[m.id]}))
-]};
-
-const DROM=[
- {id:"gua",nom:"la Guadeloupe",chef:"Basse-Terre",cx:88,cy:92,
-  w:"Aux Antilles, dans la mer des Caraïbes. Chef-lieu : Basse-Terre."},
- {id:"mar",nom:"la Martinique",chef:"Fort-de-France",cx:92,cy:104,
-  w:"Aux Antilles également, juste au sud de la Guadeloupe. Chef-lieu : Fort-de-France."},
- {id:"guy",nom:"la Guyane",chef:"Cayenne",cx:106,cy:116,
-  w:"En Amérique du Sud, entre le Brésil et le Suriname. C'est le plus vaste des DROM."},
- {id:"may",nom:"Mayotte",chef:"Mamoudzou",cx:218,cy:118,
-  w:"Dans l'océan Indien, entre l'Afrique et Madagascar. Département depuis 2011."},
- {id:"reu",nom:"La Réunion",chef:"Saint-Denis",cx:230,cy:126,
-  w:"Dans l'océan Indien, à l'est de Madagascar. Chef-lieu : Saint-Denis."}
-];
-/* planisphere tres simplifie : des masses continentales grises et les cinq DROM
-   en points cliquables. La France metropolitaine y figure comme repere inerte. */
-const FOND_MONDE={viewBox:"0 0 360 180",zones:[
-  ...CONTINENTS,
-  ...DROM.map(d=>({...d,type:"point",d:""}))
+  ...REGIONS.map(r=>({...r,inerte:true})),
+  ...MERS
 ]};
 ```
 
-Écrire au-dessus `TRACES_MERS` puis `CONTINENTS`, toujours dans l'atelier.
-
-**`TRACES_MERS`**, viewBox `0 0 320 340` : quatre aplats d'eau qui remplissent les marges autour de l'hexagone, sans le recouvrir. Chacun doit être assez large pour rester cliquable : au moins 44 px dans sa plus petite dimension.
-
-- `nord` : bande en haut à droite, au-dessus des Hauts-de-France, de (185, 0) à (320, 45) environ.
-- `manche` : bande en haut à gauche, au-dessus de la Normandie et du Cotentin, de (0, 0) à (185, 55) environ.
-- `atlantique` : bande verticale le long du flanc ouest, de (0, 55) à (55, 300) environ, en épousant la côte bretonne et landaise.
-- `mediterranee` : bande en bas, sous l'Occitanie et Provence-Alpes-Côte d'Azur, de (110, 300) à (320, 340) environ, en laissant la Corse dedans.
-
-**Exemple complet, à la bonne échelle** :
-
-```js
-const TRACES_MERS={
-  manche:"M0 0 L185 0 L178 26 L130 62 L110 52 L92 62 L62 92 L24 100 L0 66 Z",
-  /* ... les trois autres ... */
-};
-```
-
-**`CONTINENTS`**, viewBox `0 0 360 180` : un planisphère très grossier, uniquement là pour situer les DROM. Quatre à six masses grises, `type:"aire"` et `inerte:true`, sans nom affiché. Repères de position : Amérique du Nord vers (75, 55), Amérique du Sud vers (105, 125), Europe vers (176, 55), Afrique vers (180, 105), Asie vers (255, 60), Océanie vers (300, 130). La France métropolitaine est un petit rectangle repère vers (176, 62), lui aussi inerte.
-
-```js
-const CONTINENTS=[
- {id:"amsud",nom:"Amérique du Sud",type:"aire",inerte:true,cx:105,cy:125,
-  d:"M88 100 L120 96 L126 128 L106 158 L92 140 Z"},
- /* ... les autres masses, puis le repère France ... */
-];
-```
-
-**Critères d'acceptation :** sur le planisphère, les cinq ancres de DROM tombent au bon endroit (Guadeloupe et Martinique dans les Caraïbes à l'ouest, Guyane accrochée à l'Amérique du Sud, Mayotte et La Réunion dans l'océan Indien), et les deux ancres antillaises restent distinctes l'une de l'autre malgré leur proximité.
-
-Les zones marquées `inerte:true` ne doivent pas être cliquables. Compléter `mapSVG` en conséquence, juste après le calcul de `cls` :
+Compléter `mapSVG` pour les zones inertes, juste après le calcul de `cls` :
 
 ```js
     if(z.inerte)return `<g class="z inerte ${z.type}"><path d="${z.d}"></path></g>`;
 ```
 
-et ajouter au CSS :
-
 ```css
 .fig .z.inerte path{fill:var(--terre);stroke:var(--paper-2);stroke-width:1;cursor:default;pointer-events:none;opacity:.6}
 ```
+
+**Le planisphère est déjà fabriqué**, sous la clé `FOND_MONDE` de `fonds.json`, repère
+`0 0 360 180` : les continents en une zone inerte, les cinq DROM en `type:"point"` à
+leurs vraies coordonnées, et la France métropolitaine en repère inerte.
+
+**La loupe est obligatoire ici.** Mesure faite sur les vraies positions : la Guadeloupe
+et la Martinique ne sont qu'à 1,7 unité l'une de l'autre, soit environ 1 px sur un
+téléphone. Sans loupe la manche est injouable. Un premier appui sur le planisphère
+resserre le cadre autour du point visé, un second désigne le territoire, et un bouton
+« Vue d'ensemble » revient en arrière.
+
+**Critère d'acceptation** :
+`node /tmp/verif-grammaire/cartes.mjs geo-france.html FOND_MERS` puis la même chose sur
+`FOND_MONDE` se terminent par `ancres dans leur zone, aucun recouvrement d'ancre.`
 
 - [ ] **Step 4 : La manche Mers et DROM**
 
@@ -2142,156 +2066,99 @@ Copier `geo-france.html` vers `geo-europe.html`, puis :
 
 4. Panneaux `placer`, `nommer`, `membre`, `voisins` ; le bloc `/* onglets */` appelle `plaIntro`, `nomIntro`, `memIntro`, `voiIntro` ; `logResult` reçoit `page:"geo-europe"` ; l'amorçage final est `plaIntro();`.
 
-- [ ] **Step 2 : Écrire le fond d'Europe**
+- [ ] **Step 2 : Reprendre le fond d'Europe**
 
-`viewBox "0 0 360 320"`. Repère : Islande en haut à gauche, Finlande en haut à droite, Portugal en bas à gauche, Chypre en bas à droite. Ancres à respecter, elles fixent les positions relatives :
+Déjà fabriqué et vérifié, sous la clé `FOND_EUROPE` de
+`docs/superpowers/outils/geo/fonds.json`, repère `0 0 360 320` : les 40 pays aux vraies
+frontières, tirés de Natural Earth, avec `ue: true` pour les 27 membres de l'Union et
+`false` pour les treize autres. Les ancres ont été contrôlées : chacune tombe dans son
+propre pays et dans aucun autre.
+
+Natural Earth est dans le **domaine public**, aucune attribution n'est exigée pour
+cette carte. Le carnet France, lui, porte la mention IGN.
+
+Recopier les 40 zones en clair dans le `<script>`, en leur adjoignant le champ `w`
+qui explique, pour chaque pays hors Union, pourquoi il n'en fait pas partie :
 
 ```js
-/* ue : true pour les 27 membres, false pour les autres pays affiches sur la carte.
-   Trace schematique : formes reconnaissables, positions relatives justes, pas
-   de frontieres exactes. */
-const PAYS=[
- {id:"pt",nom:"Portugal",ue:true,cx:28,cy:232},
- {id:"es",nom:"Espagne",ue:true,cx:58,cy:235},
- {id:"fr",nom:"France",ue:true,cx:98,cy:185},
- {id:"ie",nom:"Irlande",ue:true,cx:48,cy:92},
- {id:"be",nom:"Belgique",ue:true,cx:110,cy:140},
- {id:"nl",nom:"Pays-Bas",ue:true,cx:114,cy:124},
- {id:"lu",nom:"Luxembourg",ue:true,cx:122,cy:152},
- {id:"de",nom:"Allemagne",ue:true,cx:145,cy:140},
- {id:"dk",nom:"Danemark",ue:true,cx:144,cy:100},
- {id:"se",nom:"Suède",ue:true,cx:172,cy:66},
- {id:"fi",nom:"Finlande",ue:true,cx:205,cy:52},
- {id:"ee",nom:"Estonie",ue:true,cx:212,cy:88},
- {id:"lv",nom:"Lettonie",ue:true,cx:212,cy:104},
- {id:"lt",nom:"Lituanie",ue:true,cx:208,cy:118},
- {id:"pl",nom:"Pologne",ue:true,cx:185,cy:132},
- {id:"cz",nom:"Tchéquie",ue:true,cx:168,cy:156},
- {id:"sk",nom:"Slovaquie",ue:true,cx:192,cy:162},
- {id:"at",nom:"Autriche",ue:true,cx:162,cy:175},
- {id:"hu",nom:"Hongrie",ue:true,cx:192,cy:180},
- {id:"si",nom:"Slovénie",ue:true,cx:166,cy:190},
- {id:"hr",nom:"Croatie",ue:true,cx:176,cy:200},
- {id:"ro",nom:"Roumanie",ue:true,cx:216,cy:186},
- {id:"bg",nom:"Bulgarie",ue:true,cx:214,cy:212},
- {id:"gr",nom:"Grèce",ue:true,cx:203,cy:258},
- {id:"it",nom:"Italie",ue:true,cx:155,cy:225},
- {id:"mt",nom:"Malte",ue:true,cx:163,cy:285},
- {id:"cy",nom:"Chypre",ue:true,cx:258,cy:275},
- {id:"gb",nom:"Royaume-Uni",ue:false,cx:76,cy:88,w:"Membre de 1973 à 2020, il est sorti de l'Union après le Brexit."},
- {id:"ch",nom:"Suisse",ue:false,cx:135,cy:178,w:"Au cœur de l'Europe, mais elle n'a jamais adhéré à l'Union."},
- {id:"no",nom:"Norvège",ue:false,cx:148,cy:52,w:"Elle a refusé l'adhésion par référendum, à deux reprises."},
- {id:"is",nom:"Islande",ue:false,cx:30,cy:32,w:"Île de l'Atlantique nord, elle n'est pas membre de l'Union."},
- {id:"rs",nom:"Serbie",ue:false,cx:196,cy:205,w:"Candidate à l'adhésion, pas encore membre."},
- {id:"ba",nom:"Bosnie-Herzégovine",ue:false,cx:182,cy:212,w:"Candidate à l'adhésion, pas encore membre."},
- {id:"al",nom:"Albanie",ue:false,cx:192,cy:235,w:"Candidate à l'adhésion, pas encore membre."},
- {id:"mk",nom:"Macédoine du Nord",ue:false,cx:200,cy:228,w:"Candidate à l'adhésion, pas encore membre."},
- {id:"me",nom:"Monténégro",ue:false,cx:188,cy:220,w:"Candidat à l'adhésion, pas encore membre."},
- {id:"ua",nom:"Ukraine",ue:false,cx:240,cy:158,w:"Candidate depuis 2022, pas encore membre."},
- {id:"md",nom:"Moldavie",ue:false,cx:228,cy:172,w:"Candidate depuis 2022, pas encore membre."},
- {id:"by",nom:"Biélorussie",ue:false,cx:218,cy:132,w:"Pas membre et pas candidate."},
- {id:"tr",nom:"Turquie",ue:false,cx:250,cy:245,w:"Candidate de longue date, les négociations sont à l'arrêt."}
-];
+const PAYS=[ /* les 40 zones de fonds.json, plus w pour les treize hors Union */ ];
 const UE=PAYS.filter(p=>p.ue);
-const FOND_EUROPE={viewBox:"0 0 360 320",zones:PAYS.map(p=>({...p,type:"aire",d:TRACES_EUROPE[p.id]}))};
+const FOND_EUROPE={viewBox:"0 0 360 320",zones:PAYS};
 ```
 
-Écrire `TRACES_EUROPE` au-dessus, dans l'atelier, viewBox `0 0 360 320`, pas de grille 20 : un polygone par pays, centré sur son ancre.
-
-**Méthode.** Poser d'abord les cinq formes que l'œil reconnaît immédiatement, elles servent de calage à toutes les autres :
-
-1. la **péninsule ibérique**, un bloc large en bas à gauche, découpé en Portugal (bande ouest étroite) et Espagne ;
-2. la **botte italienne**, une diagonale du nord-ouest au sud-est de (140, 200) à (175, 258), avec la Sicile détachée vers (160, 268) ;
-3. la **Scandinavie**, deux bandes verticales accolées, Norvège à l'ouest, Suède à l'est, surmontant le Danemark ;
-4. les **îles britanniques**, deux formes détachées du continent : Irlande à l'ouest, Royaume-Uni allongé du sud-ouest au nord-est ;
-5. la **Grèce**, avec sa côte découpée, en bas au centre-droit.
-
-Remplir ensuite le centre du continent de proche en proche, les pays voisins partageant leurs sommets comme pour les régions de France. Malte et Chypre sont deux petites îles détachées ; le Luxembourg est le plus petit polygone continental, coincé entre Belgique, France et Allemagne. Ces trois-là ne sont jouables que grâce à leur halo de 22 px : vérifier au doigt.
-
-**Exemple complet, à la bonne échelle**, une île minuscule et un pays continental :
-
-```js
-const TRACES_EUROPE={
-  mt:"M160 282 L166 281 L167 288 L161 289 Z",
-  pt:"M18 212 L38 214 L38 252 L22 254 Z",
-  /* ... les trente-neuf autres ... */
-};
-```
-
-**Critères d'acceptation :** la silhouette générale de l'Europe se reconnaît sans étiquettes ; les îles britanniques, la Sicile, Malte, Chypre et l'Islande sont bien détachées du continent ; chaque ancre rouge tombe dans son pays ; aucun pays n'est réduit à un trait invisible.
-
-Distinguer visuellement membres et non-membres dans le CSS :
-
-```css
-#membre .fig .z path{fill:var(--terre)}
-.fig .z.horsue path{fill:#E2E0DA}
-```
-
-et, dans `mapSVG`, ajouter la classe quand la zone le demande, juste après le calcul de `cls` :
-
-```js
-    if(z.ue===false)cls+=" horsue";
-```
-
-Attention : cette classe ne doit **pas** être posée dans les manches 1, 2 et 3, sinon la réponse à « Dans l'UE ou pas ? » se lit sur la couleur. Passer donc `opts.montrerUE` et ne l'appliquer que dans la manche 4 :
+Distinguer visuellement membres et non-membres, mais **jamais pendant la manche
+« Dans l'UE ou pas ? »**, sinon la réponse se lit sur la couleur. D'où l'option
+`montrerUE`, appliquée seulement dans la manche des voisins :
 
 ```js
     if(opts.montrerUE&&z.ue===false)cls+=" horsue";
 ```
 
-- [ ] **Step 3 : La manche Placer**
+```css
+.fig .z.horsue path{fill:#E2E0DA}
+```
+
+**Critère d'acceptation** :
+`node /tmp/verif-grammaire/cartes.mjs geo-europe.html FOND_EUROPE` se termine par
+`ancres dans leur zone, aucun recouvrement d'ancre.`, et la silhouette de l'Europe se
+reconnaît sans étiquettes.
+
+- [ ] **Step 3 : La manche Placer, avec la loupe**
+
+Douze pays tirés parmi les vingt-sept. On donne un nom, l'élève désigne le pays.
+
+**Le clic direct est impossible sur cette carte, et ce n'est pas un défaut
+d'implémentation : c'est une contrainte physique.** Mesures faites sur les vrais
+tracés, en pixels rendus à 390 px de large : Belgique et Luxembourg 8 px, Slovénie et
+Croatie 9 px, Autriche, Hongrie et Slovaquie 10 px, Malte 1 px. Restreindre aux 27
+membres n'y change rien, et découper l'Europe en quatre cartes zoomées ne monte qu'à
+16 à 27 px. Un doigt en fait environ 45.
+
+La manche se joue donc **en deux appuis** :
+
+1. la carte s'affiche en vue d'ensemble ; l'élève appuie sur la zone où il pense que
+   se trouve le pays. Le point d'appui est converti par `pointCarte`, puis le viewBox
+   se resserre par `loupeVB` autour de ce point ;
+2. sur la carte zoomée, l'élève appuie sur le pays lui-même, et c'est cet appui qui
+   répond. Un bouton « Vue d'ensemble » permet de ressortir sans répondre.
+
+Le premier appui ne vaut pas réponse et ne coûte rien : il ne sert qu'à approcher. Il
+ne révèle rien non plus, puisque c'est l'élève qui choisit où regarder.
 
 ```js
-/* ============ 1. placer ============ */
-const A={list:[],i:0,score:0,errs:[],t0:0,streak:0,secs:0};
-const ap=$("#placer");
-function plaIntro(){
-  ap.innerHTML=`<div class="intro">
-    <h2>Place les pays de l'Union</h2>
-    <p>Douze pays tirés parmi les vingt-sept membres. On te donne un nom, tu cliques le pays sur la carte. La carte est schématique : ce sont les positions qui comptent.</p>
-    <button class="btn" id="ago">Commencer la manche</button>
-  </div>`;
-  $("#ago").onclick=plaStart;
-}
-function plaStart(){
-  A.list=pick(UE,12);A.i=0;A.score=0;A.errs=[];A.streak=0;A.t0=Date.now();plaStep();
-}
-function plaStep(){
-  if(A.i>=A.list.length)return plaEnd();
-  const q=A.list[A.i];
-  ap.innerHTML=`
-    <div class="status"><span>Pays <b>${A.i+1}</b>/${A.list.length}</span><span class="grow"></span><span>Points <b id="asc">${A.score}</b></span></div>
-    <div id="acard">
-      <div class="react" id="av"></div>
-      <p class="annot" id="aan">Clique sur ce pays</p>
-      <p class="hyp enonce">${esc(q.nom)}</p>
-      <div class="fig" id="afig">${mapSVG(FOND_EUROPE)}</div>
-      <p class="why" id="awhy"></p>
-    </div>
-    <div class="row-end"><button class="btn hidden" id="anext">Suivant</button></div>`;
-  mapBrancher($("#afig"),id=>{
-    const ok=id===q.id;
-    const clique=PAYS.find(p=>p.id===id);
-    if(ok)A.score+=10;else A.errs.push({rep:q.nom,w:`Tu avais cliqué ${clique.nom}.`});
-    $("#afig").innerHTML=mapSVG(FOND_EUROPE,{bonne:q.id,choisie:id,etiquettes:true});
-    showVerdict(ok,"#av",A);
-    $("#acard").classList.add("revealed");
-    $("#aan").textContent=q.nom;
-    $("#awhy").innerHTML=ok?"":`<em>Non, ça c'était ${esc(clique.nom)}.</em>`;
-    $("#asc").textContent=A.score;
-    const n=$("#anext");n.classList.remove("hidden");
-    n.textContent=A.i===A.list.length-1?"Voir le bilan":"Suivant";
-    n.onclick=()=>{A.i++;plaStep();};
-    n.focus({preventScroll:true});
-  });
-}
-function plaEnd(){
-  A.secs=Math.round((Date.now()-A.t0)/1000);
-  logResult("placer",A.score,A.list.length-A.errs.length,A.list.length,A.secs);
-  ap.innerHTML=bilanHTML(A,"Tu places les vingt-sept. Passe à « Reconnaître », c'est le sens inverse.");
-  $("#again",ap).onclick=plaStart;
+function placStep(){
+  /* etat : P.vb vaut null en vue d'ensemble, sinon le viewBox resserre */
+  ...
+  const fig=$("#afig");
+  const svg=()=>fig.querySelector("svg");
+  function dessiner(){
+    fig.innerHTML=mapSVG(FOND_EUROPE,P.vb?{vb:P.vb}:{});
+    if(P.vb){
+      mapBrancher(fig,repondre);                       /* zoome : on repond */
+    }else{
+      svg().onclick=ev=>{                              /* vue d'ensemble : on zoome */
+        const [x,y]=pointCarte(svg(),ev);
+        P.vb=loupeVB(FOND_EUROPE,x,y);
+        dessiner();
+      };
+    }
+    $("#aretour").classList.toggle("hidden",!P.vb);
+  }
+  $("#aretour").onclick=()=>{P.vb=null;dessiner();};
+  dessiner();
 }
 ```
+
+Après réponse, revenir en vue d'ensemble pour montrer la bonne réponse **dans son
+contexte européen**, ce qui est justement ce que l'élève doit retenir :
+
+```js
+    P.vb=null;
+    fig.innerHTML=mapSVG(FOND_EUROPE,{bonne:q.id,choisie:id,etiquettes:true});
+```
+
+Le reste de la manche, énoncé, score, série, bilan, `logResult("placer",...)`, suit la
+charpente des autres manches du projet.
 
 - [ ] **Step 4 : La manche Reconnaître**
 
