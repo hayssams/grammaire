@@ -690,7 +690,7 @@ function memEnd(){
 }
 
 /* ============ 4. les voisins de la France ============ */
-const V={list:[],i:0,score:0,errs:[],t0:0,streak:0,secs:0};
+const V={list:[],i:0,score:0,errs:[],t0:0,streak:0,secs:0,vb:null};
 const vp=$("#voisins");
 const VOISINS=[
  {id:"be",w:"Elle borde le nord de la France, des Hauts-de-France au Grand Est."},
@@ -704,7 +704,7 @@ const VOISINS=[
 function voiIntro(){
   vp.innerHTML=`<div class="intro">
     <h2>Les voisins de la France</h2>
-    <p>Sept pays entourent la France sur la carte. Clique celui qu'on te nomme. Les pays qui ne sont pas dans l'Union sont en gris : ici, ça n'a pas d'importance.</p>
+    <p>Sept pays entourent la France sur la carte, trop serrés pour un clic direct : comme pour Placer, touche d'abord l'endroit où tu penses que se trouve le pays nommé, la carte se resserre, puis désigne-le. Les pays qui ne sont pas dans l'Union restent en gris aux deux niveaux : ici, ça n'a pas d'importance.</p>
     <button class="btn" id="vgo">Commencer la manche</button>
   </div>`;
   $("#vgo").onclick=voiStart;
@@ -712,34 +712,61 @@ function voiIntro(){
 function voiStart(){
   V.list=shuffle(VOISINS);V.i=0;V.score=0;V.errs=[];V.streak=0;V.t0=Date.now();voiStep();
 }
+/* Meme mecanique a deux appuis que Placer (voir la note en tete du fichier) :
+   pas de cadreSur ici, qui centrerait le cadre sur la bonne reponse et la
+   revelerait avant meme le premier appui. montrerUE reste actif aux deux
+   niveaux de zoom : la question ne porte pas sur l'appartenance a l'Union. */
 function voiStep(){
   if(V.i>=V.list.length)return voiEnd();
   const q=V.list[V.i];
+  V.vb=null;
   vp.innerHTML=`
     <div class="status"><span>Voisin <b>${V.i+1}</b>/${V.list.length}</span><span class="grow"></span><span>Points <b id="vsc">${V.score}</b></span></div>
     <div id="vcard">
       <div class="react" id="vv"></div>
-      <p class="annot" id="van">Clique sur ce voisin de la France</p>
+      <p class="annot" id="van">Touche l'endroit où tu penses qu'il se trouve</p>
       <p class="hyp enonce">${esc(q.nom)}</p>
-      <div class="fig" id="vfig">${mapSVG(FOND_EUROPE,{surligne:"fr",montrerUE:true})}</div>
+      <div class="fig"><div id="vzfig"></div><button class="btn ghost retour hidden" id="vzretour" type="button">Vue d'ensemble</button></div>
       <p class="why" id="vwhy"></p>
     </div>
     <div class="row-end"><button class="btn hidden" id="vnext">Suivant</button></div>`;
-  mapBrancher($("#vfig"),id=>{
+  const fig=$("#vzfig");
+  const svg=()=>fig.querySelector("svg");
+  function dessiner(){
+    fig.innerHTML=mapSVG(FOND_EUROPE,V.vb?{vb:V.vb,montrerUE:true}:{montrerUE:true});
+    if(V.vb){
+      redimensionnerCadre(svg(),V.vb);                 /* etiquettes a la bonne taille dans le cadre resserre */
+      mapBrancher(fig,repondre);                       /* zoome : on repond */
+    }else{
+      svg().onclick=ev=>{                              /* vue d'ensemble : on zoome */
+        const [x,y]=pointCarte(svg(),ev);
+        V.vb=loupeVB(FOND_EUROPE,x,y);
+        dessiner();
+      };
+    }
+    $("#vzretour").classList.toggle("hidden",!V.vb);
+    $("#van").textContent=V.vb?"Désigne le pays":"Touche l'endroit où tu penses qu'il se trouve";
+  }
+  $("#vzretour").onclick=()=>{V.vb=null;dessiner();};
+  function repondre(id){
     const ok=id===q.id;
     const clique=PAYS.find(p=>p.id===id);
     if(ok)V.score+=10;else V.errs.push({rep:q.nom,w:q.w});
-    $("#vfig").innerHTML=mapSVG(FOND_EUROPE,{bonne:q.id,choisie:id,etiquettes:true,montrerUE:true});
+    V.vb=null;
+    /* retour en vue d'ensemble pour montrer la bonne reponse dans son contexte europeen */
+    fig.innerHTML=mapSVG(FOND_EUROPE,{bonne:q.id,choisie:id,etiquettes:true,montrerUE:true});
+    $("#vzretour").classList.add("hidden");
+    $("#van").textContent="Voici où il se trouve";
     showVerdict(ok,"#vv",V);
     $("#vcard").classList.add("revealed");
-    $("#van").textContent=q.nom;
     $("#vwhy").innerHTML=(ok?"":`<em>Non, ça c'était ${esc(clique.nom)}. </em>`)+q.w;
     $("#vsc").textContent=V.score;
     const n=$("#vnext");n.classList.remove("hidden");
     n.textContent=V.i===V.list.length-1?"Voir le bilan":"Suivant";
     n.onclick=()=>{V.i++;voiStep();};
     n.focus({preventScroll:true});
-  });
+  }
+  dessiner();
 }
 function voiEnd(){
   V.secs=Math.round((Date.now()-V.t0)/1000);
