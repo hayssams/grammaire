@@ -107,10 +107,11 @@ nav{display:flex;gap:6px;margin:18px 0 0;align-items:flex-end}
 .fig .good rect:not(.cible){opacity:1;stroke:var(--ink);stroke-width:2}
 .fig .bad rect:not(.cible){opacity:.35;stroke:var(--marge);stroke-width:2;stroke-dasharray:3 2}
 .fig .dim rect:not(.cible){opacity:.3}
+.fig .dim .trlab,.fig .bad .trlab{fill:var(--ink)}
 .fig .repere line{stroke:var(--ink);stroke-width:1.5;stroke-dasharray:2 2}
 .fig .rlab{font-family:var(--sans);font-size:10px;font-weight:700;fill:var(--ink)}
 .fig .borne{font-family:var(--sans);font-size:9px;fill:var(--ink-soft)}
-.revealed .fig .tr rect:not(.cible){cursor:default}
+.revealed .fig .tr rect,.revealed .fig .cible{cursor:default}
 @media (prefers-reduced-motion:reduce){
   .fig .tr rect:not(.cible){transition:none}
 }
@@ -137,7 +138,6 @@ nav{display:flex;gap:6px;margin:18px 0 0;align-items:flex-end}
 .why{font-size:14px;color:var(--ink-soft);margin:8px 0 0;opacity:0;transition:opacity .3s .3s}
 .revealed .why{opacity:1}
 .why em{font-style:normal;color:var(--ink);font-weight:700}
-.why .frac{font-size:15px}
 
 /* ---------- choix ---------- */
 .judge{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px}
@@ -190,7 +190,6 @@ nav{display:flex;gap:6px;margin:18px 0 0;align-items:flex-end}
 
 @media (max-width:360px){
   .choice{font-size:16px}
-  .ratios{font-size:16px}
 }
 @media (prefers-reduced-motion:reduce){
   *{transition-duration:.01ms !important;animation-duration:.01ms !important}
@@ -235,7 +234,7 @@ const TRANCHES={
   t2:{label:"1919-1938 · l'entre-deux-guerres",court:"1919-1938",de:1919,a:1938,v:"--t2"},
   t3:{label:"1939-1945 · la Seconde Guerre mondiale",court:"1939-1945",de:1939,a:1945,v:"--t3"},
   t4:{label:"1946-1975 · la guerre froide s'installe",court:"1946-1975",de:1946,a:1975,v:"--t4"},
-  t5:{label:"1976-2002 · la détente et l'Europe",court:"1976-2002",de:1976,a:2002,v:"--t5"}
+  t5:{label:"1976-2002 · la fin de la guerre froide et l'Europe",court:"1976-2002",de:1976,a:2002,v:"--t5"}
 };
 const TORDRE=["t1","t2","t3","t4","t5"];
 
@@ -248,7 +247,7 @@ const DATES=[
  {d:"1929",an:1929,t:"t2",label:"crise économique mondiale",w:"Le krach de Wall Street en octobre 1929 jette des millions de gens au chômage et fragilise les démocraties."},
  {d:"1933",an:1933,t:"t2",label:"arrivée d'Hitler au pouvoir",w:"Hitler devient chancelier en janvier 1933 et installe en quelques mois une dictature raciste."},
  {d:"1936",an:1936,t:"t2",label:"élection du Front populaire en France",w:"La gauche unie gagne les élections : congés payés, semaine de 40 heures, conventions collectives."},
- {d:"1939-1945",an:1942,t:"t3",label:"Seconde Guerre mondiale",w:"Six ans de guerre mondiale, déclenchée par l'invasion de la Pologne le 1er septembre 1939."},
+ {d:"1939-1945",an:1939,t:"t3",label:"Seconde Guerre mondiale",w:"Six ans de guerre mondiale, déclenchée par l'invasion de la Pologne le 1er septembre 1939."},
  {d:"18 juin 1940",an:1940,t:"t3",label:"appel du général de Gaulle",w:"Depuis Londres, de Gaulle refuse la défaite et appelle à continuer le combat. C'est l'acte de naissance de la France libre."},
  {d:"6 juin 1944",an:1944,t:"t3",label:"débarquement en Normandie",w:"Les Alliés débarquent sur les plages normandes et ouvrent enfin un front à l'ouest."},
  {d:"1944",an:1944,t:"t3",label:"Libération de la France",w:"Paris est libéré en août 1944 ; la France retrouve sa souveraineté et rétablit la République."},
@@ -275,7 +274,10 @@ const DATES=[
    reste 1,4 fois plus large que t1, cinq ans).
    Ne pas normaliser apres coup : diviser par la somme des planchers annule
    le plancher lui-meme et ramene la bande la plus etroite a 41 unites. */
-const FRISE_X0=20, FRISE_X1=320, FRISE_AN0=1910, FRISE_AN1=2010, FRISE_MIN=46;
+const FRISE_X0=20, FRISE_X1=320, FRISE_MIN=46;
+/* les bornes de l'axe se deduisent des tranches : l'axe va de 1914 a 2002, pas
+   de 1910 a 2010. Les coder en dur decrit un axe qui n'existe pas. */
+const FRISE_DE=TRANCHES[TORDRE[0]].de, FRISE_A=TRANCHES[TORDRE[TORDRE.length-1]].a;
 const FRISE_GEO=(()=>{
   const duree=TORDRE.map(id=>TRANCHES[id].a-TRANCHES[id].de+1);
   const totalDuree=duree.reduce((s,d)=>s+d,0);
@@ -290,22 +292,29 @@ const FRISE_GEO=(()=>{
   });
   return geo;
 })();
-/* position exacte d'une annee sur l'axe, pour le repere affiche apres reponse */
+/* position exacte d'une annee sur l'axe, pour le repere affiche apres reponse.
+   Interpoler sur la largeur du rectangle dessine (g.w-2) et non sur la largeur
+   allouee : sinon le repere de la derniere annee d'une tranche tombe dans la
+   gouttiere, juste a cote de la bande qu'on designe a l'eleve. */
 function friseX(an){
-  const id=TORDRE.find(k=>an>=TRANCHES[k].de&&an<=TRANCHES[k].a)||"t5";
+  const id=TORDRE.find(k=>an>=TRANCHES[k].de&&an<=TRANCHES[k].a)||TORDRE[TORDRE.length-1];
   const t=TRANCHES[id], g=FRISE_GEO[id];
-  return g.x+(an-t.de+.5)/(t.a-t.de+1)*g.w;
+  return g.x+(an-t.de+.5)/(t.a-t.de+1)*(g.w-2);
 }
 /* opts : {bonne, choisie, an} tous optionnels */
 function friseSVG(opts={}){
   const {bonne,choisie,an}=opts;
-  const bandes=TORDRE.map((id,i)=>{
+  const bandes=TORDRE.map(id=>{
     const t=TRANCHES[id], g=FRISE_GEO[id];
     let cls="tr";
     if(bonne&&id===bonne)cls+=" good";
     else if(choisie&&id===choisie)cls+=" bad";
     else if(bonne)cls+=" dim";
-    return `<g class="${cls}" data-tr="${id}" role="button" tabindex="0" aria-label="${esc(t.label)}">
+    /* une fois la reponse revelee les bandes n'ecoutent plus rien : leur retirer
+       role et tabindex, sinon cinq boutons restent annonces et tabulables alors
+       qu'ils sont inertes. */
+    const inter=bonne?"":` role="button" tabindex="0"`;
+    return `<g class="${cls}" data-tr="${id}"${inter} aria-label="${esc(t.label)}">
       <rect class="cible" x="${g.x.toFixed(1)}" y="34" width="${g.w.toFixed(1)}" height="60"></rect>
       <rect x="${g.x.toFixed(1)}" y="34" width="${(g.w-2).toFixed(1)}" height="60" rx="5" fill="var(${t.v})"></rect>
       <text x="${(g.x+g.w/2-1).toFixed(1)}" y="68" text-anchor="middle" class="trlab">${t.court.replace("-","‑")}</text>
@@ -315,11 +324,11 @@ function friseSVG(opts={}){
     ? `<g class="repere"><line x1="${friseX(an).toFixed(1)}" y1="26" x2="${friseX(an).toFixed(1)}" y2="102"></line>
        <text x="${friseX(an).toFixed(1)}" y="18" text-anchor="middle" class="rlab">${an}</text></g>`
     : "";
-  return `<svg viewBox="20 0 300 118" role="img" aria-label="Frise chronologique de 1910 à 2010">
+  return `<svg viewBox="20 0 300 118" role="img" aria-label="Frise chronologique de ${FRISE_DE} à ${FRISE_A}">
     <line class="axe" x1="${FRISE_X0}" y1="102" x2="${FRISE_X1}" y2="102"></line>
     ${bandes}${repere}
-    <text x="${FRISE_X0}" y="115" class="borne">1910</text>
-    <text x="${FRISE_X1}" y="115" text-anchor="end" class="borne">2010</text>
+    <text x="${FRISE_X0}" y="115" class="borne">${FRISE_DE}</text>
+    <text x="${FRISE_X1}" y="115" text-anchor="end" class="borne">${FRISE_A}</text>
   </svg>`;
 }
 
