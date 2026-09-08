@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Le mémo de physique-chimie</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F5F6F1;
+  --paper-2:#FCFCFA;
+  --rule:#BFD3E4;
+  --rule-soft:#DDE7F0;
+  --marge:#DE5B4A;
+  --ink:#16233B;
+  --ink-soft:#5E6E85;
+  --pc:#5F4B8B;
+  --serif:"Instrument Serif", Georgia, "Times New Roman", serif;
+  --sans:"Karla", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:16px;
+  line-height:1.5;
+  min-height:100vh;
+  padding:0 0 40px;
+}
+.wrap{max-width:560px;margin:0 auto;padding:0 14px}
+
+/* ---------- en-tete ---------- */
+header{padding:26px 0 14px}
+.topbar{display:flex;align-items:center;gap:14px;margin:0 0 6px}
+.topbar .eyebrow{margin:0}
+.home{
+  font-family:var(--sans);font-size:13px;font-weight:700;text-decoration:none;color:var(--ink);
+  border:1px solid var(--rule);border-radius:999px;padding:6px 12px;background:var(--paper,transparent);
+  transition:background .2s,transform .2s
+}
+.home:hover{background:var(--rule-soft);transform:translateY(-1px)}
+.eyebrow{
+  font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-soft);font-weight:700;margin:0 0 6px
+}
+h1{
+  font-family:var(--serif);font-weight:400;font-size:34px;line-height:1.05;
+  margin:0 0 4px;letter-spacing:-.01em
+}
+h1 em{font-style:italic;color:var(--pc)}
+.sub{margin:0;color:var(--ink-soft);font-size:14px}
+
+/* ---------- onglets ---------- */
+nav{display:flex;gap:6px;margin:18px 0 0;align-items:flex-end}
+.tab{
+  flex:1;border:1px solid var(--rule);border-bottom:none;
+  background:#EDEFE9;color:var(--ink-soft);
+  font-family:var(--sans);font-size:12.5px;font-weight:700;
+  padding:11px 3px 10px;border-radius:9px 9px 0 0;cursor:pointer;
+  letter-spacing:.01em;transition:background .15s,color .15s,transform .15s
+}
+.tab:hover{color:var(--ink)}
+.tab[aria-selected="true"]{background:var(--paper-2);color:var(--ink);transform:translateY(1px);box-shadow:0 -2px 0 var(--pc) inset}
+
+/* ---------- feuille ---------- */
+.sheet{
+  position:relative;background:var(--paper-2);
+  border:1px solid var(--rule);border-radius:0 0 10px 10px;
+  padding:22px 16px 20px 30px;overflow:hidden;
+  background-image:repeating-linear-gradient(to bottom,transparent 0 31px,var(--rule-soft) 31px 32px);
+  background-position:0 8px;
+}
+.sheet::before{
+  content:"";position:absolute;top:0;bottom:0;left:20px;width:1px;background:var(--marge);opacity:.5
+}
+.panel{display:none}
+.panel.on{display:block}
+
+/* ---------- groupes ---------- */
+.groupe{border:1px solid var(--rule);border-left:3px solid var(--pc);background:var(--paper-2);
+  border-radius:8px;padding:14px 14px 12px;margin:0 0 12px;overflow-x:auto}
+.groupe h2{font-family:var(--serif);font-weight:400;font-size:20px;margin:0 0 10px;color:var(--pc)}
+
+/* ---------- items ---------- */
+.item{margin:0 0 10px;font-size:14.5px}
+.item:last-child{margin-bottom:0}
+.item b{font-family:var(--serif);font-size:17px;color:var(--pc);display:block;margin-bottom:1px}
+.item .w{display:block;font-size:13px;color:var(--ink-soft);margin-top:1px}
+.item .passage{font-weight:700;color:var(--ink)}
+
+/* ---------- tableau des valeurs ---------- */
+.valeurs{width:100%;border-collapse:collapse}
+.valeurs td{padding:7px 4px;border-bottom:1px solid var(--rule-soft);font-size:14px;line-height:1.3}
+.valeurs tr:last-child td{border-bottom:none}
+.valeurs td:first-child{font-weight:700}
+.valeurs td:last-child{text-align:right;color:var(--ink-soft);white-space:nowrap;padding-left:10px}
+
+/* ---------- ne confonds pas ---------- */
+.section-title{font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-soft);margin:22px 0 10px}
+.vs{border:1px dashed var(--rule);border-radius:8px;background:var(--paper-2);
+  padding:14px 14px 12px;margin:0 0 12px}
+.vs h3{font-family:var(--serif);font-weight:400;font-size:19px;margin:0 0 8px}
+.vs p{margin:0 0 8px;font-size:14.5px;line-height:1.42}
+.vs p:last-child{margin-bottom:0}
+.vs b{color:var(--ink)}
+
+@media (max-width:420px){
+  h1{font-size:29px}
+  .sheet{padding-left:26px}
+}
+@media (max-width:360px){
+  .item b{font-size:16px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition-duration:.01ms !important;animation-duration:.01ms !important}
+}
+:focus-visible{outline:2px solid var(--pc);outline-offset:2px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="topbar"><a class="home" href="physique-chimie.html">🏠 Physique-Chimie</a><p class="eyebrow">Physique-Chimie, 3<sup>e</sup></p></div>
+    <h1>Le mémo de <em>physique-chimie</em></h1>
+    <p class="sub">L'essentiel du chapitre États de la matière, à relire avant un contrôle.</p>
+    <nav role="tablist">
+      <button class="tab" role="tab" aria-selected="true" data-panel="etats">États et changements</button>
+      <button class="tab" role="tab" aria-selected="false" data-panel="melanges">Mélanges et mesures</button>
+    </nav>
+  </header>
+
+  <div class="sheet">
+    <section class="panel on" id="etats">
+
+      <div class="groupe">
+        <h2>Les trois états</h2>
+        <div class="item"><b>Solide</b><span class="w">Forme propre et volume propre : il garde sa forme, on peut le poser sur la table. Ses molécules sont rangées, serrées, et vibrent sur place.</span></div>
+        <div class="item"><b>Liquide</b><span class="w">Volume propre mais pas de forme propre : il prend la forme du récipient, et sa surface libre au repos est plane et horizontale. Ses molécules restent en contact mais glissent les unes sur les autres.</span></div>
+        <div class="item"><b>Gaz</b><span class="w">Ni forme propre ni volume propre : il occupe tout l'espace disponible. Il est compressible. Ses molécules, très espacées, filent dans tous les sens à grande vitesse.</span></div>
+      </div>
+
+      <div class="groupe">
+        <h2>Les six changements d'état</h2>
+        <div class="item"><b>Fusion</b><span class="w"><span class="passage">solide → liquide.</span> Le glaçon qui fond dans le verre.</span></div>
+        <div class="item"><b>Solidification</b><span class="w"><span class="passage">liquide → solide.</span> L'eau du bac à glaçons qui gèle au congélateur.</span></div>
+        <div class="item"><b>Vaporisation</b><span class="w"><span class="passage">liquide → gaz.</span> L'eau qui bout, le linge qui sèche. Une vaporisation lente s'appelle l'évaporation.</span></div>
+        <div class="item"><b>Liquéfaction</b><span class="w"><span class="passage">gaz → liquide.</span> La buée sur le miroir, les gouttelettes sur la bouteille froide.</span></div>
+        <div class="item"><b>Sublimation</b><span class="w"><span class="passage">solide → gaz.</span> La neige carbonique qui « fume » sans laisser de flaque.</span></div>
+        <div class="item"><b>Condensation</b><span class="w"><span class="passage">gaz → solide.</span> Le givre sur les parois du congélateur, les flocons de neige.</span></div>
+      </div>
+
+      <div class="groupe">
+        <h2>La courbe de l'eau</h2>
+        <div class="item"><b>Fusion à 0 °C, ébullition à 100 °C</b><span class="w">Ce sont les deux paliers de la courbe de température de l'eau pure. La solidification se produit aussi à 0 °C.</span></div>
+        <div class="item"><b>Un palier est plat</b><span class="w">Un corps pur change d'état à température constante : pendant le palier, les deux états coexistent et l'énergie reçue sert au changement d'état, pas à chauffer.</span></div>
+      </div>
+
+      <p class="section-title">Ne confonds pas</p>
+
+      <div class="vs">
+        <h3>Fondre ou se dissoudre ?</h3>
+        <p><b>Fondre</b>, c'est passer de solide à liquide sous l'effet de la chaleur : le glaçon fond. <b>Se dissoudre</b>, c'est se disperser dans un liquide : le sel se dissout dans l'eau, il ne fond pas.</p>
+      </div>
+
+      <div class="vs">
+        <h3>Vapeur d'eau ou nuage blanc ?</h3>
+        <p>La <b>vapeur d'eau</b> est un gaz invisible. Le <b>nuage blanc</b> au-dessus de la casserole, ce sont de fines gouttelettes d'eau liquide, formées quand la vapeur se refroidit.</p>
+      </div>
+
+      <div class="vs">
+        <h3>Évaporation ou ébullition ?</h3>
+        <p>Deux vaporisations. <b>L'évaporation</b> est lente, en surface, à toute température : le linge sèche. <b>L'ébullition</b> est rapide, dans tout le liquide, à 100 °C pour l'eau : les bulles montent.</p>
+      </div>
+
+    </section>
+    <section class="panel" id="melanges">
+
+      <div class="groupe">
+        <h2>Corps purs et mélanges</h2>
+        <div class="item"><b>Corps pur</b><span class="w">Une seule espèce chimique : l'eau distillée, c'est de l'eau et rien d'autre.</span></div>
+        <div class="item"><b>Mélange</b><span class="w">Plusieurs espèces chimiques : l'eau minérale (eau et sels minéraux), l'air.</span></div>
+        <div class="item"><b>Homogène</b><span class="w">On ne distingue pas les constituants à l'œil nu : l'eau sucrée, l'air.</span></div>
+        <div class="item"><b>Hétérogène</b><span class="w">On distingue les constituants à l'œil nu : l'eau et le sable, l'eau et l'huile.</span></div>
+      </div>
+
+      <div class="groupe">
+        <h2>Les solutions</h2>
+        <div class="item"><b>Miscibles ou non</b><span class="w">Deux liquides qui se mélangent sont miscibles (l'eau et le sirop). L'huile et l'eau ne sont pas miscibles : deux couches.</span></div>
+        <div class="item"><b>Solvant et soluté</b><span class="w">Le solvant dissout (l'eau), le soluté est dissous (le sel, le sucre). Ensemble, ils forment une solution.</span></div>
+        <div class="item"><b>Solution saturée</b><span class="w">Le solvant ne peut plus rien dissoudre : l'excédent de soluté reste au fond du verre.</span></div>
+        <div class="item"><b>La masse se conserve</b><span class="w">100 g d'eau + 10 g de sel dissous = 110 g d'eau salée. Le sel est toujours là, même invisible.</span></div>
+      </div>
+
+      <div class="groupe">
+        <h2>La composition de l'air</h2>
+        <div class="item"><b>Un mélange de gaz</b><span class="w">Environ 78 % de diazote, 21 % de dioxygène et 1 % d'autres gaz (argon, dioxyde de carbone...).</span></div>
+        <div class="item"><b>L'air a une masse</b><span class="w">Un litre d'air pèse environ 1,3 g.</span></div>
+      </div>
+
+      <div class="groupe">
+        <h2>La masse volumique</h2>
+        <div class="item"><b>ρ = m ÷ V</b><span class="w">La masse divisée par le volume, en g/cm³. La formule se retourne : m = ρ × V, et V = m ÷ ρ. Elle permet d'identifier une matière.</span></div>
+        <table class="valeurs">
+          <tr><td>Huile</td><td>0,9 g/cm³</td></tr>
+          <tr><td>Eau</td><td>1 g/cm³</td></tr>
+          <tr><td>Aluminium</td><td>2,7 g/cm³</td></tr>
+          <tr><td>Fer</td><td>7,9 g/cm³</td></tr>
+          <tr><td>Air</td><td>1,3 g/L</td></tr>
+        </table>
+        <div class="item" style="margin-top:10px"><b>Pourquoi l'huile flotte</b><span class="w">Sa masse volumique (0,9) est plus faible que celle de l'eau (1) : à volume égal, elle est plus légère.</span></div>
+      </div>
+
+      <p class="section-title">Ne confonds pas</p>
+
+      <div class="vs">
+        <h3>Masse ou masse volumique ?</h3>
+        <p>La <b>masse</b> dépend de la quantité : deux litres d'eau pèsent deux fois plus qu'un. La <b>masse volumique</b> caractérise la matière : elle vaut 1 g/cm³ pour l'eau, quelle que soit la quantité.</p>
+      </div>
+
+      <div class="vs">
+        <h3>Limpide ou pur ?</h3>
+        <p>Un liquide <b>limpide</b> n'est pas forcément un <b>corps pur</b> : l'eau minérale est transparente, mais c'est un mélange homogène d'eau et de sels minéraux.</p>
+      </div>
+
+    </section>
+  </div>
+</div>
+
+<script>
+document.querySelectorAll(".tab").forEach(t=>{
+  t.addEventListener("click",()=>{
+    document.querySelectorAll(".tab").forEach(x=>x.setAttribute("aria-selected",x===t));
+    document.querySelectorAll(".panel").forEach(p=>p.classList.toggle("on",p.id===t.dataset.panel));
+    window.scrollTo({top:0});
+  });
+});
+</script>
+</body>
+</html>

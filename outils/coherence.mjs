@@ -9,8 +9,11 @@ if (!memo) { console.error("usage: coherence.mjs CARNET.html TABLEAU champs MEMO
 function extraire(fichier, nom) {
   const html = readFileSync(fichier, "utf8");
   const m = html.match(new RegExp(`const ${nom}\\s*=\\s*\\[[\\s\\S]*?\\n\\];`));
-  if (!m) throw new Error(`${nom} introuvable dans ${fichier}`);
-  return new Function(m[0] + `; return ${nom};`)();
+  if (m) return new Function(m[0] + `; return ${nom};`)();
+  // un objet map convient aussi : on contrôle alors ses valeurs
+  const o = html.match(new RegExp(`const ${nom}\\s*=\\s*\\{[\\s\\S]*?\\n\\};`));
+  if (!o) throw new Error(`${nom} introuvable dans ${fichier}`);
+  return Object.values(new Function(o[0] + `; return ${nom};`)());
 }
 
 // normalise pour comparer du texte HTML a du texte JS : entites, apostrophes, espaces

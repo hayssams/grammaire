@@ -15,7 +15,7 @@ Site statique sans build, sans dépendances, sans tests : chaque page est un fic
 - `maths.html` : rubrique Maths, carte vers le carnet Thalès.
 - `histoire.html` : rubrique Histoire (accent terre de Sienne `--histoire: #8C4A2F`), cartes vers les deux carnets et le mémo, plus le lien externe vers l'appli recommandée par la professeure.
 - `geographie.html` : rubrique Géographie (accent bleu canard `--geo: #17697B`), cartes vers les deux carnets et le mémo.
-- `physique-chimie.html` : rubrique Physique-Chimie (accent violet encre `--pc: #5F4B8B`), carte vers le carnet États de la matière.
+- `physique-chimie.html` : rubrique Physique-Chimie (accent violet encre `--pc: #5F4B8B`), cartes vers le carnet États de la matière et le mémo.
 - `etats-matiere.html` : carnet de physique-chimie couvrant le chapitre « Les états de la matière » (programme SchoolMouv 3e) en six manches : Les états (QCM solide/liquide/gaz), Nommer (schéma des changements d'état, flèche interrogée en rouge), Situations (vie courante, le schéma s'allume à la révélation), La courbe (lecture de la courbe de chauffe ou de refroidissement de l'eau), Mélanges (corps purs, solutions, composition de l'air), Masse volumique (ρ = m ÷ V, calculs en saisie). Deux moteurs SVG : `schemaEtats(chg)` (trois boîtes, six flèches) et `courbeEau(c)` (repère gradué, paliers, segment marqué). Contrairement aux autres carnets, les six manches partagent un constructeur `creeManche(o)` (intro, déroulé QCM ou saisie, bilan) : chaque manche fournit ses données et sa fonction `prep(q)`. Les éléments sont interrogés à l'intérieur du panel (pas d'ids globaux, les panels masqués gardent leur HTML). La barre passe en deux rangées de trois onglets.
 - `thales.html` : carnet de maths sur le théorème de Thalès (accent vert `--maths: #1B6F55`). Reprend la mécanique des carnets de grammaire (onglets, `showVerdict`, confettis, série, `logResult` avec `page:"thales"`), avec en plus un moteur de figures `figSVG(f)` qui dessine les configurations de Thalès (triangle ou papillon) en SVG inline à partir des données de chaque exercice (`REPERER`, `RAPPORTS`, `CALCULER`, `RECIP`, `SEMBLABLES`), un second moteur `figDuoSVG(d)` qui dessine deux triangles indépendants avec arcs d'angles colorés par paires et longueurs de côtés (manche Semblables), et des manches à saisie numérique (virgule ou point acceptés, tolérance ±0,01). La manche Semblables mélange questions oui/non et calculs dans une même liste (`kind:"reco"` ou `"calc"`).
 - `histoire-dates.html` et `histoire-personnages.html` : les deux carnets d'histoire, tirés du programme de révision de rentrée (`docs/3eme revisions histoire geographie FR_compressed (1).pdf`). Ils partagent un moteur de frise `friseSVG(opts)` qui découpe 1914-2002 en cinq tranches cliquables (`TRANCHES`, ids `t1` à `t5`), avec une largeur minimale par tranche pour rester utilisable au doigt. Le premier porte les 23 dates, le second les 21 personnages, chacun avec son rôle rédigé et le fait daté qui permet de le situer.
@@ -34,7 +34,7 @@ Site statique sans build, sans dépendances, sans tests : chaque page est un fic
   - Les zones `inerte` sont du décor et ne réagissent jamais au clic.
 
   **La loupe** existe parce que viser au doigt est physiquement impossible sur une carte dense : 8 px pour le Luxembourg, 1 px pour la Guadeloupe. Un premier appui resserre le cadre, un second désigne. Le facteur de zoom se calcule pour que les deux zones les plus proches atteignent 44 px : 6 pour l'Europe. Là où même cela ne suffirait pas, le fond déclare des **cadres nommés** : le planisphère demanderait un zoom de 33, il porte donc trois cadres géographiques.
-- `histoire-memo.html` et `geo-memo.html` : fiches mémo statiques sur le modèle d'`astuces.html` (deux onglets, pas de score, pas d'appel Google Sheets). Elles recopient les données des carnets, qui font foi. **Toute modification d'une donnée dans un carnet doit être reportée dans la fiche**, et le contrôle se fait par script plutôt qu'à l'œil :
+- `histoire-memo.html`, `geo-memo.html` et `pc-memo.html` : fiches mémo statiques sur le modèle d'`astuces.html` (deux onglets, pas de score, pas d'appel Google Sheets). Elles recopient les données des carnets, qui font foi. **Toute modification d'une donnée dans un carnet doit être reportée dans la fiche**, et le contrôle se fait par script plutôt qu'à l'œil :
 
   ```bash
   node outils/coherence.mjs histoire-dates.html DATES d,label histoire-memo.html
@@ -45,9 +45,10 @@ Site statique sans build, sans dépendances, sans tests : chaque page est un fic
   node outils/coherence.mjs geo-france.html MERS nom geo-memo.html
   node outils/coherence.mjs geo-france.html DROM nom,chef geo-memo.html
   node outils/coherence.mjs geo-europe.html PAYS nom geo-memo.html
+  node outils/coherence.mjs etats-matiere.html CHG label pc-memo.html
   ```
 
-  Le script charge le tableau du carnet et vérifie que chaque valeur figure dans la fiche, en tenant compte des entités HTML et des apostrophes typographiques. Chaque appel doit se terminer par `la fiche est à jour.`
+  Le script charge le tableau du carnet (ou les valeurs d'un objet map, comme `CHG`) et vérifie que chaque valeur figure dans la fiche, en tenant compte des entités HTML et des apostrophes typographiques. Chaque appel doit se terminer par `la fiche est à jour.`
 - `astuces.html` : fiche mémo statique (astuce de reconnaissance + 3 à 5 exemples par classe et par fonction, sections « Ne confonds pas ») ; deux onglets, pas de score ni d'appel Google Sheets, contenu écrit directement dans le HTML.
 - `docs/superpowers/` : specs et plans d'implémentation.
 
