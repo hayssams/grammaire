@@ -100,6 +100,8 @@ nav{display:flex;gap:6px;margin:18px 0 0;align-items:flex-end}
 .fig .ptn{font:italic 15px var(--serif);fill:var(--ink);paint-order:stroke;stroke:var(--paper-2);stroke-width:4}
 .fig .len{font:700 12px var(--sans);fill:var(--ink-soft);paint-order:stroke;stroke:var(--paper-2);stroke-width:4}
 .fig .len.unknown{fill:var(--marge);font-size:14px}
+.fig .arc{fill:none;stroke-width:2}
+.fig .ang{font:700 11.5px var(--sans);paint-order:stroke;stroke:var(--paper-2);stroke-width:4}
 .echelle{font-size:11px;color:var(--ink-soft);text-align:right;margin:0 0 8px}
 .hyp{font-size:14.5px;margin:0 0 6px}
 .hyp em{font-style:normal;font-weight:700}
@@ -192,9 +194,13 @@ nav{display:flex;gap:6px;margin:18px 0 0;align-items:flex-end}
   margin:22px 0 0
 }
 
+@media (max-width:420px){
+  .tab{font-size:11px;letter-spacing:0;padding:10px 2px 9px}
+}
 @media (max-width:360px){
   .choice{font-size:16px}
   .ratios{font-size:16px}
+  .tab{font-size:10px}
 }
 @media (prefers-reduced-motion:reduce){
   *{transition-duration:.01ms !important;animation-duration:.01ms !important}
@@ -207,12 +213,13 @@ nav{display:flex;gap:6px;margin:18px 0 0;align-items:flex-end}
   <header>
     <div class="topbar"><a class="home" href="maths.html">🏠 Maths</a><p class="eyebrow">Maths, 3<sup>e</sup></p></div>
     <h1>Thalès se lit <em>sur la figure</em></h1>
-    <p class="sub">Quatre entraînements : vérifier les conditions, écrire les rapports, calculer, conclure.</p>
+    <p class="sub">Cinq entraînements : vérifier les conditions, écrire les rapports, calculer, conclure, comparer les triangles.</p>
     <nav role="tablist">
       <button class="tab" role="tab" aria-selected="true" data-panel="reperer">Repérer</button>
       <button class="tab" role="tab" aria-selected="false" data-panel="rapports">Les rapports</button>
       <button class="tab" role="tab" aria-selected="false" data-panel="calculer">Calculer</button>
       <button class="tab" role="tab" aria-selected="false" data-panel="recip">Réciproque</button>
+      <button class="tab" role="tab" aria-selected="false" data-panel="semblables">Semblables</button>
     </nav>
   </header>
 
@@ -221,6 +228,7 @@ nav{display:flex;gap:6px;margin:18px 0 0;align-items:flex-end}
     <section class="panel" id="rapports"></section>
     <section class="panel" id="calculer"></section>
     <section class="panel" id="recip"></section>
+    <section class="panel" id="semblables"></section>
   </div>
 </div>
 
@@ -277,6 +285,45 @@ function figSVG(f){
        `<text class="ptn" x="${p.x+d.x*13}" y="${p.y+d.y*13}" text-anchor="middle" dominant-baseline="middle">${nm(k)}</text>`;
   });
   return `<svg viewBox="0 0 320 212" role="img" aria-label="Figure de Thalès">${b}</svg>`;
+}
+function figDuoSVG(d){
+  const norm=v=>{const l=Math.hypot(v.x,v.y)||1;return{x:v.x/l,y:v.y/l};};
+  const COL=["#1B6F55","#DE5B4A","#457b9d"];
+  let b="";
+  d.tris.forEach(t=>{
+    const P=t.P;
+    const G={x:(P[0].x+P[1].x+P[2].x)/3,y:(P[0].y+P[1].y+P[2].y)/3};
+    for(let i=0;i<3;i++){
+      const p=P[i],q=P[(i+1)%3];
+      b+=`<line x1="${p.x}" y1="${p.y}" x2="${q.x}" y2="${q.y}" class="tr"/>`;
+    }
+    (t.angs||[]).forEach(a=>{
+      const p=P[a.at],u1=norm({x:P[(a.at+1)%3].x-p.x,y:P[(a.at+1)%3].y-p.y}),u2=norm({x:P[(a.at+2)%3].x-p.x,y:P[(a.at+2)%3].y-p.y});
+      const r=13,s1={x:p.x+u1.x*r,y:p.y+u1.y*r},s2={x:p.x+u2.x*r,y:p.y+u2.y*r};
+      const sweep=(u1.x*u2.y-u1.y*u2.x)>0?1:0;
+      b+=`<path class="arc" stroke="${COL[a.c]}" d="M ${s1.x} ${s1.y} A ${r} ${r} 0 0 ${sweep} ${s2.x} ${s2.y}"/>`;
+      if(a.v){
+        const m=norm({x:u1.x+u2.x,y:u1.y+u2.y});
+        b+=`<text class="ang" fill="${COL[a.c]}" x="${p.x+m.x*27}" y="${p.y+m.y*27}" text-anchor="middle" dominant-baseline="middle">${a.v}</text>`;
+      }
+    });
+    (t.lens||[]).forEach(L=>{
+      const p=P[L.a],q=P[L.b],mid={x:(p.x+q.x)/2,y:(p.y+q.y)/2};
+      const u=norm({x:q.x-p.x,y:q.y-p.y});
+      let n={x:-u.y,y:u.x};
+      if((mid.x+n.x*13-G.x)**2+(mid.y+n.y*13-G.y)**2 < (mid.x-n.x*13-G.x)**2+(mid.y-n.y*13-G.y)**2)n={x:-n.x,y:-n.y};
+      const pos={x:mid.x+n.x*(L.d??13),y:mid.y+n.y*(L.d??13)};
+      const unknown=L.v==="?";
+      const txt=`${P[L.a].n}${P[L.b].n} = ${unknown?"?":L.v}`;
+      b+=`<text class="len${unknown?" unknown":""}" x="${pos.x}" y="${pos.y}" text-anchor="middle" dominant-baseline="middle">${txt}</text>`;
+    });
+    P.forEach(p=>{
+      const dr=norm({x:p.x-G.x,y:p.y-G.y});
+      b+=`<circle class="pt" cx="${p.x}" cy="${p.y}" r="2.6"/>`+
+         `<text class="ptn" x="${p.x+dr.x*13}" y="${p.y+dr.y*13}" text-anchor="middle" dominant-baseline="middle">${p.n}</text>`;
+    });
+  });
+  return `<svg viewBox="0 0 320 212" role="img" aria-label="Deux triangles">${b}</svg>`;
 }
 const TRI={type:"triangle",A:{x:165,y:26},B:{x:38,y:188},C:{x:295,y:188}};
 const TRI2={type:"triangle",A:{x:120,y:30},B:{x:30,y:190},C:{x:300,y:170}};
@@ -390,6 +437,57 @@ const RECIP=[
    w:"Rapports égaux et alignements dans le même ordre : la réciproque du théorème de Thalès donne (MN) // (BC), même en configuration croisée."}
 ];
 
+const SEMBLABLES=[
+  {kind:"reco",ok:true,duo:{tris:[
+    {P:[{x:28,y:170,n:"A"},{x:125,y:170,n:"B"},{x:95,y:84,n:"C"}],angs:[{at:0,v:"52°",c:0},{at:1,v:"71°",c:1}]},
+    {P:[{x:162,y:195,n:"D"},{x:300,y:195,n:"E"},{x:258,y:72,n:"F"}],angs:[{at:0,v:"52°",c:0},{at:1,v:"71°",c:1}]}]},
+   hyp:"Deux angles sont donnés dans chaque triangle. <em>Les triangles ABC et DEF sont-ils semblables ?</em>",
+   w:"Les angles sont égaux deux à deux : 52° et 71° de part et d'autre, et le troisième vaut 180° − 52° − 71° = 57° des deux côtés. Deux angles égaux suffisent : ABC et DEF sont semblables."},
+  {kind:"reco",ok:false,duo:{tris:[
+    {P:[{x:28,y:178,n:"A"},{x:122,y:178,n:"B"},{x:84,y:112,n:"C"}],angs:[{at:0,v:"50°",c:0},{at:1,v:"60°",c:1}]},
+    {P:[{x:160,y:192,n:"D"},{x:300,y:192,n:"E"},{x:266,y:66,n:"F"}],angs:[{at:0,v:"50°",c:0},{at:1,v:"75°",c:2}]}]},
+   hyp:"Deux angles sont donnés dans chaque triangle. <em>Les triangles ABC et DEF sont-ils semblables ?</em>",
+   w:"Un seul angle commun ne suffit pas. Dans ABC, le troisième angle vaut 180° − 50° − 60° = 70° ; dans DEF, il vaut 55°. Les angles 50°, 60°, 70° et 50°, 75°, 55° ne se correspondent pas : pas semblables."},
+  {kind:"reco",ok:true,duo:{tris:[
+    {P:[{x:28,y:172,n:"D"},{x:130,y:172,n:"E"},{x:101,y:111,n:"F"}],angs:[{at:0,v:"40°",c:0},{at:1,v:"65°",c:1}]},
+    {P:[{x:158,y:188,n:"G"},{x:300,y:188,n:"H"},{x:260,y:102,n:"I"}],angs:[{at:0,v:"40°",c:0},{at:2,v:"75°",c:2}]}]},
+   hyp:"Deux angles sont donnés dans chaque triangle, mais pas les mêmes. <em>Les triangles DEF et GHI sont-ils semblables ?</em>",
+   w:"Calcule les troisièmes angles : dans DEF, 180° − 40° − 65° = 75° ; dans GHI, 180° − 40° − 75° = 65°. Les deux triangles ont les angles 40°, 65° et 75° : ils sont semblables."},
+  {kind:"reco",ok:true,duo:{tris:[
+    {P:[{x:40,y:180,n:"A"},{x:130,y:180,n:"B"},{x:40,y:112,n:"C"}],lens:[{a:0,b:1,v:"4"},{a:0,b:2,v:"3"},{a:1,b:2,v:"5"}]},
+    {P:[{x:180,y:195,n:"D"},{x:300,y:195,n:"E"},{x:180,y:105,n:"F"}],lens:[{a:0,b:1,v:"8"},{a:0,b:2,v:"6"},{a:1,b:2,v:"10"}]}]},
+   hyp:"Aucun angle donné, mais les six côtés, en cm. <em>Les triangles ABC et DEF sont-ils semblables ?</em>",
+   w:"Compare les côtés deux à deux : 8 ÷ 4 = 2, 6 ÷ 3 = 2, 10 ÷ 5 = 2. Les côtés sont proportionnels (coefficient 2), donc ABC et DEF sont semblables."},
+  {kind:"reco",ok:false,duo:{tris:[
+    {P:[{x:30,y:170,n:"A"},{x:126,y:170,n:"B"},{x:56,y:111,n:"C"}],lens:[{a:0,b:1,v:"6"},{a:0,b:2,v:"4"},{a:1,b:2,v:"5"}]},
+    {P:[{x:172,y:192,n:"D"},{x:298,y:192,n:"E"},{x:223,y:142,n:"F"}],lens:[{a:0,b:1,v:"14"},{a:0,b:2,v:"8"},{a:1,b:2,v:"10"}]}]},
+   hyp:"Aucun angle donné, mais les six côtés, en cm. <em>Les triangles ABC et DEF sont-ils semblables ?</em>",
+   w:"8 ÷ 4 = 2 et 10 ÷ 5 = 2, mais 14 ÷ 6 ≈ 2,33 : les trois quotients ne sont pas égaux. Les côtés ne sont pas proportionnels, donc les triangles ne sont pas semblables."},
+  {kind:"reco",ok:true,f:{...TRI,t:.45,par:true},
+   hyp:"M ∈ [AB], N ∈ [AC], (MN) // (BC). <em>Les triangles AMN et ABC sont-ils semblables ?</em>",
+   w:"Oui : l'angle en A est commun aux deux triangles, et (MN) // (BC) rend les autres angles égaux deux à deux (angles correspondants). Une configuration de Thalès cache toujours deux triangles semblables."},
+  {kind:"calc",ans:8,unit:"cm",rep:"EF = 8 cm",duo:{tris:[
+    {P:[{x:30,y:175,n:"A"},{x:120,y:175,n:"B"},{x:58,y:105,n:"C"}],angs:[{at:0,c:0},{at:1,c:1}],lens:[{a:0,b:1,v:"3"},{a:1,b:2,v:"4"}]},
+    {P:[{x:158,y:195,n:"D"},{x:293,y:195,n:"E"},{x:200,y:90,n:"F"}],angs:[{at:0,c:0},{at:1,c:1}],lens:[{a:0,b:1,v:"6"},{a:1,b:2,v:"?"}]}]},
+   hyp:"Les triangles ABC et DEF sont semblables, leurs sommets se correspondent dans cet ordre. Longueurs en cm. <em>Calcule EF.</em>",
+   w:"DE correspond à AB : le coefficient d'agrandissement vaut k = 6 ÷ 3 = 2. EF correspond à BC, donc EF = 2 × 4 = <em>8 cm</em>."},
+  {kind:"calc",ans:9,unit:"cm",rep:"UW = 9 cm",duo:{tris:[
+    {P:[{x:30,y:182,n:"R"},{x:122,y:182,n:"S"},{x:85,y:80,n:"T"}],angs:[{at:0,c:0},{at:2,c:2}],lens:[{a:0,b:1,v:"4"},{a:0,b:2,v:"6"}]},
+    {P:[{x:158,y:195,n:"U"},{x:292,y:195,n:"V"},{x:238,y:68,n:"W"}],angs:[{at:0,c:0},{at:2,c:2}],lens:[{a:0,b:1,v:"6"},{a:0,b:2,v:"?"}]}]},
+   hyp:"Les triangles RST et UVW sont semblables, leurs sommets se correspondent dans cet ordre. Longueurs en cm. <em>Calcule UW.</em>",
+   w:"UV correspond à RS : k = 6 ÷ 4 = 1,5. UW correspond à RT, donc UW = 1,5 × 6 = <em>9 cm</em>."},
+  {kind:"calc",ans:3.2,unit:"cm",rep:"EF = 3,2 cm",duo:{tris:[
+    {P:[{x:22,y:190,n:"A"},{x:152,y:190,n:"B"},{x:80,y:95,n:"C"}],angs:[{at:0,c:0},{at:1,c:1}],lens:[{a:0,b:1,v:"10"},{a:1,b:2,v:"8"}]},
+    {P:[{x:192,y:182,n:"D"},{x:290,y:182,n:"E"},{x:230,y:120,n:"F"}],angs:[{at:0,c:0},{at:1,c:1}],lens:[{a:0,b:1,v:"4"},{a:1,b:2,v:"?"}]}]},
+   hyp:"Les triangles ABC et DEF sont semblables, leurs sommets se correspondent dans cet ordre. Longueurs en cm. <em>Calcule EF.</em>",
+   w:"Cette fois DEF est une réduction de ABC : k = 4 ÷ 10 = 0,4. EF correspond à BC, donc EF = 0,4 × 8 = <em>3,2 cm</em>."},
+  {kind:"calc",ans:10.5,unit:"cm",rep:"NO = 10,5 cm",duo:{tris:[
+    {P:[{x:28,y:178,n:"J"},{x:118,y:178,n:"K"},{x:102,y:86,n:"L"}],angs:[{at:0,c:0},{at:1,c:1}],lens:[{a:0,b:1,v:"5"},{a:1,b:2,v:"7"}]},
+    {P:[{x:148,y:195,n:"M"},{x:283,y:195,n:"N"},{x:238,y:72,n:"O"}],angs:[{at:0,c:0},{at:1,c:1}],lens:[{a:0,b:1,v:"7,5"},{a:1,b:2,v:"?"}]}]},
+   hyp:"Les triangles JKL et MNO sont semblables, leurs sommets se correspondent dans cet ordre. Longueurs en cm. <em>Calcule NO.</em>",
+   w:"MN correspond à JK : k = 7,5 ÷ 5 = 1,5. NO correspond à KL, donc NO = 1,5 × 7 = <em>10,5 cm</em>."}
+];
+
 /* ============ gamification ============ */
 const SHEET_URL="https://script.google.com/macros/s/AKfycbwB53nfh6Xk_z1Gn4ck_WL8aX0gPxDzQ2MpxWVnpsdunmWR_IKj-tHPHOEVkP614jQJ/exec";
 function logResult(game,score,good,total,secs){
@@ -440,6 +538,7 @@ document.querySelectorAll(".tab").forEach(t=>{
     if(t.dataset.panel==="rapports")rapIntro();
     if(t.dataset.panel==="calculer")calcIntro();
     if(t.dataset.panel==="recip")recIntro();
+    if(t.dataset.panel==="semblables")semIntro();
     window.scrollTo({top:0,behavior:"smooth"});
   });
 });
@@ -656,8 +755,87 @@ function recStep(){
 function recEnd(){
   V.secs=Math.round((Date.now()-V.t0)/1000);
   logResult("reciproque",V.score,V.list.length-V.errs.length,V.list.length,V.secs);
-  vp.innerHTML=bilanHTML(V,"Rien à revoir. Théorème, réciproque, contraposée : tu as tout en main.");
+  vp.innerHTML=bilanHTML(V,"Rien à revoir. Passe aux triangles semblables : une figure de Thalès en cache toujours deux.");
   $("#again",vp).onclick=()=>{V.list=shuffle(RECIP);V.i=0;V.score=0;V.errs=[];V.streak=0;V.t0=Date.now();recStep();};
+}
+
+/* ============ 5. semblables ============ */
+const S={list:[],i:0,score:0,errs:[],t0:0,streak:0,secs:0};
+const sp=$("#semblables");
+function semIntro(){
+  sp.innerHTML=`<div class="intro">
+    <h2>Deux triangles, une même forme ?</h2>
+    <p>Dix figures. Dis d'abord si les deux triangles sont semblables, par les angles ou par les côtés, puis calcule des longueurs avec le coefficient d'agrandissement ou de réduction.</p>
+    <button class="btn" id="sgo">Commencer la manche</button>
+  </div>`;
+  $("#sgo").onclick=()=>{S.list=shuffle(SEMBLABLES);S.i=0;S.score=0;S.errs=[];S.streak=0;S.t0=Date.now();semStep();};
+}
+function semStep(){
+  if(S.i>=S.list.length)return semEnd();
+  const q=S.list[S.i];
+  sp.innerHTML=`
+    <div class="status"><span>Figure <b>${S.i+1}</b>/${S.list.length}</span><span class="grow"></span><span>Points <b id="ssc">${S.score}</b></span></div>
+    <div id="scard">
+      <div class="react" id="sv"></div>
+      <p class="annot" id="san">${q.kind==="reco"?"Les deux triangles sont-ils semblables ?":"À toi de calculer"}</p>
+      <div class="fig">${q.duo?figDuoSVG(q.duo):figSVG(q.f)}</div>
+      <p class="echelle">Figure pas à l'échelle</p>
+      <p class="hyp">${q.hyp}</p>
+      <p class="why" id="swhy"></p>
+    </div>
+    ${q.kind==="reco"
+      ?`<div class="judge"><button class="btn" data-v="1">Oui, semblables</button><button class="btn no" data-v="0">Non</button></div>`
+      :`<div class="answer"><input id="sin" inputmode="decimal" autocomplete="off" placeholder="Ta réponse"><span class="unit">${q.unit}</span><button class="btn" id="sok">Valider</button></div>`}
+    <div class="row-end"><button class="btn hidden" id="snext">Suivante</button></div>`;
+  function suivante(){
+    const n=$("#snext");n.classList.remove("hidden");
+    n.textContent=S.i===S.list.length-1?"Voir le bilan":"Suivante";
+    n.onclick=()=>{S.i++;semStep();};
+    n.focus({preventScroll:true});
+  }
+  if(q.kind==="reco"){
+    sp.querySelectorAll(".judge .btn").forEach(b=>{
+      b.onclick=()=>{
+        const ok=(b.dataset.v==="1")===q.ok;
+        if(ok)S.score+=10;else S.errs.push({rep:q.ok?"Oui, semblables.":"Non, pas semblables.",w:q.w});
+        sp.querySelectorAll(".judge .btn").forEach(x=>{
+          x.disabled=true;
+          if((x.dataset.v==="1")===q.ok)x.classList.add("good");
+          else if(x===b)x.classList.add("bad");
+          else x.classList.add("dim");
+        });
+        showVerdict(ok,"#sv",S);
+        $("#scard").classList.add("revealed");
+        $("#san").textContent=q.ok?"Oui, semblables":"Non, pas semblables";
+        $("#swhy").innerHTML=(ok?"":"<em>Non. </em>")+q.w;
+        $("#ssc").textContent=S.score;
+        suivante();
+      };
+    });
+  }else{
+    const input=$("#sin");input.focus({preventScroll:true});
+    function valider(){
+      const v=parseFloat(input.value.replace(",",".").trim());
+      if(!isFinite(v)){input.value="";input.placeholder="Écris un nombre";return;}
+      const ok=Math.abs(v-q.ans)<=0.011;
+      if(ok)S.score+=10;else S.errs.push({rep:q.rep,w:q.w});
+      input.disabled=true;$("#sok").disabled=true;
+      showVerdict(ok,"#sv",S);
+      $("#scard").classList.add("revealed");
+      $("#san").textContent=q.rep;
+      $("#swhy").innerHTML=(ok?"":`<em>Non, tu as répondu ${esc(input.value)}. </em>`)+q.w;
+      $("#ssc").textContent=S.score;
+      suivante();
+    }
+    $("#sok").onclick=valider;
+    input.addEventListener("keydown",e=>{if(e.key==="Enter")valider();});
+  }
+}
+function semEnd(){
+  S.secs=Math.round((Date.now()-S.t0)/1000);
+  logResult("semblables",S.score,S.list.length-S.errs.length,S.list.length,S.secs);
+  sp.innerHTML=bilanHTML(S,"Rien à revoir. Théorème, réciproque, triangles semblables : tu as tout en main.");
+  $("#again",sp).onclick=()=>{S.list=shuffle(SEMBLABLES);S.i=0;S.score=0;S.errs=[];S.streak=0;S.t0=Date.now();semStep();};
 }
 
 repIntro();
