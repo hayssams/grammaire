@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Les états de la matière</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F5F6F1;
+  --paper-2:#FCFCFA;
+  --rule:#BFD3E4;
+  --rule-soft:#DDE7F0;
+  --marge:#DE5B4A;
+  --ink:#16233B;
+  --ink-soft:#5E6E85;
+  --pc:#5F4B8B;
+  --serif:"Instrument Serif", Georgia, "Times New Roman", serif;
+  --sans:"Karla", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:16px;
+  line-height:1.5;
+  min-height:100vh;
+  padding:0 0 40px;
+}
+.wrap{max-width:560px;margin:0 auto;padding:0 14px}
+
+/* ---------- en-tete ---------- */
+header{padding:26px 0 14px}
+.topbar{display:flex;align-items:center;gap:14px;margin:0 0 6px}
+.topbar .eyebrow{margin:0}
+.home{
+  font-family:var(--sans);font-size:13px;font-weight:700;text-decoration:none;color:var(--ink);
+  border:1px solid var(--rule);border-radius:999px;padding:6px 12px;background:var(--paper,transparent);
+  transition:background .2s,transform .2s
+}
+.home:hover{background:var(--rule-soft);transform:translateY(-1px)}
+.eyebrow{
+  font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-soft);font-weight:700;margin:0 0 6px
+}
+h1{
+  font-family:var(--serif);font-weight:400;font-size:34px;line-height:1.05;
+  margin:0 0 4px;letter-spacing:-.01em
+}
+h1 em{font-style:italic;color:var(--pc)}
+.sub{margin:0;color:var(--ink-soft);font-size:14px}
+
+/* ---------- onglets (deux rangees de trois) ---------- */
+nav{display:flex;flex-wrap:wrap;gap:6px;margin:18px 0 10px}
+.tab{
+  flex:1 1 31%;border:1px solid var(--rule);
+  background:#EDEFE9;color:var(--ink-soft);
+  font-family:var(--sans);font-size:12.5px;font-weight:700;
+  padding:10px 3px;border-radius:9px;cursor:pointer;
+  letter-spacing:.01em;transition:background .15s,color .15s
+}
+.tab:hover{color:var(--ink)}
+.tab[aria-selected="true"]{background:var(--paper-2);color:var(--ink);box-shadow:inset 0 -2px 0 var(--pc)}
+
+/* ---------- feuille ---------- */
+.sheet{
+  position:relative;background:var(--paper-2);
+  border:1px solid var(--rule);border-radius:10px;
+  padding:22px 16px 20px 30px;overflow:hidden;
+  background-image:repeating-linear-gradient(to bottom,transparent 0 31px,var(--rule-soft) 31px 32px);
+  background-position:0 8px;
+}
+.sheet::before{
+  content:"";position:absolute;top:0;bottom:0;left:20px;width:1px;background:var(--marge);opacity:.5
+}
+.panel{display:none}
+.panel.on{display:block}
+
+/* ---------- barre d'etat ---------- */
+.status{
+  display:flex;align-items:center;gap:12px;
+  font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--ink-soft);margin-bottom:14px
+}
+.status .grow{flex:1}
+.status b{color:var(--ink);font-size:14px;letter-spacing:0}
+
+/* ---------- figure ---------- */
+.fig{margin:0 0 8px}
+.fig svg{width:100%;height:auto;display:block}
+.fig .box{fill:var(--paper-2);stroke:var(--ink);stroke-width:1.5}
+.fig .boxlab{font:700 13px var(--sans);fill:var(--ink);letter-spacing:.06em}
+.fig .fl{stroke:#B9C2CE;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.fig .fl.on{stroke:var(--marge);stroke-width:3}
+.fig .axe{stroke:var(--ink);stroke-width:1.5;fill:none;stroke-linecap:round}
+.fig .tick{font:700 10px var(--sans);fill:var(--ink-soft)}
+.fig .axlab{font:italic 12px var(--serif);fill:var(--ink)}
+.fig .guide{stroke:#B9C2CE;stroke-width:1;stroke-dasharray:4 4}
+.fig .cw{stroke:var(--pc);stroke-width:2.5;stroke-linecap:round}
+.fig .cw.on{stroke:var(--marge);stroke-width:4}
+.hyp{font-size:14.5px;margin:0 0 6px}
+.hyp em{font-style:normal;font-weight:700}
+.annot{
+  font-family:var(--sans);font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-soft);transition:color .3s ease;margin:0 0 4px
+}
+.revealed .annot{color:var(--pc)}
+
+/* ---------- reactions ---------- */
+.react{text-align:center;min-height:78px;margin:0 0 8px;position:relative}
+.react .emo{display:inline-block;font-size:48px;line-height:52px;animation:pop .45s cubic-bezier(.2,1.6,.4,1)}
+.react .msg{display:block;font-family:var(--sans);font-weight:800;font-size:16px;line-height:22px;letter-spacing:.02em;animation:pop .45s .1s both cubic-bezier(.2,1.6,.4,1)}
+.react.yes .msg{color:var(--pc)}
+.react.no .msg{color:var(--marge)}
+.react.no .emo{animation:shake .5s ease}
+.react .streak{display:block;font-family:var(--sans);font-size:12px;font-weight:700;color:var(--ink-soft);margin-top:2px;animation:pop .4s .25s both}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px) rotate(-8deg)}40%,80%{transform:translateX(8px) rotate(8deg)}}
+.confetti{position:absolute;left:50%;top:26px;width:9px;height:9px;border-radius:2px;pointer-events:none;animation:fly .9s ease-out forwards}
+@keyframes fly{0%{transform:translate(0,0) rotate(0);opacity:1}100%{transform:translate(var(--dx),var(--dy)) rotate(540deg);opacity:0}}
+@keyframes pop{from{transform:scale(.3);opacity:0}to{transform:scale(1);opacity:1}}
+.why{font-size:14px;color:var(--ink-soft);margin:8px 0 0;opacity:0;transition:opacity .3s .3s}
+.revealed .why{opacity:1}
+.why em{font-style:normal;color:var(--ink);font-weight:700}
+
+/* ---------- choix ---------- */
+.choices-eq{display:grid;gap:8px;margin-top:16px}
+.choices-eq.deux{grid-template-columns:1fr 1fr}
+.choice{
+  border:1px solid var(--rule);background:var(--paper-2);color:var(--ink);
+  font-family:var(--serif);font-size:17px;
+  padding:12px 8px;border-radius:7px;cursor:pointer;text-align:center;
+  transition:background .12s,border-color .12s,color .12s,opacity .2s
+}
+.choice:hover:not(:disabled){border-color:var(--ink);background:#F1F3EE}
+.choice:disabled{cursor:default}
+.choice.dim{opacity:.32}
+.choice.good{background:var(--pc);border-color:var(--pc);color:#fff;opacity:1}
+.choice.bad{background:transparent;border-color:var(--marge);color:var(--marge);opacity:1;text-decoration:line-through}
+
+/* ---------- saisie ---------- */
+.answer{display:flex;gap:8px;align-items:center;margin-top:16px}
+.answer input{
+  flex:1;min-width:0;border:1px solid var(--rule);border-radius:8px;padding:12px;
+  font-family:var(--sans);font-size:18px;background:var(--paper-2);color:var(--ink)
+}
+.answer input:disabled{opacity:.6}
+.answer .unit{font-weight:700;color:var(--ink-soft)}
+
+/* ---------- boutons ---------- */
+.btn{
+  display:inline-block;border:1px solid var(--ink);background:var(--ink);color:var(--paper-2);
+  font-family:var(--sans);font-size:15px;font-weight:700;padding:12px 22px;border-radius:8px;cursor:pointer;
+  transition:opacity .15s
+}
+.btn:hover{opacity:.86}
+.btn:disabled{cursor:default}
+.btn.ghost{background:transparent;color:var(--ink)}
+.row-end{display:flex;justify-content:flex-end;gap:8px;margin-top:18px;min-height:46px;align-items:center}
+.hidden{display:none !important}
+
+/* ---------- accueil de manche ---------- */
+.intro{padding:6px 0 4px}
+.intro h2{font-family:var(--serif);font-weight:400;font-size:27px;margin:0 0 8px;line-height:1.15}
+.intro p{margin:0 0 18px;color:var(--ink-soft);font-size:15px;max-width:44ch}
+
+/* ---------- bilan ---------- */
+.bilan h2{font-family:var(--serif);font-weight:400;font-size:30px;margin:0 0 2px}
+.bigscore{font-family:var(--serif);font-size:56px;line-height:1;margin:10px 0 2px}
+.bilan .meta{color:var(--ink-soft);font-size:14px;margin:0 0 18px}
+.errlist{border-top:1px solid var(--rule-soft);margin:14px 0 0;padding:0;list-style:none}
+.errlist li{border-bottom:1px solid var(--rule-soft);padding:11px 0;font-size:14px;color:var(--ink-soft)}
+.errlist .rep{font-weight:700;color:var(--pc)}
+.section-title{
+  font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);
+  margin:22px 0 0
+}
+
+@media (max-width:420px){
+  .tab{font-size:11.5px;letter-spacing:0}
+}
+@media (max-width:360px){
+  .choice{font-size:15px}
+  .tab{font-size:10.5px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition-duration:.01ms !important;animation-duration:.01ms !important}
+}
+:focus-visible{outline:2px solid var(--pc);outline-offset:2px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="topbar"><a class="home" href="physique-chimie.html">🏠 Physique-Chimie</a><p class="eyebrow">Physique-Chimie, 3<sup>e</sup></p></div>
+    <h1>La matière change <em>d'état</em></h1>
+    <p class="sub">Six entraînements : les trois états, les changements d'état, la courbe de l'eau, les mélanges, la masse volumique.</p>
+    <nav role="tablist">
+      <button class="tab" role="tab" aria-selected="true" data-panel="etats">Les états</button>
+      <button class="tab" role="tab" aria-selected="false" data-panel="nommer">Nommer</button>
+      <button class="tab" role="tab" aria-selected="false" data-panel="situations">Situations</button>
+      <button class="tab" role="tab" aria-selected="false" data-panel="courbe">La courbe</button>
+      <button class="tab" role="tab" aria-selected="false" data-panel="melanges">Mélanges</button>
+      <button class="tab" role="tab" aria-selected="false" data-panel="masse">Masse volumique</button>
+    </nav>
+  </header>
+
+  <div class="sheet">
+    <section class="panel on" id="etats"></section>
+    <section class="panel" id="nommer"></section>
+    <section class="panel" id="situations"></section>
+    <section class="panel" id="courbe"></section>
+    <section class="panel" id="melanges"></section>
+    <section class="panel" id="masse"></section>
+  </div>
+</div>
+
+<script>
+/* ============ outils ============ */
+const $ = (sel,root=document)=>root.querySelector(sel);
+const shuffle = a => {const c=[...a];for(let i=c.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[c[i],c[j]]=[c[j],c[i]];}return c;};
+const esc = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;");
+function chrono(sec){return sec<60?sec+" s":Math.floor(sec/60)+" min "+String(sec%60).padStart(2,"0");}
+const rnd=a=>a[Math.floor(Math.random()*a.length)];
+const norm=v=>{const l=Math.hypot(v.x,v.y)||1;return{x:v.x/l,y:v.y/l};};
+
+/* ============ schema des trois etats ============ */
+const CHG_ORDER=["fusion","solidification","vaporisation","liquefaction","sublimation","condensation"];
+const CHG={
+  fusion:{a:"sol",b:"liq",label:"Fusion"},
+  solidification:{a:"liq",b:"sol",label:"Solidification"},
+  vaporisation:{a:"liq",b:"gaz",label:"Vaporisation"},
+  liquefaction:{a:"gaz",b:"liq",label:"Liquéfaction"},
+  sublimation:{a:"sol",b:"gaz",label:"Sublimation"},
+  condensation:{a:"gaz",b:"sol",label:"Condensation"}
+};
+function schemaEtats(chg){
+  const B={sol:{x:68,y:172,l:"SOLIDE"},liq:{x:252,y:172,l:"LIQUIDE"},gaz:{x:160,y:40,l:"GAZ"}};
+  let b="";
+  Object.values(B).forEach(o=>{
+    b+=`<rect class="box" x="${o.x-45}" y="${o.y-17}" width="90" height="34" rx="8"/>`+
+       `<text class="boxlab" x="${o.x}" y="${o.y}" text-anchor="middle" dominant-baseline="central">${o.l}</text>`;
+  });
+  CHG_ORDER.forEach(id=>{
+    const c=CHG[id],p0=B[c.a],q0=B[c.b];
+    const u=norm({x:q0.x-p0.x,y:q0.y-p0.y}),n={x:-u.y,y:u.x};
+    const rp=45*Math.abs(u.x)+17*Math.abs(u.y)+7;
+    const p={x:p0.x+u.x*rp+n.x*8,y:p0.y+u.y*rp+n.y*8};
+    const q={x:q0.x-u.x*rp+n.x*8,y:q0.y-u.y*rp+n.y*8};
+    const cls=id===chg?"fl on":"fl";
+    b+=`<line x1="${p.x}" y1="${p.y}" x2="${q.x}" y2="${q.y}" class="${cls}"/>`+
+       `<path class="${cls}" d="M ${q.x-u.x*9+n.x*5} ${q.y-u.y*9+n.y*5} L ${q.x} ${q.y} L ${q.x-u.x*9-n.x*5} ${q.y-u.y*9-n.y*5}"/>`;
+  });
+  return `<svg viewBox="0 0 320 212" role="img" aria-label="Schéma des changements d'état">${b}</svg>`;
+}
+
+/* ============ courbe de temperature de l'eau ============ */
+function courbeEau(c){
+  const Y=T=>176-(T+20)*1.06;
+  const CHAUFFE=[[46,-15],[86,0],[150,0],[212,100],[258,100],[290,115]];
+  const REFROIDIT=[[46,60],[120,0],[196,0],[290,-15]];
+  const pts=(c.mode==="refroidit"?REFROIDIT:CHAUFFE).map(([x,T])=>({x,y:Y(T)}));
+  let b=`<line x1="40" y1="188" x2="308" y2="188" class="axe"/><line x1="40" y1="188" x2="40" y2="16" class="axe"/>`+
+    `<path class="axe" d="M 301 184 L 308 188 L 301 192"/><path class="axe" d="M 36 23 L 40 16 L 44 23"/>`+
+    `<text class="axlab" x="52" y="16">température (°C)</text><text class="axlab" x="306" y="205" text-anchor="end">temps</text>`;
+  [-20,0,20,40,60,80,100,120].forEach(T=>{
+    b+=`<line x1="37" x2="43" y1="${Y(T)}" y2="${Y(T)}" class="axe"/>`+
+       `<text class="tick" x="33" y="${Y(T)}" text-anchor="end" dominant-baseline="middle">${T}</text>`;
+  });
+  (c.mode==="refroidit"?[0]:[0,100]).forEach(T=>{
+    b+=`<line class="guide" x1="40" x2="292" y1="${Y(T)}" y2="${Y(T)}"/>`;
+  });
+  for(let i=0;i<pts.length-1;i++){
+    b+=`<line x1="${pts[i].x}" y1="${pts[i].y}" x2="${pts[i+1].x}" y2="${pts[i+1].y}" class="cw${i===c.seg?" on":""}"/>`;
+  }
+  return `<svg viewBox="0 0 320 212" role="img" aria-label="Courbe de température de l'eau">${b}</svg>`;
+}
+
+/* ============ donnees ============ */
+const ETATS=[
+  {q:"Il garde sa forme quand on le pose sur la table : il a une <em>forme propre</em>.",e:"sol",
+   w:"Un solide a une forme propre et un volume propre : il ne s'adapte pas au récipient."},
+  {q:"Il n'a pas de forme propre : il prend la forme du récipient, et sa surface libre au repos est <em>plane et horizontale</em>.",e:"liq",
+   w:"C'est le portrait du liquide : un volume propre, pas de forme propre, et une surface libre toujours horizontale."},
+  {q:"Il n'a ni forme propre ni volume propre : il occupe <em>tout l'espace disponible</em>.",e:"gaz",
+   w:"Un gaz remplit tout le récipient qu'on lui offre : il est expansible, et on peut aussi le comprimer."},
+  {q:"Dans une seringue bouchée, on peut réduire son volume en poussant le piston : il est <em>compressible</em>.",e:"gaz",
+   w:"Seuls les gaz sont compressibles. Un liquide ou un solide gardent leur volume, même sous pression."},
+  {q:"De l'eau portée à 120 °C, à l'air libre. Dans quel état est-elle ?",e:"gaz",
+   w:"Au-dessus de 100 °C, l'eau est entièrement passée à l'état gazeux : c'est de la vapeur d'eau, invisible."},
+  {q:"Le nuage blanc au-dessus de la casserole qui bout. Dans quel état est cette eau ?",e:"liq",
+   w:"Piège classique : la vapeur d'eau est invisible. Le nuage blanc, ce sont de fines gouttelettes d'eau liquide, formées quand la vapeur se refroidit."},
+  {q:"Le miel, qui coule lentement et épouse la forme de son pot.",e:"liq",
+   w:"Même très visqueux, le miel coule et prend la forme du récipient : c'est un liquide."},
+  {q:"L'air de la salle de classe.",e:"gaz",
+   w:"L'air est un mélange de gaz : il occupe toute la pièce et n'a ni forme ni volume propres."},
+  {q:"Ses molécules sont <em>rangées, serrées</em>, et vibrent sur place sans se déplacer.",e:"sol",
+   w:"À l'échelle microscopique, l'état solide est ordonné et compact : les molécules vibrent autour d'une position fixe."},
+  {q:"Ses molécules restent en contact mais <em>glissent</em> les unes sur les autres, en désordre.",e:"liq",
+   w:"C'est l'état liquide : les molécules se touchent (volume propre) mais bougent librement (pas de forme propre)."},
+  {q:"Ses molécules sont <em>très espacées</em> et filent dans tous les sens à grande vitesse.",e:"gaz",
+   w:"L'état gazeux est dispersé et désordonné : les molécules se déplacent librement, d'où l'absence de forme et de volume propres."}
+];
+
+const NOMMER=[
+  {chg:"fusion",w:"La fusion fait passer de l'état solide à l'état liquide : le glaçon qui fond dans ton verre."},
+  {chg:"solidification",w:"La solidification fait passer du liquide au solide : l'eau du bac à glaçons qui gèle au congélateur."},
+  {chg:"vaporisation",w:"La vaporisation fait passer du liquide au gaz : l'eau qui bout, ou le linge qui sèche (une vaporisation lente s'appelle l'évaporation)."},
+  {chg:"liquefaction",w:"La liquéfaction fait passer du gaz au liquide : la buée sur le miroir, quand la vapeur d'eau touche une paroi froide."},
+  {chg:"sublimation",w:"La sublimation fait passer directement du solide au gaz, sans passer par le liquide : la neige carbonique qui « fume »."},
+  {chg:"condensation",w:"La condensation fait passer directement du gaz au solide : le givre qui se dépose sur les parois du congélateur."}
+];
+
+const SITUATIONS=[
+  {q:"Après la douche, le miroir de la salle de bain est couvert de buée.",chg:"liquefaction",
+   w:"La vapeur d'eau de l'air chaud se liquéfie en fines gouttelettes au contact du miroir froid : gaz → liquide."},
+  {q:"Du givre s'est déposé sur les parois du congélateur.",chg:"condensation",
+   w:"La vapeur d'eau passe directement à l'état solide sur la paroi très froide : gaz → solide, sans passer par le liquide."},
+  {q:"Étendu sur le fil, le linge sèche au soleil.",chg:"vaporisation",
+   w:"L'eau liquide du linge passe lentement à l'état gazeux : c'est une évaporation, une vaporisation à basse température."},
+  {q:"Le glaçon rétrécit puis disparaît dans la limonade.",chg:"fusion",
+   w:"Le glaçon solide devient de l'eau liquide dans le verre : solide → liquide."},
+  {q:"En plein hiver, la surface du lac gèle.",chg:"solidification",
+   w:"L'eau liquide du lac devient de la glace : liquide → solide."},
+  {q:"La neige carbonique (du dioxyde de carbone solide) diminue à l'air libre sans laisser de flaque.",chg:"sublimation",
+   w:"Le dioxyde de carbone solide (−78 °C) passe directement à l'état gazeux : solide → gaz, c'est la sublimation."},
+  {q:"Dans la casserole à 100 °C, de grosses bulles montent : l'eau bout.",chg:"vaporisation",
+   w:"À 100 °C, l'eau liquide se transforme en vapeur : les bulles qui montent sont remplies de gaz."},
+  {q:"Des gouttelettes apparaissent sur la bouteille sortie du réfrigérateur.",chg:"liquefaction",
+   w:"Au contact de la bouteille froide, la vapeur d'eau de l'air redevient liquide : gaz → liquide."},
+  {q:"La cire fondue de la bougie durcit en refroidissant.",chg:"solidification",
+   w:"La cire liquide redevient solide en refroidissant : liquide → solide."},
+  {q:"En altitude, les flocons de neige se forment directement à partir de la vapeur d'eau.",chg:"condensation",
+   w:"La vapeur d'eau passe directement à l'état solide en cristaux de glace : gaz → solide."}
+];
+
+const COURBE=[
+  {kind:"num",crb:{mode:"chauffe",seg:1},ans:0,unit:"°C",rep:"0 °C",
+   hyp:"On chauffe régulièrement de la glace. Le palier marqué en rouge est celui de la fusion. <em>À quelle température, en °C, se produit-il ?</em>",
+   w:"La glace fond à 0 °C. Tant qu'il reste de la glace, l'énergie reçue sert au changement d'état : la température ne monte pas, c'est le palier de fusion."},
+  {kind:"num",crb:{mode:"chauffe",seg:3},ans:100,unit:"°C",rep:"100 °C",
+   hyp:"On chauffe de l'eau. Le palier marqué en rouge est celui de l'ébullition. <em>À quelle température, en °C, se produit-il ?</em>",
+   w:"L'eau pure bout à 100 °C : pendant toute la vaporisation, la température reste bloquée à 100 °C."},
+  {kind:"qcm",crb:{mode:"chauffe",seg:0},ch:["Solide","Liquide","Gazeux"],good:0,rep:"À l'état solide.",
+   hyp:"On chauffe de la glace. <em>Dans quel état est l'eau sur la partie marquée en rouge ?</em>",
+   w:"Avant le palier de fusion, la température est encore négative : c'est de la glace qui se réchauffe."},
+  {kind:"qcm",crb:{mode:"chauffe",seg:2},ch:["Solide","Liquide","Gazeux"],good:1,rep:"À l'état liquide.",
+   hyp:"<em>Dans quel état est l'eau sur la partie marquée en rouge ?</em>",
+   w:"Entre les deux paliers, de 0 à 100 °C, l'eau est entièrement liquide et se réchauffe."},
+  {kind:"qcm",crb:{mode:"chauffe",seg:4},ch:["Solide","Liquide","Gazeux"],good:2,rep:"À l'état gazeux.",
+   hyp:"<em>Dans quel état est l'eau sur la partie marquée en rouge ?</em>",
+   w:"Après le palier de vaporisation, toute l'eau est devenue de la vapeur, qui continue de chauffer au-delà de 100 °C."},
+  {kind:"qcm",crb:{mode:"chauffe",seg:1},ch:["La glace fond : c'est la fusion","L'eau bout : c'est la vaporisation","L'eau gèle : c'est la solidification"],good:0,rep:"La fusion.",
+   hyp:"<em>Que se passe-t-il pendant le palier marqué en rouge ?</em>",
+   w:"À 0 °C, solide et liquide coexistent : la glace fond à température constante, jusqu'à disparition du dernier morceau."},
+  {kind:"qcm",crb:{mode:"refroidit",seg:1},ch:["L'eau se solidifie","La glace fond","La vapeur se liquéfie"],good:0,rep:"La solidification.",
+   hyp:"Cette fois, l'eau <em>refroidit</em>. Que se passe-t-il pendant le palier marqué en rouge ?",
+   w:"En refroidissant, l'eau liquide devient de la glace à 0 °C : la solidification se produit à la même température que la fusion."},
+  {kind:"qcm",crb:{mode:"chauffe"},ch:["Un corps pur change d'état à température constante","On arrête de chauffer pendant le palier","Le thermomètre se bloque à 0 et à 100"],good:0,rep:"Un corps pur change d'état à température constante.",
+   hyp:"<em>Pourquoi la température reste-t-elle constante pendant les paliers ?</em>",
+   w:"L'eau est un corps pur : sa fusion se fait exactement à 0 °C, sa vaporisation à 100 °C. Un mélange, lui, change d'état sur un intervalle de températures."}
+];
+
+const MELANGES=[
+  {q:"L'eau distillée ne contient que des molécules d'eau. C'est...",ch:["Un corps pur","Un mélange"],good:0,rep:"Un corps pur.",
+   w:"Un corps pur n'est constitué que d'une seule espèce chimique. L'eau distillée, c'est de l'eau et rien d'autre."},
+  {q:"L'eau minérale contient de l'eau et des sels minéraux dissous. C'est...",ch:["Un corps pur","Un mélange"],good:1,rep:"Un mélange.",
+   w:"Plusieurs espèces chimiques : c'est un mélange, même s'il a l'air parfaitement limpide."},
+  {q:"Eau et sirop bien mélangés : on ne distingue plus les constituants à l'œil nu. Le mélange est...",ch:["Homogène","Hétérogène"],good:0,rep:"Homogène.",
+   w:"Quand on ne distingue plus les constituants à l'œil nu, le mélange est homogène."},
+  {q:"Eau et sable : on voit nettement les grains au fond du verre. Le mélange est...",ch:["Homogène","Hétérogène"],good:1,rep:"Hétérogène.",
+   w:"On distingue les constituants à l'œil nu : le mélange est hétérogène."},
+  {q:"L'huile versée dans l'eau forme une couche séparée au-dessus. L'huile et l'eau...",ch:["Sont miscibles","Ne sont pas miscibles"],good:1,rep:"Ne sont pas miscibles.",
+   w:"Deux liquides qui ne se mélangent pas sont non miscibles : ils forment un mélange hétérogène, en deux couches."},
+  {q:"Une cuillère de sel disparaît complètement dans l'eau. Le sel...",ch:["Se dissout : il est soluble dans l'eau","Fond : il devient liquide","A disparu pour de bon"],good:0,rep:"Il se dissout.",
+   w:"Le sel ne fond pas, il se dissout : ses grains se dispersent dans l'eau en espèces invisibles. Fondre, c'est passer de solide à liquide sous l'effet de la chaleur."},
+  {q:"Malgré l'agitation, du sucre reste au fond du verre. La solution est...",ch:["Saturée","Hétérogène depuis le début","Mal filtrée"],good:0,rep:"Saturée.",
+   w:"Quand le solvant ne peut plus dissoudre davantage de soluté, la solution est saturée : l'excédent reste au fond."},
+  {q:"Dans l'eau sucrée, comment s'appellent l'eau et le sucre ?",ch:["L'eau est le solvant, le sucre le soluté","L'eau est le soluté, le sucre le solvant"],good:0,rep:"L'eau est le solvant, le sucre le soluté.",
+   w:"Le solvant dissout (l'eau), le soluté est dissous (le sucre). Ensemble, ils forment une solution."},
+  {q:"On dissout 10 g de sel dans 100 g d'eau. Quelle est la masse de l'eau salée obtenue ?",ch:["110 g","100 g","Un peu moins de 110 g"],good:0,rep:"110 g.",
+   w:"La masse se conserve pendant une dissolution : le sel est toujours là, même invisible. 100 + 10 = 110 g."},
+  {q:"L'air que tu respires est...",ch:["Un mélange de gaz","Un corps pur","Uniquement du dioxygène"],good:0,rep:"Un mélange de gaz.",
+   w:"L'air est un mélange homogène de gaz : environ 78 % de diazote, 21 % de dioxygène et 1 % d'autres gaz."},
+  {q:"Quel est le gaz le plus abondant dans l'air ?",ch:["Le diazote","Le dioxygène","Le dioxyde de carbone"],good:0,rep:"Le diazote.",
+   w:"Le diazote représente environ 78 % de l'air. Le dioxygène, celui qui nous fait vivre, environ 21 %."},
+  {q:"Quelle proportion de l'air le dioxygène représente-t-il ?",ch:["Environ 21 %","Environ 78 %","Environ la moitié"],good:0,rep:"Environ 21 %.",
+   w:"Retiens le duo : 78 % de diazote, 21 % de dioxygène. Le reste (1 %) : argon, dioxyde de carbone..."}
+];
+
+const MASSE=[
+  {kind:"qcm",q:"Comment calcule-t-on la masse volumique ρ d'un objet ?",ch:["ρ = m ÷ V","ρ = V ÷ m","ρ = m × V"],good:0,rep:"ρ = m ÷ V.",
+   w:"La masse volumique est la masse divisée par le volume. Elle s'exprime en g/cm³ (ou en kg/m³)."},
+  {kind:"num",q:"Un pavé de fer a un volume de 10 cm³ et une masse de 79 g. <em>Calcule sa masse volumique, en g/cm³.</em>",ans:7.9,unit:"g/cm³",rep:"ρ = 7,9 g/cm³",
+   w:"ρ = m ÷ V = 79 ÷ 10 = <em>7,9 g/cm³</em>. C'est bien la masse volumique du fer."},
+  {kind:"num",q:"La masse volumique de l'eau vaut 1 g/cm³. <em>Quelle est la masse de 250 cm³ d'eau, en g ?</em>",ans:250,unit:"g",rep:"m = 250 g",
+   w:"m = ρ × V = 1 × 250 = <em>250 g</em>. Avec l'eau, masse en grammes et volume en cm³ ont la même valeur."},
+  {kind:"num",q:"La masse volumique de l'huile vaut 0,9 g/cm³. <em>Quelle est la masse de 200 cm³ d'huile, en g ?</em>",ans:180,unit:"g",rep:"m = 180 g",
+   w:"m = ρ × V = 0,9 × 200 = <em>180 g</em> : moins lourd que le même volume d'eau (200 g)."},
+  {kind:"num",q:"La masse volumique du fer vaut 7,9 g/cm³. <em>Quel volume, en cm³, occupent 158 g de fer ?</em>",ans:20,unit:"cm³",rep:"V = 20 cm³",
+   w:"V = m ÷ ρ = 158 ÷ 7,9 = <em>20 cm³</em>. La formule se retourne dans les trois sens : ρ = m ÷ V, m = ρ × V, V = m ÷ ρ."},
+  {kind:"num",q:"Un bijou de 54 g occupe 20 cm³. <em>Calcule sa masse volumique, en g/cm³.</em>",ans:2.7,unit:"g/cm³",rep:"ρ = 2,7 g/cm³",
+   w:"ρ = 54 ÷ 20 = <em>2,7 g/cm³</em> : c'est de l'aluminium, pas de l'argent (10,5 g/cm³). La masse volumique permet d'identifier une matière."},
+  {kind:"qcm",q:"Pourquoi l'huile flotte-t-elle sur l'eau ?",ch:["Sa masse volumique est plus faible que celle de l'eau","Elle pèse toujours moins lourd que l'eau","Elle est plus visqueuse que l'eau"],good:0,rep:"Sa masse volumique est plus faible.",
+   w:"0,9 g/cm³ contre 1 g/cm³ : à volume égal, l'huile est plus légère que l'eau, donc elle flotte. Comparer des masses sans comparer les volumes n'a pas de sens."},
+  {kind:"qcm",q:"Quelle est environ la masse d'un litre d'air ?",ch:["1,3 g","130 g","0 g : un gaz ne pèse rien"],good:0,rep:"Environ 1,3 g.",
+   w:"L'air a une masse : environ 1,3 g par litre. C'est peu, mais ce n'est pas rien : un gaz se pèse."}
+];
+
+/* ============ gamification ============ */
+const SHEET_URL="https://script.google.com/macros/s/AKfycbwB53nfh6Xk_z1Gn4ck_WL8aX0gPxDzQ2MpxWVnpsdunmWR_IKj-tHPHOEVkP614jQJ/exec";
+function logResult(game,score,good,total,secs){
+  try{fetch(SHEET_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({page:"etats-matiere",game,score,good,total,secs})});}catch(e){}
+}
+const CHEERS=[["🎉","Bravo !"],["⚗️","Belle expérience !"],["🧪","Excellent !"],["🏆","Champion !"],["🚀","Trop fort !"],["🌡️","Cent degrés de talent !"],["✨","Génial !"],["💧","Limpide !"]];
+const OOPS=[["😅","Oups, presque !"],["🙈","Pas cette fois !"],["🤔","Hmm, regarde le schéma..."],["🐢","On y va doucement !"],["🧐","Presque ! Lis la correction."]];
+function confetti(host){
+  const cols=["#e63946","#f4a261","#2a9d8f","#457b9d","#ffd166","#9b5de5","#06d6a0"];
+  for(let i=0;i<22;i++){
+    const p=document.createElement("i");p.className="confetti";
+    const ang=Math.random()*Math.PI*2, d=60+Math.random()*90;
+    p.style.setProperty("--dx",Math.cos(ang)*d+"px");
+    p.style.setProperty("--dy",(Math.sin(ang)*d-40)+"px");
+    p.style.background=rnd(cols);
+    p.style.animationDelay=(Math.random()*.15)+"s";
+    host.appendChild(p);
+  }
+}
+function bilanHTML(st,titreOk){
+  const good=st.list.length-st.errs.length;
+  return `<div class="bilan">
+    <h2>${good===st.list.length?"🏆 Sans faute, incroyable !":good>=st.list.length*.8?"🌟 Bravo, belle manche !":good>=st.list.length/2?"👍 Pas mal du tout !":"💪 Continue, tu progresses !"}</h2>
+    <p class="bigscore">${st.score}</p>
+    <p class="meta">${good} bonnes réponses sur ${st.list.length}, en ${chrono(st.secs)}.</p>
+    ${st.errs.length?`<p class="section-title">À revoir</p><ul class="errlist">${st.errs.map(e=>`
+      <li><span class="rep">${e.rep}</span> ${e.w}</li>`).join("")}</ul>`
+    :`<p class="section-title">Sans faute</p><p style="margin-top:8px">${titreOk}</p>`}
+    <div class="row-end"><button class="btn ghost again">Nouvelle manche</button></div>
+  </div>`;
+}
+
+/* ============ moteur de manche ============ */
+function creeManche(o){
+  const st={list:[],i:0,score:0,errs:[],t0:0,streak:0,secs:0};
+  const hote=$(o.panel);
+  function verdict(ok){
+    const v=hote.querySelector(".react");
+    const [emo,msg]=ok?rnd(CHEERS):rnd(OOPS);
+    st.streak=ok?st.streak+1:0;
+    v.className="react "+(ok?"yes":"no");
+    v.innerHTML=`<span class="emo" role="img" aria-label="${ok?"Bonne réponse":"Mauvaise réponse"}">${emo}</span><span class="msg">${msg}</span>`+
+      (st.streak>=3?`<span class="streak">🔥 ${st.streak} d'affilée !</span>`:"");
+    if(ok)confetti(v);
+  }
+  function intro(){
+    hote.innerHTML=`<div class="intro"><h2>${o.titre}</h2><p>${o.texte}</p><button class="btn">Commencer la manche</button></div>`;
+    hote.querySelector(".btn").onclick=lance;
+  }
+  function lance(){st.list=shuffle(o.donnees);st.i=0;st.score=0;st.errs=[];st.streak=0;st.t0=Date.now();etape();}
+  function etape(){
+    if(st.i>=st.list.length)return fin();
+    const q=o.prep(st.list[st.i]);
+    hote.innerHTML=`
+      <div class="status"><span>Question <b>${st.i+1}</b>/${st.list.length}</span><span class="grow"></span><span>Points <b class="pts">${st.score}</b></span></div>
+      <div class="carte">
+        <div class="react"></div>
+        <p class="annot">${q.annot}</p>
+        ${q.fig?`<div class="fig">${q.fig}</div>`:""}
+        <p class="hyp">${q.hyp}</p>
+        <p class="why"></p>
+      </div>
+      ${q.kind==="num"
+        ?`<div class="answer"><input inputmode="decimal" autocomplete="off" placeholder="Ta réponse"><span class="unit">${q.unit}</span><button class="btn ok">Valider</button></div>`
+        :`<div class="choices-eq${q.ch.length>4?" deux":""}">${q.ch.map((c,k)=>`<button class="choice" data-k="${k}">${c}</button>`).join("")}</div>`}
+      <div class="row-end"><button class="btn hidden suiv">Suivante</button></div>`;
+    function revele(ok,saisie){
+      verdict(ok);
+      hote.querySelector(".carte").classList.add("revealed");
+      hote.querySelector(".annot").textContent=q.rep;
+      hote.querySelector(".why").innerHTML=(ok?"":`<em>Non${saisie?", tu as répondu "+saisie:""}. </em>`)+q.w;
+      hote.querySelector(".pts").textContent=st.score;
+      if(q.figApres)hote.querySelector(".fig").innerHTML=q.figApres;
+      const n=hote.querySelector(".suiv");n.classList.remove("hidden");
+      n.textContent=st.i===st.list.length-1?"Voir le bilan":"Suivante";
+      n.onclick=()=>{st.i++;etape();};
+      n.focus({preventScroll:true});
+    }
+    if(q.kind==="num"){
+      const input=hote.querySelector(".answer input");input.focus({preventScroll:true});
+      function valider(){
+        const v=parseFloat(input.value.replace(",",".").trim());
+        if(!isFinite(v)){input.value="";input.placeholder="Écris un nombre";return;}
+        const ok=Math.abs(v-q.ans)<=0.011;
+        if(ok)st.score+=10;else st.errs.push({rep:q.rep,w:q.w});
+        input.disabled=true;hote.querySelector(".answer .btn").disabled=true;
+        revele(ok,esc(input.value));
+      }
+      hote.querySelector(".answer .btn").onclick=valider;
+      input.addEventListener("keydown",e=>{if(e.key==="Enter")valider();});
+    }else{
+      hote.querySelectorAll(".choice").forEach(b=>{
+        b.onclick=()=>{
+          const ok=+b.dataset.k===q.good;
+          if(ok)st.score+=10;else st.errs.push({rep:q.rep,w:q.w});
+          hote.querySelectorAll(".choice").forEach(x=>{
+            x.disabled=true;
+            if(+x.dataset.k===q.good)x.classList.add("good");
+            else if(x===b)x.classList.add("bad");
+            else x.classList.add("dim");
+          });
+          revele(ok,"");
+        };
+      });
+    }
+  }
+  function fin(){
+    st.secs=Math.round((Date.now()-st.t0)/1000);
+    logResult(o.game,st.score,st.list.length-st.errs.length,st.list.length,st.secs);
+    hote.innerHTML=bilanHTML(st,o.bravo);
+    hote.querySelector(".again").onclick=lance;
+  }
+  return {intro};
+}
+
+/* ============ les six manches ============ */
+const E3=["Solide","Liquide","Gaz"];
+const E3_ID=["sol","liq","gaz"];
+const NOMS=CHG_ORDER.map(id=>CHG[id].label);
+const MANCHES={
+  etats:creeManche({panel:"#etats",game:"etats",donnees:ETATS,
+    titre:"Solide, liquide ou gaz ?",
+    texte:"Onze descriptions : propriétés, exemples et vue microscopique. Retrouve l'état de la matière à chaque fois.",
+    bravo:"Rien à revoir. Passe à la manche suivante : les six changements d'état t'attendent.",
+    prep:q=>({kind:"qcm",annot:"Solide, liquide ou gaz ?",fig:null,hyp:q.q,ch:E3,good:E3_ID.indexOf(q.e),rep:E3[E3_ID.indexOf(q.e)]+".",w:q.w})}),
+  nommer:creeManche({panel:"#nommer",game:"nommer",donnees:NOMMER,
+    titre:"Les six changements d'état.",
+    texte:"Le schéma, une flèche rouge, six noms possibles. À la fin de la manche, tu le connaîtras par cœur.",
+    bravo:"Rien à revoir. Va les reconnaître en situation, dans la vie de tous les jours.",
+    prep:q=>({kind:"qcm",annot:"Comment s'appelle ce changement d'état ?",fig:schemaEtats(q.chg),
+      hyp:"Observe le sens de la flèche rouge, puis choisis le bon nom.",
+      ch:NOMS,good:CHG_ORDER.indexOf(q.chg),rep:CHG[q.chg].label+".",w:q.w})}),
+  situations:creeManche({panel:"#situations",game:"situations",donnees:SITUATIONS,
+    titre:"Autour de toi, ça change d'état.",
+    texte:"Dix scènes de la vie courante. Trouve le changement d'état qui se cache derrière chacune : le schéma s'allume après ta réponse.",
+    bravo:"Rien à revoir. Passe à la courbe de l'eau : paliers en vue.",
+    prep:q=>({kind:"qcm",annot:"Quel changement d'état ?",fig:schemaEtats(null),figApres:schemaEtats(q.chg),
+      hyp:q.q,ch:NOMS,good:CHG_ORDER.indexOf(q.chg),rep:CHG[q.chg].label+".",w:q.w})}),
+  courbe:creeManche({panel:"#courbe",game:"courbe",donnees:COURBE,
+    titre:"La courbe de l'eau.",
+    texte:"Températures, paliers, états : huit questions pour apprendre à lire la courbe de chauffe (et de refroidissement) de l'eau.",
+    bravo:"Rien à revoir. Enchaîne avec les mélanges et les solutions.",
+    prep:q=>({...q,annot:q.kind==="num"?"À toi de lire la courbe":"Observe la courbe",fig:courbeEau(q.crb)})}),
+  melanges:creeManche({panel:"#melanges",game:"melanges",donnees:MELANGES,
+    titre:"Corps purs et mélanges.",
+    texte:"Douze questions : homogène ou hétérogène, miscible ou pas, soluble, saturé... et de quoi est fait l'air.",
+    bravo:"Rien à revoir. Dernière manche : la masse volumique.",
+    prep:q=>({kind:"qcm",annot:"Corps purs, mélanges, solutions",fig:null,hyp:q.q,ch:q.ch,good:q.good,rep:q.rep,w:q.w})}),
+  masse:creeManche({panel:"#masse",game:"masse",donnees:MASSE,
+    titre:"La masse volumique.",
+    texte:"ρ = m ÷ V. Huit questions, dont des calculs : la calculatrice est autorisée, tape ta réponse.",
+    bravo:"Rien à revoir. États, changements, mélanges, masse volumique : le chapitre est à toi.",
+    prep:q=>({...q,annot:q.kind==="num"?"À toi de calculer":"La masse volumique",fig:null,hyp:q.q})})
+};
+
+/* onglets */
+document.querySelectorAll(".tab").forEach(t=>{
+  t.addEventListener("click",()=>{
+    document.querySelectorAll(".tab").forEach(x=>x.setAttribute("aria-selected",x===t));
+    document.querySelectorAll(".panel").forEach(p=>p.classList.toggle("on",p.id===t.dataset.panel));
+    MANCHES[t.dataset.panel].intro();
+    window.scrollTo({top:0,behavior:"smooth"});
+  });
+});
+
+MANCHES.etats.intro();
+</script>
+</body>
+</html>

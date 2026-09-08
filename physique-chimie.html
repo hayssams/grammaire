@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Les carnets d'entraînement</title>
+<title>Physique-Chimie, les carnets</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
@@ -16,10 +16,6 @@
   --marge:#DE5B4A;
   --ink:#16233B;
   --ink-soft:#5E6E85;
-  --francais:#1D4E89;
-  --maths:#1B6F55;
-  --histoire:#8C4A2F;
-  --geo:#17697B;
   --pc:#5F4B8B;
   --serif:"Instrument Serif", Georgia, "Times New Roman", serif;
   --sans:"Karla", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -39,6 +35,14 @@ body{
 
 /* ---------- en-tete ---------- */
 header{padding:26px 0 14px}
+.topbar{display:flex;align-items:center;gap:14px;margin:0 0 6px}
+.topbar .eyebrow{margin:0}
+.home{
+  font-family:var(--sans);font-size:13px;font-weight:700;text-decoration:none;color:var(--ink);
+  border:1px solid var(--rule);border-radius:999px;padding:6px 12px;background:var(--paper,transparent);
+  transition:background .2s,transform .2s
+}
+.home:hover{background:var(--rule-soft);transform:translateY(-1px)}
 .eyebrow{
   font-size:11px;letter-spacing:.16em;text-transform:uppercase;
   color:var(--ink-soft);font-weight:700;margin:0 0 6px
@@ -47,7 +51,7 @@ h1{
   font-family:var(--serif);font-weight:400;font-size:34px;line-height:1.05;
   margin:0 0 4px;letter-spacing:-.01em
 }
-h1 em{font-style:italic;color:var(--francais)}
+h1 em{font-style:italic;color:var(--pc)}
 .sub{margin:0;color:var(--ink-soft);font-size:14px;max-width:44ch}
 
 /* ---------- feuille ---------- */
@@ -62,68 +66,70 @@ h1 em{font-style:italic;color:var(--francais)}
   content:"";position:absolute;top:0;bottom:0;left:20px;width:1px;background:var(--marge);opacity:.5
 }
 
-/* ---------- matieres ---------- */
+/* ---------- cartes ---------- */
 .cards{display:grid;gap:12px;margin:0}
 .card{
-  display:flex;align-items:center;gap:12px;position:relative;
-  text-decoration:none;color:inherit;
+  display:block;position:relative;text-decoration:none;color:inherit;
   border:1px solid var(--rule);border-left:3px solid var(--c);
   background:var(--paper-2);border-radius:8px;
-  padding:22px 18px;
+  padding:16px 16px 15px;
   transition:border-color .15s,box-shadow .15s,transform .15s
 }
 .card:hover{border-color:var(--c);box-shadow:0 2px 0 var(--c);transform:translateY(-1px)}
+.card .num{
+  font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--c);margin:0 0 5px
+}
 .card h2{
-  font-family:var(--serif);font-weight:400;font-size:30px;line-height:1.1;
-  margin:0;letter-spacing:-.005em;color:var(--c);flex:1
+  font-family:var(--serif);font-weight:400;font-size:25px;line-height:1.15;
+  margin:0 0 6px;letter-spacing:-.005em
+}
+.card p{margin:0;color:var(--ink-soft);font-size:14px;max-width:42ch}
+.card .modes{
+  display:flex;flex-wrap:wrap;gap:5px;margin:12px 0 0;padding:0;list-style:none
+}
+.card .modes li{
+  font-size:11.5px;font-weight:700;letter-spacing:.02em;
+  color:var(--ink-soft);background:#EDEFE9;
+  border:1px solid var(--rule-soft);border-radius:5px;padding:4px 8px
 }
 .card .go{
-  font-family:var(--serif);font-size:24px;line-height:1;color:var(--c);
-  transition:transform .15s
+  font-family:var(--serif);font-size:22px;line-height:1;color:var(--c);
+  position:absolute;top:15px;right:15px;transition:transform .15s
 }
 .card:hover .go{transform:translateX(3px)}
 
 @media (max-width:420px){
   h1{font-size:29px}
   .sheet{padding-left:26px}
-  .card h2{font-size:26px}
+  .card h2{font-size:22px}
 }
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
-    <p class="eyebrow">Révisions, 3<sup>e</sup></p>
-    <h1>Les carnets <em>d'entraînement</em></h1>
-    <p class="sub">Choisis ta matière.</p>
+    <div class="topbar"><a class="home" href="index.html">🏠 Accueil</a><p class="eyebrow">Physique-Chimie, 3<sup>e</sup></p></div>
+    <h1>La mati&egrave;re dans <em>tous ses &eacute;tats</em></h1>
+    <p class="sub">Les carnets d'entraînement de physique-chimie, un chapitre à la fois.</p>
   </header>
 
   <div class="sheet">
     <div class="cards">
 
-      <a class="card" style="--c:var(--francais)" href="francais.html">
-        <h2>Français</h2>
+      <a class="card" style="--c:var(--pc)" href="etats-matiere.html">
         <span class="go">&rarr;</span>
-      </a>
-
-      <a class="card" style="--c:var(--maths)" href="maths.html">
-        <h2>Maths</h2>
-        <span class="go">&rarr;</span>
-      </a>
-
-      <a class="card" style="--c:var(--histoire)" href="histoire.html">
-        <h2>Histoire</h2>
-        <span class="go">&rarr;</span>
-      </a>
-
-      <a class="card" style="--c:var(--geo)" href="geographie.html">
-        <h2>G&eacute;ographie</h2>
-        <span class="go">&rarr;</span>
-      </a>
-
-      <a class="card" style="--c:var(--pc)" href="physique-chimie.html">
-        <h2>Physique-Chimie</h2>
-        <span class="go">&rarr;</span>
+        <p class="num">Carnet 1 &middot; la mati&egrave;re</p>
+        <h2>Les &eacute;tats de la mati&egrave;re</h2>
+        <p>Solide, liquide, gaz et leurs six changements d'&eacute;tat, la courbe de l'eau et ses paliers, les m&eacute;langes et les solutions, la composition de l'air, la masse volumique.</p>
+        <ul class="modes">
+          <li>Les &eacute;tats</li>
+          <li>Nommer</li>
+          <li>Situations</li>
+          <li>La courbe</li>
+          <li>M&eacute;langes</li>
+          <li>Masse volumique</li>
+        </ul>
       </a>
 
     </div>

@@ -10,11 +10,13 @@ Site statique sans build, sans dépendances, sans tests : chaque page est un fic
 
 ## Structure
 
-- `index.html` : page chapeau, quatre cartes (Français, Maths, Histoire, Géographie).
+- `index.html` : page chapeau, cinq cartes (Français, Maths, Histoire, Géographie, Physique-Chimie).
 - `francais.html` : rubrique Français, cartes vers les deux carnets et la boîte à astuces.
 - `maths.html` : rubrique Maths, carte vers le carnet Thalès.
 - `histoire.html` : rubrique Histoire (accent terre de Sienne `--histoire: #8C4A2F`), cartes vers les deux carnets et le mémo, plus le lien externe vers l'appli recommandée par la professeure.
 - `geographie.html` : rubrique Géographie (accent bleu canard `--geo: #17697B`), cartes vers les deux carnets et le mémo.
+- `physique-chimie.html` : rubrique Physique-Chimie (accent violet encre `--pc: #5F4B8B`), carte vers le carnet États de la matière.
+- `etats-matiere.html` : carnet de physique-chimie couvrant le chapitre « Les états de la matière » (programme SchoolMouv 3e) en six manches : Les états (QCM solide/liquide/gaz), Nommer (schéma des changements d'état, flèche interrogée en rouge), Situations (vie courante, le schéma s'allume à la révélation), La courbe (lecture de la courbe de chauffe ou de refroidissement de l'eau), Mélanges (corps purs, solutions, composition de l'air), Masse volumique (ρ = m ÷ V, calculs en saisie). Deux moteurs SVG : `schemaEtats(chg)` (trois boîtes, six flèches) et `courbeEau(c)` (repère gradué, paliers, segment marqué). Contrairement aux autres carnets, les six manches partagent un constructeur `creeManche(o)` (intro, déroulé QCM ou saisie, bilan) : chaque manche fournit ses données et sa fonction `prep(q)`. Les éléments sont interrogés à l'intérieur du panel (pas d'ids globaux, les panels masqués gardent leur HTML). La barre passe en deux rangées de trois onglets.
 - `thales.html` : carnet de maths sur le théorème de Thalès (accent vert `--maths: #1B6F55`). Reprend la mécanique des carnets de grammaire (onglets, `showVerdict`, confettis, série, `logResult` avec `page:"thales"`), avec en plus un moteur de figures `figSVG(f)` qui dessine les configurations de Thalès (triangle ou papillon) en SVG inline à partir des données de chaque exercice (`REPERER`, `RAPPORTS`, `CALCULER`, `RECIP`, `SEMBLABLES`), un second moteur `figDuoSVG(d)` qui dessine deux triangles indépendants avec arcs d'angles colorés par paires et longueurs de côtés (manche Semblables), et des manches à saisie numérique (virgule ou point acceptés, tolérance ±0,01). La manche Semblables mélange questions oui/non et calculs dans une même liste (`kind:"reco"` ou `"calc"`).
 - `histoire-dates.html` et `histoire-personnages.html` : les deux carnets d'histoire, tirés du programme de révision de rentrée (`docs/3eme revisions histoire geographie FR_compressed (1).pdf`). Ils partagent un moteur de frise `friseSVG(opts)` qui découpe 1914-2002 en cinq tranches cliquables (`TRANCHES`, ids `t1` à `t5`), avec une largeur minimale par tranche pour rester utilisable au doigt. Le premier porte les 23 dates, le second les 21 personnages, chacun avec son rôle rédigé et le fait daté qui permet de le situer.
 - `geo-france.html` et `geo-europe.html` : les deux carnets de géo. Les tracés sont les **vraies frontières**, simplifiées puis figées en clair dans les fichiers : régions de l'IGN sous Licence Ouverte Etalab, ce qui **oblige à porter la mention de la source sur `geo-france.html`** ; pays, fleuves et planisphère de Natural Earth, domaine public. La fabrication est documentée dans `docs/superpowers/outils/geo/`, qui n'est pas servi.
@@ -70,7 +72,7 @@ En tête du `<script>` de chaque carnet :
 ### Gamification et suivi
 
 - Confettis, série (streak), messages `CHEERS`/`OOPS` tirés au hasard à chaque réponse.
-- Les résultats de chaque manche sont envoyés à Google Sheets via `logResult()` : POST `no-cors` vers `SHEET_URL` (Google Apps Script), avec `page` valant `"classes"`, `"fonctions"`, `"thales"`, `"histoire-dates"`, `"histoire-personnages"`, `"geo-france"` ou `"geo-europe"`. Toute nouvelle activité doit appeler `logResult` en fin de manche. **Défaut connu :** la manche Caméléons/Déplacements des deux carnets de grammaire (`camEnd`) ne l'appelle pas encore.
+- Les résultats de chaque manche sont envoyés à Google Sheets via `logResult()` : POST `no-cors` vers `SHEET_URL` (Google Apps Script), avec `page` valant `"classes"`, `"fonctions"`, `"thales"`, `"histoire-dates"`, `"histoire-personnages"`, `"geo-france"`, `"geo-europe"` ou `"etats-matiere"`. Toute nouvelle activité doit appeler `logResult` en fin de manche. **Défaut connu :** la manche Caméléons/Déplacements des deux carnets de grammaire (`camEnd`) ne l'appelle pas encore.
 
 Il y a maintenant trois familles de jumeaux, et la règle vaut pour chacune : **toute modification de comportement partagé doit être reportée à la main dans tous les fichiers de la famille.**
 
@@ -78,7 +80,7 @@ Il y a maintenant trois familles de jumeaux, et la règle vaut pour chacune : **
 - Histoire : `histoire-dates.html` et `histoire-personnages.html` (moteur `friseSVG` commun).
 - Géographie : `geo-france.html` et `geo-europe.html` (moteur `mapSVG` commun).
 
-`thales.html` reste seul de son espèce, avec son moteur `figSVG`.
+`thales.html` (moteurs `figSVG` et `figDuoSVG`) et `etats-matiere.html` (moteurs `schemaEtats` et `courbeEau`) restent chacun seuls de leur espèce.
 
 ## Charte graphique
 
