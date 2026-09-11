@@ -46,9 +46,10 @@ Site statique sans build, sans dépendances, sans tests : chaque page est un fic
   node outils/coherence.mjs geo-france.html DROM nom,chef geo-memo.html
   node outils/coherence.mjs geo-europe.html PAYS nom geo-memo.html
   node outils/coherence.mjs etats-matiere.html CHG label pc-memo.html
+  node outils/verifie-banque.mjs
   ```
 
-  Le script charge le tableau du carnet (ou les valeurs d'un objet map, comme `CHG`) et vérifie que chaque valeur figure dans la fiche, en tenant compte des entités HTML et des apostrophes typographiques. Chaque appel doit se terminer par `la fiche est à jour.`
+  Le script charge le tableau du carnet (ou les valeurs d'un objet map, comme `CHG`) et vérifie que chaque valeur figure dans la fiche, en tenant compte des entités HTML et des apostrophes typographiques. Chaque appel doit se terminer par `la fiche est à jour.` Le script `outils/verifie-banque.mjs` contrôle quant à lui la banque de `classes-grammaticales.html` (effectifs 54/13/9, cibles `[[...]]`, classes valides, caméléons cohérents) et doit se terminer par `La banque est conforme`.
 - `astuces.html` : fiche mémo statique (astuce de reconnaissance + 3 à 5 exemples par classe et par fonction, sections « Ne confonds pas ») ; deux onglets, pas de score ni d'appel Google Sheets, contenu écrit directement dans le HTML.
 - `docs/superpowers/` : specs et plans d'implémentation.
 
