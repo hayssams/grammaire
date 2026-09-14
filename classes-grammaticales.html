@@ -430,8 +430,19 @@ function markChoices(root,correct,chosen){
 
 /* ============ 1. en contexte ============ */
 const SHEET_URL="https://script.google.com/macros/s/AKfycbwB53nfh6Xk_z1Gn4ck_WL8aX0gPxDzQ2MpxWVnpsdunmWR_IKj-tHPHOEVkP614jQJ/exec";
+function appareil(){
+  const ua=navigator.userAgent, n=navigator, e=screen;
+  const tactile=(n.maxTouchPoints||0)>0, cote=Math.max(e.width,e.height);
+  const os=/iPhone|iPod/.test(ua)?"iOS":/iPad/.test(ua)?"iPadOS":/Android/.test(ua)?"Android":/Windows/.test(ua)?"Windows":/Mac OS X/.test(ua)?(tactile?"iPadOS":"macOS"):/Linux/.test(ua)?"Linux":"autre";
+  let nom="autre";
+  for(const [cle,val] of [["Edg","Edge"],["OPR","Opera"],["CriOS","Chrome"],["FxiOS","Firefox"],["Firefox","Firefox"],["Chrome","Chrome"],["Version","Safari"]]){
+    const m=ua.match(new RegExp(cle+"\\/(\\d+)")); if(m){nom=val+" "+m[1];break;}
+  }
+  const type=!tactile?"ordinateur":(os==="iPadOS"||(os==="Android"&&!/Mobile/.test(ua))||cote>=1000)?"tablette":"mobile";
+  return {appareil:type,os,navigateur:nom,ecran:e.width+"x"+e.height,fenetre:innerWidth+"x"+innerHeight,dpr:devicePixelRatio||1,tactile,langue:n.language||"",ua};
+}
 function logResult(game,score,good,total,secs){
-  try{fetch(SHEET_URL,{method:"POST",mode:"no-cors",body:JSON.stringify({page:"classes",game,score,good,total,secs})});}catch(e){}
+  try{fetch(SHEET_URL,{method:"POST",mode:"no-cors",body:JSON.stringify(Object.assign({page:"classes",game,score,good,total,secs},appareil()))});}catch(e){}
 }
 const Q = {list:[],i:0,score:0,errs:[],t0:0,streak:0};
 const CHEERS=[["🎉","Bravo !"],["⭐","Super !"],["🚀","Excellent !"],["🏆","Champion !"],["🦄","Magnifique !"],["🔥","Trop fort !"],["🌟","Génial !"],["🐱","Miaou, bien joué !"]];
