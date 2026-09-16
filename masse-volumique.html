@@ -299,21 +299,25 @@ function tableauMetaux(){
 }
 
 /* un becher, ses couches de liquides, et l'objet place par la regle : il flotte
-   sur la premiere couche plus dense que lui, sinon il repose au fond */
+   sur la premiere couche plus dense que lui, sinon il repose au fond.
+   Toutes les couches ont la meme hauteur fixe et s'empilent depuis le fond : verser un
+   second liquide allonge la colonne vers le haut au lieu de comprimer le premier, sinon
+   l'eau semblerait baisser au moment ou l'on verse l'huile. Trois couches au plus, et
+   trois couches remplissent exactement le verre de YT a YB. */
 function verre(o){
-  const X=104,W=112,YT=44,YB=188;
+  const X=104,W=112,YT=44,YB=188,H=(YB-YT)/3;
   const cs=o.couches.map(liq).sort((a,b)=>a.rho-b.rho);
-  const h=(YB-YT)/cs.length;
+  const haut=YB-cs.length*H;
   let b="";
   cs.forEach((c,i)=>{
-    const y=YT+i*h;
-    b+=`<rect class="couche" x="${X+3}" y="${y}" width="${W-6}" height="${h}" fill="${c.col}"/>`;
-    b+=`<text class="couchelab" x="${X+11}" y="${y+h/2}" dominant-baseline="central">${c.nom} ${fr(c.rho)}</text>`;
+    const y=haut+i*H;
+    b+=`<rect class="couche" x="${X+3}" y="${y}" width="${W-6}" height="${H}" fill="${c.col}"/>`;
+    b+=`<text class="couchelab" x="${X+11}" y="${y+H/2}" dominant-baseline="central">${c.nom} ${fr(c.rho)}</text>`;
   });
   b+=`<path class="verre" d="M ${X} ${YT-22} L ${X} ${YB-10} Q ${X} ${YB} ${X+10} ${YB} L ${X+W-10} ${YB} Q ${X+W} ${YB} ${X+W} ${YB-10} L ${X+W} ${YT-22}"/>`;
   if(o.objet){
     const k=cs.findIndex(c=>c.rho>o.objet.rho);
-    const cy=k<0?YB-13:YT+k*h;
+    const cy=k<0?YB-13:haut+k*H;
     b+=`<circle class="objet" cx="${X+W-26}" cy="${cy}" r="11"/>`;
     b+=`<text class="objetlab" x="${X+W+6}" y="${cy}" dominant-baseline="central">${o.objet.nom} ${fr(o.objet.rho)}</text>`;
   }
