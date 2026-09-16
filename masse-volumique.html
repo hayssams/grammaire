@@ -257,7 +257,10 @@ const norm=v=>{const l=Math.hypot(v.x,v.y)||1;return{x:v.x/l,y:v.y/l};};
    unique, decale a gauche pour lui laisser la place. Avec deux tubes, le tube droit passerait
    dessous. Meme prudence avec un niveau nul : le menisque descendrait sous le fond du tube.
    L'option lire ajoute le trait rouge et sa legende dans la loupe : elle est reservee au
-   figApres, sans quoi la figure repondrait a la question avant le choix. */
+   figApres, sans quoi la figure repondrait a la question avant le choix.
+   Un trait de graduation marque le bas du menisque, jamais son bord : les courbes sont donc
+   posees pour que leur point le plus bas, a mi-hauteur entre bords et point de controle,
+   tombe exactement sur la graduation (ys dans le tube, surf+7,5 dans la loupe). */
 function eprouvette(o){
   const max=o.max||110, tubes=o.tubes, W=54, H=150, Y0=182;
   const xs = tubes.length===1 ? (o.loupe?[104]:[160]) : [92,228];
@@ -265,9 +268,9 @@ function eprouvette(o){
   let b="";
   tubes.forEach((t,i)=>{
     const x=xs[i]-W/2, ys=y(t.v);
-    b+=`<rect class="liq" x="${x+2}" y="${ys}" width="${W-4}" height="${Y0-ys}"/>`;
+    b+=`<path class="liq" d="M ${x+2} ${ys-3} Q ${xs[i]} ${ys+3} ${x+W-2} ${ys-3} L ${x+W-2} ${Y0} L ${x+2} ${Y0} Z"/>`;
     if(t.solide)b+=`<rect class="solide" x="${x+13}" y="${Y0-24}" width="${W-26}" height="21" rx="3"/>`;
-    b+=`<path class="menis" d="M ${x+2} ${ys} Q ${xs[i]} ${ys+6} ${x+W-2} ${ys}"/>`;
+    b+=`<path class="menis" d="M ${x+2} ${ys-3} Q ${xs[i]} ${ys+3} ${x+W-2} ${ys-3}"/>`;
     b+=`<path class="tube" d="M ${x} ${Y0-H-14} L ${x} ${Y0-8} Q ${x} ${Y0} ${x+8} ${Y0} L ${x+W-8} ${Y0} Q ${x+W} ${Y0} ${x+W} ${Y0-8} L ${x+W} ${Y0-H-14}"/>`;
     for(let v=0;v<=max;v+=10){
       const gros=v%20===0;
@@ -282,7 +285,7 @@ function eprouvette(o){
     b+=`<path class="liq" d="M ${LX+3} ${surf} Q ${LX+LW/2} ${surf+15} ${LX+LW-3} ${surf} L ${LX+LW-3} ${LY+LH-3} L ${LX+3} ${LY+LH-3} Z"/>`;
     b+=`<path class="menis" d="M ${LX+3} ${surf} Q ${LX+LW/2} ${surf+15} ${LX+LW-3} ${surf}"/>`;
     if(o.lire){
-      b+=`<line class="lire" x1="${LX-8}" x2="${LX+LW+8}" y1="${surf+14}" y2="${surf+14}"/>`;
+      b+=`<line class="lire" x1="${LX-8}" x2="${LX+LW+8}" y1="${surf+7.5}" y2="${surf+7.5}"/>`;
       b+=`<text class="axlab" x="${LX+LW/2}" y="${LY+LH+18}" text-anchor="middle">on lit ici</text>`;
     }
   }
