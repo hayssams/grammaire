@@ -23,6 +23,8 @@ node outils/coherence.mjs histoire-dates.html DATES d,label histoire-memo.html
 
 Affiche `la fiche est à jour.` si tout y est, sinon une ligne `ABSENT` par valeur manquante.
 
+La règle de la ligne commune suppose qu'une entrée de la fiche tient dans un seul élément, une ligne de tableau ou un bloc. Une fiche qui éclaterait les champs d'une même entrée en éléments frères ferait échouer le contrôle à tort ; une fiche qui empilerait plusieurs entrées dans un seul bloc le rendrait au contraire trop permissif. Aucune fiche actuelle n'est dans ce cas, mais c'est à savoir avant de remettre en forme une fiche.
+
 À lancer après toute modification d'une donnée dans un carnet, avant de reporter le changement dans la fiche correspondante.
 
 ## `verifie-banque.mjs`
