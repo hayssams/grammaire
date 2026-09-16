@@ -325,6 +325,25 @@ const MESURER=[
    w:"ρ = 80 ÷ 100 = <em>0,8 g/cm³</em>. C'est plus léger que l'eau : ce liquide flotterait dessus. À 0,8, c'est de l'éthanol."}
 ];
 
+const UNITES=[
+  {kind:"qcm",q:"1 mL, c'est aussi…",ch:["1 cm³","1 dm³","10 cm³"],good:0,rep:"1 mL = 1 cm³.",
+   w:"Le millilitre et le centimètre cube sont deux noms du même volume. C'est ce qui permet de passer d'une éprouvette (en mL) à un calcul en cm³ sans rien convertir."},
+  {kind:"qcm",q:"1 L, c'est aussi…",ch:["1 dm³, soit 1000 cm³","1 m³","100 cm³"],good:0,rep:"1 L = 1 dm³ = 1000 cm³.",
+   w:"Un litre est un cube de 10 cm de côté : 10 × 10 × 10 = 1000 cm³. Et 1 m³ vaut 1000 L : un mètre cube d'eau pèse une tonne."},
+  {kind:"num",q:"L'aluminium a une masse volumique de 2,7 g/cm³. <em>Combien cela fait-il en kg/m³ ?</em>",ans:2700,unit:"kg/m³",rep:"2700 kg/m³",
+   w:"On multiplie par 1000 : 2,7 g/cm³ = <em>2700 kg/m³</em>. Un mètre cube contient un million de cm³, mais un kilo vaut mille grammes : il reste le facteur 1000."},
+  {kind:"num",q:"L'eau a une masse volumique de 1000 kg/m³. <em>Combien cela fait-il en g/cm³ ?</em>",ans:1,unit:"g/cm³",rep:"1 g/cm³",
+   w:"On divise par 1000 : 1000 kg/m³ = <em>1 g/cm³</em>. Les deux écritures disent la même chose, c'est l'unité choisie qui change."},
+  {kind:"num",q:"Une canette contient 33 cL. <em>Combien cela fait-il en mL ?</em>",ans:330,unit:"mL",rep:"330 mL",
+   w:"Un centilitre vaut 10 millilitres : 33 × 10 = <em>330 mL</em>, donc 330 cm³."},
+  {kind:"qcm",q:"L'essence a une masse volumique de 0,69 g/mL. Quelle est la masse d'un litre d'essence ?",ch:["690 g","69 g","6,9 g"],good:0,rep:"690 g.",
+   w:"Un litre vaut <em>1000</em> mL, pas 100 : 0,69 × 1000 = <em>690 g</em>. C'est l'erreur la plus fréquente du chapitre, un facteur 10 qui s'envole."},
+  {kind:"num",q:"L'huile a une masse volumique de 0,9 g/cm³. <em>Quelle est la masse d'une bouteille de 1,5 L, en g ?</em>",ans:1350,unit:"g",rep:"m = 1350 g",
+   w:"D'abord la conversion : 1,5 L = 1500 cm³. Ensuite la formule : m = 0,9 × 1500 = <em>1350 g</em>, soit 1,35 kg."},
+  {kind:"qcm",q:"Quelle est l'unité de masse volumique du système international ?",ch:["Le kg/m³","Le g/cm³","Le g/L"],good:0,rep:"Le kg/m³.",
+   w:"Le système international combine le kilogramme et le mètre cube. En classe on utilise surtout le g/cm³, plus pratique, mais les deux sont justes à condition d'écrire l'unité."}
+];
+
 /* ============ gamification ============ */
 const SHEET_URL="https://script.google.com/macros/s/AKfycbwB53nfh6Xk_z1Gn4ck_WL8aX0gPxDzQ2MpxWVnpsdunmWR_IKj-tHPHOEVkP614jQJ/exec";
 function appareil(){
@@ -463,6 +482,11 @@ const MANCHES={
     texte:"L'éprouvette, le ménisque, la tare, et le grand classique : trouver le volume d'un solide en le plongeant dans l'eau.",
     bravo:"Rien à revoir. Direction les unités, là où les erreurs coûtent le plus cher.",
     prep:q=>({...q,annot:q.kind==="num"?"À toi de calculer":"Mesurer un volume",fig:q.fig?eprouvette(q.fig):null,hyp:q.q})}),
+  unites:creeManche({panel:"#unites",game:"unites",donnees:UNITES,
+    titre:"Les unités, sans se tromper.",
+    texte:"mL et cm³, L et dm³, g/cm³ et kg/m³. Huit questions pour ne plus perdre de points sur un facteur 1000.",
+    bravo:"Rien à revoir. Maintenant, sers-toi de tout ça pour reconnaître un métal.",
+    prep:q=>({...q,annot:q.kind==="num"?"À toi de convertir":"Les unités",fig:null,hyp:q.q})}),
   /* fin des manches */
 };
 
