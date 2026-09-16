@@ -37,9 +37,16 @@ for (const f of process.argv.slice(2)) {
   if (/function logResult/.test(html)) {
     const page = html.match(/page:"([^"]+)"/);
     if (!page) ko(f, "logResult sans champ page");
-    const manches = [...html.matchAll(/logResult\("([^"]+)"/g)].map(m => m[1]);
-    if (onglets.length && manches.length !== onglets.length)
-      ko(f, `${manches.length} appel(s) à logResult pour ${onglets.length} onglets`);
+    // Deux facons de journaliser, toutes les deux valables. Soit chaque manche appelle logResult
+    // avec son nom en clair, soit les manches partagent un constructeur qui l'appelle une seule
+    // fois, chacune lui passant son game. On compte donc les deux et on retient le plus grand :
+    // ne compter que les appels littéraux faisait crier au loup sur les carnets de la seconde
+    // famille, qui journalisent pourtant bien leurs cinq manches.
+    const litteraux = [...html.matchAll(/logResult\("([^"]+)"/g)].length;
+    const parGame = [...html.matchAll(/\bgame:"([^"]+)"/g)].length;
+    const manches = Math.max(litteraux, parGame);
+    if (onglets.length && manches !== onglets.length)
+      ko(f, `${manches} manche(s) journalisée(s) pour ${onglets.length} onglets`);
   }
   console.log(`--  ${f} : ${scripts.length} script(s), ${panneaux.length} panneau(x)`);
 }
