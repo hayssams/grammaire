@@ -234,7 +234,10 @@ const norm=v=>{const l=Math.hypot(v.x,v.y)||1;return{x:v.x/l,y:v.y/l};};
 
 /* ============ moteurs ============ */
 
-/* une ou deux eprouvettes graduees, avec le solide immerge et la loupe sur le menisque */
+/* une ou deux eprouvettes graduees, avec le solide immerge et la loupe sur le menisque.
+   La loupe occupe la moitie droite du cadre (x de 206 a 298) : elle ne va donc qu'avec un tube
+   unique, decale a gauche pour lui laisser la place. Avec deux tubes, le tube droit passerait
+   dessous. Meme prudence avec un niveau nul : le menisque descendrait sous le fond du tube. */
 function eprouvette(o){
   const max=o.max||110, tubes=o.tubes, W=54, H=150, Y0=182;
   const xs = tubes.length===1 ? (o.loupe?[104]:[160]) : [92,228];
