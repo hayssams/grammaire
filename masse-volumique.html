@@ -92,16 +92,9 @@ nav{display:flex;flex-wrap:wrap;gap:6px;margin:18px 0 10px}
 /* ---------- figure ---------- */
 .fig{margin:0 0 8px}
 .fig svg{width:100%;height:auto;display:block}
-.fig .box{fill:var(--paper-2);stroke:var(--ink);stroke-width:1.5}
-.fig .boxlab{font:700 13px var(--sans);fill:var(--ink);letter-spacing:.06em}
-.fig .fl{stroke:#B9C2CE;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
-.fig .fl.on{stroke:var(--marge);stroke-width:3}
 .fig .axe{stroke:var(--ink);stroke-width:1.5;fill:none;stroke-linecap:round}
 .fig .tick{font:700 10px var(--sans);fill:var(--ink-soft)}
 .fig .axlab{font:italic 12px var(--serif);fill:var(--ink)}
-.fig .guide{stroke:#B9C2CE;stroke-width:1;stroke-dasharray:4 4}
-.fig .cw{stroke:var(--pc);stroke-width:2.5;stroke-linecap:round}
-.fig .cw.on{stroke:var(--marge);stroke-width:4}
 .hyp{font-size:14.5px;margin:0 0 6px}
 .hyp em{font-style:normal;font-weight:700}
 .annot{
@@ -248,7 +241,6 @@ const shuffle = a => {const c=[...a];for(let i=c.length-1;i>0;i--){const j=Math.
 const esc = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;");
 function chrono(sec){return sec<60?sec+" s":Math.floor(sec/60)+" min "+String(sec%60).padStart(2,"0");}
 const rnd=a=>a[Math.floor(Math.random()*a.length)];
-const norm=v=>{const l=Math.hypot(v.x,v.y)||1;return{x:v.x/l,y:v.y/l};};
 
 /* ============ moteurs ============ */
 
