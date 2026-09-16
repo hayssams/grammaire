@@ -117,6 +117,16 @@ nav{display:flex;flex-wrap:wrap;gap:6px;margin:18px 0 10px}
 .fig .loupe{fill:var(--paper-2);stroke:var(--ink);stroke-width:1.5}
 .fig .lire{stroke:var(--marge);stroke-width:1.5;stroke-dasharray:5 4}
 
+.fig .metaux{display:flex;flex-wrap:wrap;gap:6px}
+.fig .metaux span{
+  flex:1 1 30%;display:flex;justify-content:space-between;gap:8px;
+  border:1px solid var(--rule);border-radius:9px;background:var(--paper-2);
+  padding:6px 9px;font-size:13.5px
+}
+.fig .metaux b{font-weight:700}
+.fig .metaux i{font-style:normal;color:var(--ink-soft)}
+.fig .legende{margin:6px 0 0;font-size:12px;color:var(--ink-soft);text-align:right}
+
 /* ---------- reactions ---------- */
 .react{text-align:center;min-height:78px;margin:0 0 8px;position:relative}
 .react .emo{display:inline-block;font-size:48px;line-height:52px;animation:pop .45s cubic-bezier(.2,1.6,.4,1)}
@@ -267,6 +277,12 @@ function eprouvette(o){
   return `<svg viewBox="0 0 320 212" role="img" aria-label="Éprouvette graduée">${b}</svg>`;
 }
 
+/* le tableau des metaux, en HTML : sept colonnes de SVG seraient illisibles sur un telephone */
+function tableauMetaux(){
+  return `<div class="metaux">${METAUX.map(m=>`<span><b>${m.nom}</b><i>${fr(m.rho)}</i></span>`).join("")}</div>`+
+         `<p class="legende">masses volumiques en g/cm³</p>`;
+}
+
 /* ============ donnees ============ */
 
 const METAUX=[
@@ -342,6 +358,25 @@ const UNITES=[
    w:"D'abord la conversion : 1,5 L = 1500 cm³. Ensuite la formule : m = 0,9 × 1500 = <em>1350 g</em>, soit 1,35 kg."},
   {kind:"qcm",q:"Quelle est l'unité de masse volumique du système international ?",ch:["Le kg/m³","Le g/cm³","Le g/L"],good:0,rep:"Le kg/m³.",
    w:"Le système international combine le kilogramme et le mètre cube. En classe on utilise surtout le g/cm³, plus pratique, mais les deux sont justes à condition d'écrire l'unité."}
+];
+
+const IDENTIFIER=[
+  {kind:"num",q:"Un bijou de 54 g occupe 20 cm³. <em>Calcule sa masse volumique, en g/cm³.</em>",ans:2.7,unit:"g/cm³",rep:"ρ = 2,7 g/cm³",
+   w:"ρ = 54 ÷ 20 = <em>2,7 g/cm³</em> : de l'aluminium, pas de l'argent (10,5). Un bijou en argent de ce volume pèserait 210 g, quatre fois plus."},
+  {kind:"qcm",q:"Un cylindre a une masse volumique de 8,9 g/cm³. De quel métal s'agit-il ?",ch:["Du cuivre","De l'argent","Du zinc"],good:0,rep:"Du cuivre.",
+   w:"8,9 g/cm³, c'est la ligne du cuivre. L'argent est à 10,5 et le zinc à 7,1 : aucune confusion possible, les valeurs sont bien séparées."},
+  {kind:"num",q:"Une pièce dorée pèse 41 g et occupe 5 cm³. <em>Calcule sa masse volumique, en g/cm³.</em>",ans:8.2,unit:"g/cm³",rep:"ρ = 8,2 g/cm³",
+   w:"ρ = 41 ÷ 5 = <em>8,2 g/cm³</em> : du laiton, un alliage jaune. L'or est à 19,3, plus de deux fois plus lourd : cette pièce n'est pas en or."},
+  {kind:"num",q:"Un petit lingot pèse 386 g et occupe 20 cm³. <em>Calcule sa masse volumique, en g/cm³.</em>",ans:19.3,unit:"g/cm³",rep:"ρ = 19,3 g/cm³",
+   w:"ρ = 386 ÷ 20 = <em>19,3 g/cm³</em> : cette fois c'est bien de l'or. Un volume grand comme une boîte d'allumettes pèse près de 400 g."},
+  {kind:"num",q:"Une couronne pèse 210 g et occupe 20 cm³. <em>Calcule sa masse volumique, en g/cm³.</em>",ans:10.5,unit:"g/cm³",rep:"ρ = 10,5 g/cm³",
+   w:"ρ = 210 ÷ 20 = <em>10,5 g/cm³</em> : de l'argent. C'est exactement la question posée à Archimède, à qui l'on demandait si la couronne du roi était en or."},
+  {kind:"num",q:"Un morceau de zinc pèse 71 g. <em>Quel volume occupe-t-il, en cm³ ?</em>",ans:10,unit:"cm³",rep:"V = 10 cm³",
+   w:"V = m ÷ ρ = 71 ÷ 7,1 = <em>10 cm³</em>. Le tableau se lit aussi dans ce sens : il donne le volume quand on connaît la masse."},
+  {kind:"qcm",q:"Deux objets de tailles très différentes ont tous les deux une masse volumique de 7,1 g/cm³. Sont-ils du même métal ?",ch:["Oui : la masse volumique ne dépend pas de la taille","Non, puisque le gros est plus lourd","On ne peut pas le savoir"],good:0,rep:"Oui : tous les deux en zinc.",
+   w:"C'est tout l'intérêt de cette grandeur : elle caractérise la matière, pas l'objet. Gros ou petit, du zinc reste à 7,1 g/cm³."},
+  {kind:"qcm",q:"Un objet flotte sur l'eau. Peut-il être en l'un de ces métaux ?",ch:["Non : ils ont tous une masse volumique supérieure à 1","Oui, en aluminium","Oui, en zinc"],good:0,rep:"Non, aucun.",
+   w:"Le plus léger du tableau, l'aluminium, est à 2,7 : presque trois fois l'eau. Un objet métallique qui flotte est forcément creux, comme une coque de bateau."}
 ];
 
 /* ============ gamification ============ */
@@ -487,6 +522,11 @@ const MANCHES={
     texte:"mL et cm³, L et dm³, g/cm³ et kg/m³. Huit questions pour ne plus perdre de points sur un facteur 1000.",
     bravo:"Rien à revoir. Maintenant, sers-toi de tout ça pour reconnaître un métal.",
     prep:q=>({...q,annot:q.kind==="num"?"À toi de convertir":"Les unités",fig:null,hyp:q.q})}),
+  identifier:creeManche({panel:"#identifier",game:"identifier",donnees:IDENTIFIER,
+    titre:"Reconnaître un métal.",
+    texte:"Le tableau reste sous tes yeux pendant toute la manche. À toi de calculer, puis de dire de quel métal il s'agit.",
+    bravo:"Rien à revoir. Dernière manche : qui flotte, qui coule, et pourquoi.",
+    prep:q=>({...q,annot:q.kind==="num"?"À toi de calculer":"Identifier la matière",fig:tableauMetaux(),hyp:q.q})}),
   /* fin des manches */
 };
 
