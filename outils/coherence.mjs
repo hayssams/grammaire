@@ -30,8 +30,11 @@ const cles = champs.split(",");
 let manquants = 0;
 for (const it of items) {
   for (const c of cles) {
-    const v = norm(it[c]);
-    if (v && !texteMemo.includes(v)) {
+    const brut = it[c];
+    const v = norm(brut);
+    // un nombre s'ecrit 7.9 en JS et 7,9 dans une fiche : les deux ecritures conviennent
+    const variantes = typeof brut === "number" ? [v, v.replace(".", ",")] : [v];
+    if (v && !variantes.some(x => texteMemo.includes(x))) {
       console.error(`ABSENT de ${memo} : ${nomTableau}.${c} = « ${it[c]} »`);
       manquants++;
     }
