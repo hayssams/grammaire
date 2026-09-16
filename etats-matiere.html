@@ -54,7 +54,7 @@ h1{
 h1 em{font-style:italic;color:var(--pc)}
 .sub{margin:0;color:var(--ink-soft);font-size:14px}
 
-/* ---------- onglets (deux rangees de trois) ---------- */
+/* ---------- onglets (deux rangees) ---------- */
 nav{display:flex;flex-wrap:wrap;gap:6px;margin:18px 0 10px}
 .tab{
   flex:1 1 31%;border:1px solid var(--rule);
@@ -197,14 +197,13 @@ nav{display:flex;flex-wrap:wrap;gap:6px;margin:18px 0 10px}
   <header>
     <div class="topbar"><a class="home" href="physique-chimie.html">🏠 Physique-Chimie</a><p class="eyebrow">Physique-Chimie, 3<sup>e</sup></p></div>
     <h1>La matière change <em>d'état</em></h1>
-    <p class="sub">Six entraînements : les trois états, les changements d'état, la courbe de l'eau, les mélanges, la masse volumique.</p>
+    <p class="sub">Cinq entraînements : les trois états, les changements d'état, les situations de tous les jours, la courbe de l'eau, les mélanges.</p>
     <nav role="tablist">
       <button class="tab" role="tab" aria-selected="true" data-panel="etats">Les états</button>
       <button class="tab" role="tab" aria-selected="false" data-panel="nommer">Nommer</button>
       <button class="tab" role="tab" aria-selected="false" data-panel="situations">Situations</button>
       <button class="tab" role="tab" aria-selected="false" data-panel="courbe">La courbe</button>
       <button class="tab" role="tab" aria-selected="false" data-panel="melanges">Mélanges</button>
-      <button class="tab" role="tab" aria-selected="false" data-panel="masse">Masse volumique</button>
     </nav>
   </header>
 
@@ -214,7 +213,6 @@ nav{display:flex;flex-wrap:wrap;gap:6px;margin:18px 0 10px}
     <section class="panel" id="situations"></section>
     <section class="panel" id="courbe"></section>
     <section class="panel" id="melanges"></section>
-    <section class="panel" id="masse"></section>
   </div>
 </div>
 
@@ -391,25 +389,6 @@ const MELANGES=[
    w:"Retiens le duo : 78 % de diazote, 21 % de dioxygène. Le reste (1 %) : argon, dioxyde de carbone..."}
 ];
 
-const MASSE=[
-  {kind:"qcm",q:"Comment calcule-t-on la masse volumique ρ d'un objet ?",ch:["ρ = m ÷ V","ρ = V ÷ m","ρ = m × V"],good:0,rep:"ρ = m ÷ V.",
-   w:"La masse volumique est la masse divisée par le volume. Elle s'exprime en g/cm³ (ou en kg/m³)."},
-  {kind:"num",q:"Un pavé de fer a un volume de 10 cm³ et une masse de 79 g. <em>Calcule sa masse volumique, en g/cm³.</em>",ans:7.9,unit:"g/cm³",rep:"ρ = 7,9 g/cm³",
-   w:"ρ = m ÷ V = 79 ÷ 10 = <em>7,9 g/cm³</em>. C'est bien la masse volumique du fer."},
-  {kind:"num",q:"La masse volumique de l'eau vaut 1 g/cm³. <em>Quelle est la masse de 250 cm³ d'eau, en g ?</em>",ans:250,unit:"g",rep:"m = 250 g",
-   w:"m = ρ × V = 1 × 250 = <em>250 g</em>. Avec l'eau, masse en grammes et volume en cm³ ont la même valeur."},
-  {kind:"num",q:"La masse volumique de l'huile vaut 0,9 g/cm³. <em>Quelle est la masse de 200 cm³ d'huile, en g ?</em>",ans:180,unit:"g",rep:"m = 180 g",
-   w:"m = ρ × V = 0,9 × 200 = <em>180 g</em> : moins lourd que le même volume d'eau (200 g)."},
-  {kind:"num",q:"La masse volumique du fer vaut 7,9 g/cm³. <em>Quel volume, en cm³, occupent 158 g de fer ?</em>",ans:20,unit:"cm³",rep:"V = 20 cm³",
-   w:"V = m ÷ ρ = 158 ÷ 7,9 = <em>20 cm³</em>. La formule se retourne dans les trois sens : ρ = m ÷ V, m = ρ × V, V = m ÷ ρ."},
-  {kind:"num",q:"Un bijou de 54 g occupe 20 cm³. <em>Calcule sa masse volumique, en g/cm³.</em>",ans:2.7,unit:"g/cm³",rep:"ρ = 2,7 g/cm³",
-   w:"ρ = 54 ÷ 20 = <em>2,7 g/cm³</em> : c'est de l'aluminium, pas de l'argent (10,5 g/cm³). La masse volumique permet d'identifier une matière."},
-  {kind:"qcm",q:"Pourquoi l'huile flotte-t-elle sur l'eau ?",ch:["Sa masse volumique est plus faible que celle de l'eau","Elle pèse toujours moins lourd que l'eau","Elle est plus visqueuse que l'eau"],good:0,rep:"Sa masse volumique est plus faible.",
-   w:"0,9 g/cm³ contre 1 g/cm³ : à volume égal, l'huile est plus légère que l'eau, donc elle flotte. Comparer des masses sans comparer les volumes n'a pas de sens."},
-  {kind:"qcm",q:"Quelle est environ la masse d'un litre d'air ?",ch:["1,3 g","130 g","0 g : un gaz ne pèse rien"],good:0,rep:"Environ 1,3 g.",
-   w:"L'air a une masse : environ 1,3 g par litre. C'est peu, mais ce n'est pas rien : un gaz se pèse."}
-];
-
 /* ============ gamification ============ */
 const SHEET_URL="https://script.google.com/macros/s/AKfycbwB53nfh6Xk_z1Gn4ck_WL8aX0gPxDzQ2MpxWVnpsdunmWR_IKj-tHPHOEVkP614jQJ/exec";
 function appareil(){
@@ -536,7 +515,7 @@ function creeManche(o){
   return {intro};
 }
 
-/* ============ les six manches ============ */
+/* ============ les cinq manches ============ */
 const E3=["Solide","Liquide","Gaz"];
 const E3_ID=["sol","liq","gaz"];
 const NOMS=CHG_ORDER.map(id=>CHG[id].label);
@@ -567,13 +546,8 @@ const MANCHES={
   melanges:creeManche({panel:"#melanges",game:"melanges",donnees:MELANGES,
     titre:"Corps purs et mélanges.",
     texte:"Douze questions : homogène ou hétérogène, miscible ou pas, soluble, saturé... et de quoi est fait l'air.",
-    bravo:"Rien à revoir. Dernière manche : la masse volumique.",
-    prep:q=>({kind:"qcm",annot:"Corps purs, mélanges, solutions",fig:null,hyp:q.q,ch:q.ch,good:q.good,rep:q.rep,w:q.w})}),
-  masse:creeManche({panel:"#masse",game:"masse",donnees:MASSE,
-    titre:"La masse volumique.",
-    texte:"ρ = m ÷ V. Huit questions, dont des calculs : la calculatrice est autorisée, tape ta réponse.",
-    bravo:"Rien à revoir. États, changements, mélanges, masse volumique : le chapitre est à toi.",
-    prep:q=>({...q,annot:q.kind==="num"?"À toi de calculer":"La masse volumique",fig:null,hyp:q.q})})
+    bravo:"Rien à revoir. États, changements, courbe et mélanges : le chapitre est à toi. La masse volumique a son propre carnet.",
+    prep:q=>({kind:"qcm",annot:"Corps purs, mélanges, solutions",fig:null,hyp:q.q,ch:q.ch,good:q.good,rep:q.rep,w:q.w})})
 };
 
 /* onglets */
