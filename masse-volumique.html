@@ -348,14 +348,14 @@ const FORMULE=[
    w:"m = ρ × V = 2,7 × 30 = <em>81 g</em>. Le même bloc en fer (7,9) pèserait 237 g : presque trois fois plus."},
   {kind:"num",q:"La masse volumique du fer vaut 7,9 g/cm³. <em>Quel volume, en cm³, occupent 158 g de fer ?</em>",ans:20,unit:"cm³",rep:"V = 20 cm³",
    w:"V = m ÷ ρ = 158 ÷ 7,9 = <em>20 cm³</em>. La formule se retourne dans les trois sens : ρ = m ÷ V, m = ρ × V, V = m ÷ ρ."},
-  {kind:"qcm",q:"Quelle est environ la masse d'un litre d'air ?",ch:["1,3 g","130 g","0 g : un gaz ne pèse rien"],good:0,rep:"Environ 1,3 g.",
+  {kind:"qcm",q:"Quelle est environ la masse d'un litre d'air ?",ch:["0 g : un gaz ne pèse rien","1,3 g","130 g"],good:1,rep:"Environ 1,3 g.",
    w:"L'air a une masse : environ 1,3 g par litre. C'est peu, mais ce n'est pas rien : un gaz se pèse."}
 ];
 
 const MESURER=[
-  {kind:"qcm",fig:{tubes:[{v:60,label:"éprouvette graduée"}]},q:"Avec quel instrument mesure-t-on précisément le volume d'un liquide ?",ch:["Une éprouvette graduée","Un thermomètre","Une balance"],good:0,rep:"Une éprouvette graduée.",
+  {kind:"qcm",fig:{tubes:[{v:60,label:"éprouvette graduée"}]},q:"Avec quel instrument mesure-t-on précisément le volume d'un liquide ?",ch:["Un thermomètre","Une balance","Une éprouvette graduée"],good:2,rep:"Une éprouvette graduée.",
    w:"Le thermomètre mesure une température, la balance une masse. Pour un volume, c'est l'éprouvette graduée : ses traits sont gradués en mL."},
-  {kind:"qcm",fig:{tubes:[{v:60,label:"la surface est incurvée"}],loupe:true},q:"La surface du liquide est incurvée. Où lit-on le volume ?",ch:["Au bas de la courbe, l'œil bien en face","En haut, là où le liquide touche le verre","Au milieu, à vue d'œil"],good:0,rep:"Au bas du ménisque, l'œil en face.",
+  {kind:"qcm",fig:{tubes:[{v:60,label:"la surface est incurvée"}],loupe:true},q:"La surface du liquide est incurvée. Où lit-on le volume ?",ch:["En haut, là où le liquide touche le verre","Au milieu, à vue d'œil","Au bas de la courbe, l'œil bien en face"],good:2,rep:"Au bas du ménisque, l'œil en face.",
    w:"Cette courbe s'appelle le <em>ménisque</em>. On lit toujours le trait au bas du ménisque, en plaçant l'œil à sa hauteur : de biais, on lit faux."},
   {kind:"qcm",fig:null,q:"Avant de peser un liquide, on pose l'éprouvette vide sur la balance et on appuie sur « tare ». Pourquoi ?",ch:["Pour que la balance oublie la masse de l'éprouvette","Pour régler la balance en grammes","Pour vérifier le volume"],good:0,rep:"Pour ne peser que le liquide.",
    w:"La tare remet l'affichage à zéro avec l'éprouvette vide dessus. Ce qu'on lit ensuite est la masse du liquide seul, sans le verre."},
@@ -363,7 +363,7 @@ const MESURER=[
    w:"Le solide chasse l'eau : le niveau monte d'exactement son volume. V = 76 − 62 = <em>14 mL</em>, et 1 mL = 1 cm³, donc 14 cm³."},
   {kind:"num",fig:{tubes:[{v:62,label:"V₁ : avant"},{v:76,label:"V₂ : avec le solide",solide:true}]},q:"Ce même solide a une masse de 37,8 g, et il occupe 14 cm³. <em>Calcule sa masse volumique, en g/cm³.</em>",ans:2.7,unit:"g/cm³",rep:"ρ = 2,7 g/cm³",
    w:"ρ = m ÷ V = 37,8 ÷ 14 = <em>2,7 g/cm³</em> : c'est de l'aluminium. Peser, mesurer, diviser : trois gestes et la matière est identifiée."},
-  {kind:"qcm",fig:{tubes:[{v:62,label:"V₁ : avant"},{v:76,label:"V₂ : avec le solide",solide:true}]},q:"Pourquoi le solide doit-il être entièrement sous l'eau ?",ch:["Sinon il ne chasse pas tout son volume","Sinon il devient plus léger","Sinon l'eau s'évapore"],good:0,rep:"Sinon il ne chasse pas tout son volume.",
+  {kind:"qcm",fig:{tubes:[{v:62,label:"V₁ : avant"},{v:76,label:"V₂ : avec le solide",solide:true}]},q:"Pourquoi le solide doit-il être entièrement sous l'eau ?",ch:["Sinon il devient plus léger","Sinon il ne chasse pas tout son volume","Sinon l'eau s'évapore"],good:1,rep:"Sinon il ne chasse pas tout son volume.",
    w:"Le niveau ne monte que du volume réellement immergé. Un solide qui dépasse fausse la mesure : on le maintient sous l'eau, par exemple avec une aiguille."},
   {kind:"num",fig:null,q:"Un pavé de fer mesure 2 cm sur 3 cm sur 5 cm. <em>Quel est son volume, en cm³ ?</em>",ans:30,unit:"cm³",rep:"V = 30 cm³",
    w:"Pour un solide bien régulier, pas besoin d'eau : V = 2 × 3 × 5 = <em>30 cm³</em>. Ce pavé pèse 237 g, donc ρ = 237 ÷ 30 = 7,9 g/cm³, du fer."},
@@ -372,9 +372,9 @@ const MESURER=[
 ];
 
 const UNITES=[
-  {kind:"qcm",q:"1 mL, c'est aussi…",ch:["1 cm³","1 dm³","10 cm³"],good:0,rep:"1 mL = 1 cm³.",
+  {kind:"qcm",q:"1 mL, c'est aussi…",ch:["1 dm³","10 cm³","1 cm³"],good:2,rep:"1 mL = 1 cm³.",
    w:"Le millilitre et le centimètre cube sont deux noms du même volume. C'est ce qui permet de passer d'une éprouvette (en mL) à un calcul en cm³ sans rien convertir."},
-  {kind:"qcm",q:"1 L, c'est aussi…",ch:["1 dm³, soit 1000 cm³","1 m³","100 cm³"],good:0,rep:"1 L = 1 dm³ = 1000 cm³.",
+  {kind:"qcm",q:"1 L, c'est aussi…",ch:["100 cm³","1 dm³, soit 1000 cm³","1 m³"],good:1,rep:"1 L = 1 dm³ = 1000 cm³.",
    w:"Un litre est un cube de 10 cm de côté : 10 × 10 × 10 = 1000 cm³. Et 1 m³ vaut 1000 L : un mètre cube d'eau pèse une tonne."},
   {kind:"num",q:"L'aluminium a une masse volumique de 2,7 g/cm³. <em>Combien cela fait-il en kg/m³ ?</em>",ans:2700,unit:"kg/m³",rep:"2700 kg/m³",
    w:"On multiplie par 1000 : 2,7 g/cm³ = <em>2700 kg/m³</em>. Un mètre cube contient un million de cm³, mais un kilo vaut mille grammes : il reste le facteur 1000."},
@@ -382,7 +382,7 @@ const UNITES=[
    w:"On divise par 1000 : 1000 kg/m³ = <em>1 g/cm³</em>. Les deux écritures disent la même chose, c'est l'unité choisie qui change."},
   {kind:"num",q:"Une canette contient 33 cL. <em>Combien cela fait-il en mL ?</em>",ans:330,unit:"mL",rep:"330 mL",
    w:"Un centilitre vaut 10 millilitres : 33 × 10 = <em>330 mL</em>, donc 330 cm³."},
-  {kind:"qcm",q:"L'essence a une masse volumique de 0,69 g/mL. Quelle est la masse d'un litre d'essence ?",ch:["690 g","69 g","6,9 g"],good:0,rep:"690 g.",
+  {kind:"qcm",q:"L'essence a une masse volumique de 0,69 g/mL. Quelle est la masse d'un litre d'essence ?",ch:["6,9 g","69 g","690 g"],good:2,rep:"690 g.",
    w:"Un litre vaut <em>1000</em> mL, pas 100 : 0,69 × 1000 = <em>690 g</em>. C'est l'erreur la plus fréquente du chapitre, un facteur 10 qui s'envole."},
   {kind:"num",q:"L'huile a une masse volumique de 0,9 g/cm³. <em>Quelle est la masse d'une bouteille de 1,5 L, en g ?</em>",ans:1350,unit:"g",rep:"m = 1350 g",
    w:"D'abord la conversion : 1,5 L = 1500 cm³. Ensuite la formule : m = 0,9 × 1500 = <em>1350 g</em>, soit 1,35 kg."},
@@ -393,7 +393,7 @@ const UNITES=[
 const IDENTIFIER=[
   {kind:"num",q:"Un bijou de 54 g occupe 20 cm³. <em>Calcule sa masse volumique, en g/cm³.</em>",ans:2.7,unit:"g/cm³",rep:"ρ = 2,7 g/cm³",
    w:"ρ = 54 ÷ 20 = <em>2,7 g/cm³</em> : de l'aluminium, pas de l'argent (10,5). Un bijou en argent de ce volume pèserait 210 g, quatre fois plus."},
-  {kind:"qcm",q:"Un cylindre a une masse volumique de 8,9 g/cm³. De quel métal s'agit-il ?",ch:["Du cuivre","De l'argent","Du zinc"],good:0,rep:"Du cuivre.",
+  {kind:"qcm",q:"Un cylindre a une masse volumique de 8,9 g/cm³. De quel métal s'agit-il ?",ch:["Du zinc","Du cuivre","De l'argent"],good:1,rep:"Du cuivre.",
    w:"8,9 g/cm³, c'est la ligne du cuivre. L'argent est à 10,5 et le zinc à 7,1 : aucune confusion possible, les valeurs sont bien séparées."},
   {kind:"num",q:"Une pièce dorée pèse 41 g et occupe 5 cm³. <em>Calcule sa masse volumique, en g/cm³.</em>",ans:8.2,unit:"g/cm³",rep:"ρ = 8,2 g/cm³",
    w:"ρ = 41 ÷ 5 = <em>8,2 g/cm³</em> : du laiton, un alliage jaune. L'or est à 19,3, plus de deux fois plus lourd : cette pièce n'est pas en or."},
@@ -403,20 +403,20 @@ const IDENTIFIER=[
    w:"ρ = 210 ÷ 20 = <em>10,5 g/cm³</em> : de l'argent. C'est exactement la question posée à Archimède, à qui l'on demandait si la couronne du roi était en or."},
   {kind:"num",q:"Un morceau de zinc pèse 71 g. <em>Quel volume occupe-t-il, en cm³ ?</em>",ans:10,unit:"cm³",rep:"V = 10 cm³",
    w:"V = m ÷ ρ = 71 ÷ 7,1 = <em>10 cm³</em>. Le tableau se lit aussi dans ce sens : il donne le volume quand on connaît la masse."},
-  {kind:"qcm",q:"Deux objets de tailles très différentes ont tous les deux une masse volumique de 7,1 g/cm³. Sont-ils du même métal ?",ch:["Oui : la masse volumique ne dépend pas de la taille","Non, puisque le gros est plus lourd","On ne peut pas le savoir"],good:0,rep:"Oui : tous les deux en zinc.",
+  {kind:"qcm",q:"Deux objets de tailles très différentes ont tous les deux une masse volumique de 7,1 g/cm³. Sont-ils du même métal ?",ch:["Non, puisque le gros est plus lourd","Oui : la masse volumique ne dépend pas de la taille","On ne peut pas le savoir"],good:1,rep:"Oui : tous les deux en zinc.",
    w:"C'est tout l'intérêt de cette grandeur : elle caractérise la matière, pas l'objet. Gros ou petit, du zinc reste à 7,1 g/cm³."},
-  {kind:"qcm",q:"Un objet flotte sur l'eau. Peut-il être en l'un de ces métaux ?",ch:["Non : ils ont tous une masse volumique supérieure à 1","Oui, en aluminium","Oui, en zinc"],good:0,rep:"Non, aucun.",
+  {kind:"qcm",q:"Un objet flotte sur l'eau. Peut-il être en l'un de ces métaux ?",ch:["Oui, en aluminium","Oui, en zinc","Non : ils ont tous une masse volumique supérieure à 1"],good:2,rep:"Non, aucun.",
    w:"Le plus léger du tableau, l'aluminium, est à 2,7 : presque trois fois l'eau. Un objet métallique qui flotte est forcément creux, comme une coque de bateau."}
 ];
 
 const FLOTTER=[
   {kind:"qcm",fig:{couches:["Eau"]},q:"À quelle condition un objet flotte-t-il dans un liquide ?",ch:["Si sa masse volumique est plus faible que celle du liquide","S'il pèse moins d'un kilo","S'il est creux"],good:0,rep:"Si sa masse volumique est la plus faible.",
    w:"C'est une comparaison, pas une question de poids : un tronc d'arbre flotte, une bille d'acier coule. Ce qui compte, c'est ρ de l'objet face à ρ du liquide."},
-  {kind:"qcm",fig:{couches:["Eau"]},figApres:{couches:["Eau","Huile"]},q:"On verse de l'huile (0,9) dans un verre d'eau (1). Que se passe-t-il ?",ch:["L'huile reste au-dessus de l'eau","L'huile descend au fond","Les deux se mélangent"],good:0,rep:"L'huile reste au-dessus.",
+  {kind:"qcm",fig:{couches:["Eau"]},figApres:{couches:["Eau","Huile"]},q:"On verse de l'huile (0,9) dans un verre d'eau (1). Que se passe-t-il ?",ch:["L'huile descend au fond","Les deux se mélangent","L'huile reste au-dessus de l'eau"],good:2,rep:"L'huile reste au-dessus.",
    w:"0,9 contre 1 : à volume égal l'huile est plus légère, donc elle surnage. Et comme les deux ne sont pas miscibles, on voit nettement deux couches."},
-  {kind:"qcm",fig:{couches:["Eau"]},figApres:{couches:["Sirop","Eau"]},q:"On verse doucement du sirop (1,3) dans un verre d'eau (1). Où va-t-il ?",ch:["Au fond du verre","À la surface","Il reste au milieu"],good:0,rep:"Au fond du verre.",
+  {kind:"qcm",fig:{couches:["Eau"]},figApres:{couches:["Sirop","Eau"]},q:"On verse doucement du sirop (1,3) dans un verre d'eau (1). Où va-t-il ?",ch:["À la surface","Il reste au milieu","Au fond du verre"],good:2,rep:"Au fond du verre.",
    w:"Le sirop est plus dense que l'eau : il plonge. C'est pour cela qu'un sirop versé sans remuer forme une couche colorée au fond du verre."},
-  {kind:"qcm",fig:{couches:["Huile","Eau","Sirop"]},figApres:{couches:["Huile","Eau","Sirop"],objet:{nom:"Bille",rho:0.95}},q:"Une bille de masse volumique 0,95 g/cm³ tombe dans ce verre. Où s'arrête-t-elle ?",ch:["Entre l'huile et l'eau","Au fond, dans le sirop","Tout en haut, sur l'huile"],good:0,rep:"Entre l'huile et l'eau.",
+  {kind:"qcm",fig:{couches:["Huile","Eau","Sirop"]},figApres:{couches:["Huile","Eau","Sirop"],objet:{nom:"Bille",rho:0.95}},q:"Une bille de masse volumique 0,95 g/cm³ tombe dans ce verre. Où s'arrête-t-elle ?",ch:["Tout en haut, sur l'huile","Entre l'huile et l'eau","Au fond, dans le sirop"],good:1,rep:"Entre l'huile et l'eau.",
    w:"Elle traverse tout ce qui est plus léger qu'elle (l'huile, 0,9) et s'arrête sur le premier liquide plus lourd (l'eau, 1). Chaque objet trouve son étage."},
   {kind:"qcm",fig:{couches:["Eau"],objet:{nom:"Glaçon",rho:0.92}},q:"Pourquoi un glaçon flotte-t-il sur l'eau ?",ch:["L'eau solide (0,92) est moins dense que l'eau liquide (1)","Parce qu'il est froid","Parce qu'il contient de l'air"],good:0,rep:"L'eau solide est moins dense que l'eau liquide.",
    w:"C'est une exception célèbre : en gelant, l'eau <em>augmente</em> de volume, donc sa masse volumique baisse. Presque toutes les autres matières font l'inverse."},
@@ -424,7 +424,7 @@ const FLOTTER=[
    w:"On ne compare pas l'acier à l'eau, mais le bateau entier à l'eau : coque et air compris, son volume est énorme pour sa masse. Une plaque d'acier pleine, elle, coule."},
   {kind:"num",fig:{couches:["Eau"]},q:"Un cube de 100 cm³ pèse 120 g. <em>Calcule sa masse volumique, en g/cm³.</em>",ans:1.2,unit:"g/cm³",rep:"ρ = 1,2 g/cm³",
    w:"ρ = 120 ÷ 100 = <em>1,2 g/cm³</em>, plus que l'eau : ce cube coule. Le calcul répond à la question avant même de le tremper."},
-  {kind:"qcm",fig:{couches:["Eau"]},q:"Le chêne a une masse volumique de 0,7 g/cm³, l'ébène 1,2. Lequel coule dans l'eau ?",ch:["L'ébène","Le chêne","Aucun : le bois flotte toujours"],good:0,rep:"L'ébène.",
+  {kind:"qcm",fig:{couches:["Eau"]},q:"Le chêne a une masse volumique de 0,7 g/cm³, l'ébène 1,2. Lequel coule dans l'eau ?",ch:["Le chêne","L'ébène","Aucun : le bois flotte toujours"],good:1,rep:"L'ébène.",
    w:"L'ébène est un bois si dense qu'il coule. « Le bois flotte » est une règle de la vie courante, pas une loi : seule la comparaison des masses volumiques tranche."}
 ];
 
