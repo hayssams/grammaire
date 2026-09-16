@@ -45,6 +45,79 @@ for (const nom of NOMS) {
 }
 if (!trouvees) pb("aucune manche trouvée (FORMULE, MESURER, UNITES, IDENTIFIER, FLOTTER).");
 
+// 0bis. Les figures : une question dont le fig (ou figApres) plante, ou dont le SVG deborde du
+// cadre, casse la page en silence a l'affichage, la ou personne ne surveille. On rejoue donc pour
+// de vrai les moteurs qui les construisent, en isolant la tranche moteurs+donnees du script (pas
+// de DOM, pas de reseau), et en reproduisant la correspondance que prep(q) fait pour chaque
+// manche.
+const iMoteurs = src.indexOf("/* ============ moteurs ============ */");
+const iGami = src.indexOf("/* ============ gamification ============ */");
+let moteurs = null;
+if (iMoteurs < 0 || iGami < 0 || iGami <= iMoteurs) {
+  pb("les ancres moteurs/gamification sont introuvables : impossible de vérifier les figures.");
+} else {
+  try {
+    moteurs = new Function(src.slice(iMoteurs, iGami) + "; return {eprouvette, tableauMetaux, verre};")();
+  } catch (e) {
+    pb(`les moteurs de figure ne compilent pas : ${e.message}`);
+  }
+}
+
+// un chemin SVG (M/L/Q) n'enchaine que des paires x,y : les prendre deux par deux, quelle que
+// soit la commande, retombe toujours juste.
+const coordsChemin = d => {
+  const n = (d.match(/-?\d+(?:\.\d+)?/g) || []).map(Number);
+  const pts = [];
+  for (let i = 0; i + 1 < n.length; i += 2) pts.push([n[i], n[i + 1]]);
+  return pts;
+};
+
+function figureValide(ou, rendu) {
+  if (typeof rendu !== "string" || !rendu) { pb(`${ou} : la figure ne produit aucun contenu.`); return; }
+  if (/\bNaN\b|\bundefined\b/.test(rendu)) { pb(`${ou} : la figure contient NaN ou undefined.`); return; }
+  const vb = rendu.match(/viewBox="([-\d.\s]+)"/);
+  if (!vb) return; // pas de SVG (tableauMetaux rend du HTML) : rien de plus a verifier
+  const [x0, y0, lv, hv] = vb[1].trim().split(/\s+/).map(Number);
+  const xMax = x0 + lv, yMax = y0 + hv;
+  const dehors = [];
+  const teste = (re, lo, hi, prefixe) => {
+    for (const m of rendu.matchAll(re)) {
+      const v = Number(m[1]);
+      if (v < lo || v > hi) dehors.push(`${prefixe}=${v}`);
+    }
+  };
+  teste(/\b(?:cx|x1|x2)="(-?\d+(?:\.\d+)?)"/g, x0, xMax, "x");
+  teste(/\b(?:cy|y1|y2)="(-?\d+(?:\.\d+)?)"/g, y0, yMax, "y");
+  teste(/\bx="(-?\d+(?:\.\d+)?)"/g, x0, xMax, "x");
+  teste(/\by="(-?\d+(?:\.\d+)?)"/g, y0, yMax, "y");
+  for (const m of rendu.matchAll(/\bd="([^"]+)"/g)) {
+    for (const [px, py] of coordsChemin(m[1])) {
+      if (px < x0 || px > xMax) dehors.push(`d:x=${px}`);
+      if (py < y0 || py > yMax) dehors.push(`d:y=${py}`);
+    }
+  }
+  if (dehors.length) pb(`${ou} : coordonnée(s) hors du cadre "${vb[1].trim()}" (${dehors.slice(0, 4).join(", ")}).`);
+}
+
+function rendreFigure(ou, fabrique) {
+  let rendu;
+  try { rendu = fabrique(); }
+  catch (e) { pb(`${ou} : la figure lève une exception (${e.message}).`); return; }
+  figureValide(ou, rendu);
+}
+
+if (moteurs) {
+  (TABLES.MESURER || []).forEach((q, i) => {
+    if (q.fig) rendreFigure(`MESURER[${i}].fig`, () => moteurs.eprouvette(q.fig));
+    if (q.figApres) rendreFigure(`MESURER[${i}].figApres`, () => moteurs.eprouvette(q.figApres));
+  });
+  if (TABLES.IDENTIFIER) rendreFigure("IDENTIFIER (tableauMetaux)", () => moteurs.tableauMetaux());
+  (TABLES.FLOTTER || []).forEach((q, i) => {
+    rendreFigure(`FLOTTER[${i}].fig`, () => moteurs.verre(q.fig));
+    if (q.figApres) rendreFigure(`FLOTTER[${i}].figApres`, () => moteurs.verre(q.figApres));
+  });
+}
+
 for (const nom of ["METAUX", "LIQUIDES"]) {
   const t = table(nom);
   if (!t) { pb(`${nom} introuvable.`); continue; }
