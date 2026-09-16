@@ -92,6 +92,12 @@ nav{display:flex;gap:6px;margin:18px 0 0;align-items:flex-end}
 .item .w{display:block;font-size:13px;color:var(--ink-soft);margin-top:1px}
 .item .passage{font-weight:700;color:var(--ink)}
 
+/* ---------- triangle mnemotechnique ---------- */
+.triangle{display:block;margin:8px auto;width:172px;max-width:100%;height:auto}
+.triangle .cadre{fill:var(--paper);stroke:var(--pc);stroke-width:2;stroke-linejoin:round}
+.triangle .trait{stroke:var(--pc);stroke-width:2;stroke-linecap:round}
+.triangle .lettre{font-family:var(--serif);font-size:30px;fill:var(--ink);text-anchor:middle;dominant-baseline:central}
+
 /* ---------- tableau des valeurs ---------- */
 .valeurs{width:100%;border-collapse:collapse}
 .valeurs td{padding:7px 4px;border-bottom:1px solid var(--rule-soft);font-size:14px;line-height:1.3}
@@ -217,6 +223,17 @@ nav{display:flex;gap:6px;margin:18px 0 0;align-items:flex-end}
       <div class="groupe">
         <h2>La formule</h2>
         <div class="item"><b>ρ = m ÷ V</b><span class="w">La masse divisée par le volume, en g/cm³. Elle se retourne : m = ρ × V, et V = m ÷ ρ.</span></div>
+        <div class="item"><b>L'unité dit la formule</b><span class="w">Des g/cm³, ce sont des grammes divisés par des centimètres cubes, donc masse ÷ volume. Pas besoin de retenir : il suffit de lire l'unité. La même astuce marche ailleurs, des km/h sont des kilomètres divisés par des heures.</span></div>
+        <div class="item"><b>Le triangle, pour la retourner</b>
+          <svg class="triangle" viewBox="0 0 200 152" role="img" aria-label="Triangle mnémotechnique : m en haut, rho et V en bas">
+            <path class="cadre" d="M 100 12 L 188 140 L 12 140 Z"/>
+            <line class="trait" x1="49" y1="86" x2="151" y2="86"/>
+            <line class="trait" x1="100" y1="86" x2="100" y2="140"/>
+            <text class="lettre" x="100" y="52">m</text>
+            <text class="lettre" x="70" y="113">ρ</text>
+            <text class="lettre" x="130" y="113">V</text>
+          </svg>
+          <span class="w">Cache du doigt la grandeur que tu cherches, et lis ce qui reste. Tu caches ρ : il reste m au-dessus de V, donc ρ = m ÷ V. Tu caches m : il reste ρ et V côte à côte, donc m = ρ × V. Tu caches V : il reste m au-dessus de ρ, donc V = m ÷ ρ.</span></div>
         <div class="item"><b>Elle caractérise la matière</b><span class="w">Elle ne dépend pas de la quantité : un litre d'eau et deux litres d'eau ont la même masse volumique, 1 g/cm³.</span></div>
       </div>
 
