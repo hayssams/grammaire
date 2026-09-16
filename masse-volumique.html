@@ -129,6 +129,11 @@ nav{display:flex;flex-wrap:wrap;gap:6px;margin:18px 0 10px}
 .fig .metaux i{font-style:normal;color:var(--ink-soft)}
 .fig .legende{margin:6px 0 0;font-size:12px;color:var(--ink-soft);text-align:right}
 
+.fig .verre{fill:none;stroke:var(--ink);stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.fig .couchelab{font:700 12px var(--sans);fill:var(--ink)}
+.fig .objet{fill:var(--marge);stroke:var(--ink);stroke-width:1.2}
+.fig .objetlab{font:700 11px var(--sans);fill:var(--ink)}
+
 /* ---------- reactions ---------- */
 .react{text-align:center;min-height:78px;margin:0 0 8px;position:relative}
 .react .emo{display:inline-block;font-size:48px;line-height:52px;animation:pop .45s cubic-bezier(.2,1.6,.4,1)}
@@ -286,6 +291,28 @@ function tableauMetaux(){
          `<p class="legende">masses volumiques en g/cm³</p>`;
 }
 
+/* un becher, ses couches de liquides, et l'objet place par la regle : il flotte
+   sur la premiere couche plus dense que lui, sinon il repose au fond */
+function verre(o){
+  const X=104,W=112,YT=44,YB=188;
+  const cs=o.couches.map(liq).sort((a,b)=>a.rho-b.rho);
+  const h=(YB-YT)/cs.length;
+  let b="";
+  cs.forEach((c,i)=>{
+    const y=YT+i*h;
+    b+=`<rect class="couche" x="${X+3}" y="${y}" width="${W-6}" height="${h}" fill="${c.col}"/>`;
+    b+=`<text class="couchelab" x="${X+11}" y="${y+h/2}" dominant-baseline="central">${c.nom} ${fr(c.rho)}</text>`;
+  });
+  b+=`<path class="verre" d="M ${X} ${YT-22} L ${X} ${YB-10} Q ${X} ${YB} ${X+10} ${YB} L ${X+W-10} ${YB} Q ${X+W} ${YB} ${X+W} ${YB-10} L ${X+W} ${YT-22}"/>`;
+  if(o.objet){
+    const k=cs.findIndex(c=>c.rho>o.objet.rho);
+    const cy=k<0?YB-13:YT+k*h;
+    b+=`<circle class="objet" cx="${X+W-26}" cy="${cy}" r="11"/>`;
+    b+=`<text class="objetlab" x="${X+W+6}" y="${cy}" dominant-baseline="central">${o.objet.nom} ${fr(o.objet.rho)}</text>`;
+  }
+  return `<svg viewBox="0 0 320 212" role="img" aria-label="Verre contenant des liquides">${b}</svg>`;
+}
+
 /* ============ donnees ============ */
 
 const METAUX=[
@@ -380,6 +407,25 @@ const IDENTIFIER=[
    w:"C'est tout l'intérêt de cette grandeur : elle caractérise la matière, pas l'objet. Gros ou petit, du zinc reste à 7,1 g/cm³."},
   {kind:"qcm",q:"Un objet flotte sur l'eau. Peut-il être en l'un de ces métaux ?",ch:["Non : ils ont tous une masse volumique supérieure à 1","Oui, en aluminium","Oui, en zinc"],good:0,rep:"Non, aucun.",
    w:"Le plus léger du tableau, l'aluminium, est à 2,7 : presque trois fois l'eau. Un objet métallique qui flotte est forcément creux, comme une coque de bateau."}
+];
+
+const FLOTTER=[
+  {kind:"qcm",fig:{couches:["Eau"]},q:"À quelle condition un objet flotte-t-il dans un liquide ?",ch:["Si sa masse volumique est plus faible que celle du liquide","S'il pèse moins d'un kilo","S'il est creux"],good:0,rep:"Si sa masse volumique est la plus faible.",
+   w:"C'est une comparaison, pas une question de poids : un tronc d'arbre flotte, une bille d'acier coule. Ce qui compte, c'est ρ de l'objet face à ρ du liquide."},
+  {kind:"qcm",fig:{couches:["Eau"]},figApres:{couches:["Eau","Huile"]},q:"On verse de l'huile (0,9) dans un verre d'eau (1). Que se passe-t-il ?",ch:["L'huile reste au-dessus de l'eau","L'huile descend au fond","Les deux se mélangent"],good:0,rep:"L'huile reste au-dessus.",
+   w:"0,9 contre 1 : à volume égal l'huile est plus légère, donc elle surnage. Et comme les deux ne sont pas miscibles, on voit nettement deux couches."},
+  {kind:"qcm",fig:{couches:["Eau"]},figApres:{couches:["Sirop","Eau"]},q:"On verse doucement du sirop (1,3) dans un verre d'eau (1). Où va-t-il ?",ch:["Au fond du verre","À la surface","Il reste au milieu"],good:0,rep:"Au fond du verre.",
+   w:"Le sirop est plus dense que l'eau : il plonge. C'est pour cela qu'un sirop versé sans remuer forme une couche colorée au fond du verre."},
+  {kind:"qcm",fig:{couches:["Huile","Eau","Sirop"]},figApres:{couches:["Huile","Eau","Sirop"],objet:{nom:"Bille",rho:0.95}},q:"Une bille de masse volumique 0,95 g/cm³ tombe dans ce verre. Où s'arrête-t-elle ?",ch:["Entre l'huile et l'eau","Au fond, dans le sirop","Tout en haut, sur l'huile"],good:0,rep:"Entre l'huile et l'eau.",
+   w:"Elle traverse tout ce qui est plus léger qu'elle (l'huile, 0,9) et s'arrête sur le premier liquide plus lourd (l'eau, 1). Chaque objet trouve son étage."},
+  {kind:"qcm",fig:{couches:["Eau"],objet:{nom:"Glaçon",rho:0.92}},q:"Pourquoi un glaçon flotte-t-il sur l'eau ?",ch:["L'eau solide (0,92) est moins dense que l'eau liquide (1)","Parce qu'il est froid","Parce qu'il contient de l'air"],good:0,rep:"L'eau solide est moins dense que l'eau liquide.",
+   w:"C'est une exception célèbre : en gelant, l'eau <em>augmente</em> de volume, donc sa masse volumique baisse. Presque toutes les autres matières font l'inverse."},
+  {kind:"qcm",fig:{couches:["Eau"]},q:"L'acier a une masse volumique de 7,8 g/cm³. Pourquoi un bateau en acier flotte-t-il ?",ch:["Sa coque enferme de l'air : l'ensemble a une masse volumique inférieure à 1","Parce que l'acier flotte","Parce que ses moteurs le soulèvent"],good:0,rep:"Sa coque enferme beaucoup d'air.",
+   w:"On ne compare pas l'acier à l'eau, mais le bateau entier à l'eau : coque et air compris, son volume est énorme pour sa masse. Une plaque d'acier pleine, elle, coule."},
+  {kind:"num",fig:{couches:["Eau"]},q:"Un cube de 100 cm³ pèse 120 g. <em>Calcule sa masse volumique, en g/cm³.</em>",ans:1.2,unit:"g/cm³",rep:"ρ = 1,2 g/cm³",
+   w:"ρ = 120 ÷ 100 = <em>1,2 g/cm³</em>, plus que l'eau : ce cube coule. Le calcul répond à la question avant même de le tremper."},
+  {kind:"qcm",fig:{couches:["Eau"]},q:"Le chêne a une masse volumique de 0,7 g/cm³, l'ébène 1,2. Lequel coule dans l'eau ?",ch:["L'ébène","Le chêne","Aucun : le bois flotte toujours"],good:0,rep:"L'ébène.",
+   w:"L'ébène est un bois si dense qu'il coule. « Le bois flotte » est une règle de la vie courante, pas une loi : seule la comparaison des masses volumiques tranche."}
 ];
 
 /* ============ gamification ============ */
@@ -530,6 +576,12 @@ const MANCHES={
     texte:"Le tableau reste sous tes yeux pendant toute la manche. À toi de calculer, puis de dire de quel métal il s'agit.",
     bravo:"Rien à revoir. Dernière manche : qui flotte, qui coule, et pourquoi.",
     prep:q=>({...q,annot:q.kind==="num"?"À toi de calculer":"Identifier la matière",fig:tableauMetaux(),hyp:q.q})}),
+  flotter:creeManche({panel:"#flotter",game:"flotter",donnees:FLOTTER,
+    titre:"Flotter ou couler ?",
+    texte:"Huit questions pour comprendre qui surnage et qui plonge. Le verre se remplit après ta réponse.",
+    bravo:"Rien à revoir. Formule, mesure, unités, métaux, flottaison : le chapitre est à toi.",
+    prep:q=>({...q,annot:q.kind==="num"?"À toi de calculer":"Flotter ou couler",
+      fig:verre(q.fig),figApres:q.figApres?verre(q.figApres):null,hyp:q.q})}),
   /* fin des manches */
 };
 
