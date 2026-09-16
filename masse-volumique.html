@@ -255,7 +255,9 @@ const norm=v=>{const l=Math.hypot(v.x,v.y)||1;return{x:v.x/l,y:v.y/l};};
 /* une ou deux eprouvettes graduees, avec le solide immerge et la loupe sur le menisque.
    La loupe occupe la moitie droite du cadre (x de 206 a 298) : elle ne va donc qu'avec un tube
    unique, decale a gauche pour lui laisser la place. Avec deux tubes, le tube droit passerait
-   dessous. Meme prudence avec un niveau nul : le menisque descendrait sous le fond du tube. */
+   dessous. Meme prudence avec un niveau nul : le menisque descendrait sous le fond du tube.
+   L'option lire ajoute le trait rouge et sa legende dans la loupe : elle est reservee au
+   figApres, sans quoi la figure repondrait a la question avant le choix. */
 function eprouvette(o){
   const max=o.max||110, tubes=o.tubes, W=54, H=150, Y0=182;
   const xs = tubes.length===1 ? (o.loupe?[104]:[160]) : [92,228];
@@ -279,8 +281,10 @@ function eprouvette(o){
     b+=`<rect class="loupe" x="${LX}" y="${LY}" width="${LW}" height="${LH}" rx="12"/>`;
     b+=`<path class="liq" d="M ${LX+3} ${surf} Q ${LX+LW/2} ${surf+15} ${LX+LW-3} ${surf} L ${LX+LW-3} ${LY+LH-3} L ${LX+3} ${LY+LH-3} Z"/>`;
     b+=`<path class="menis" d="M ${LX+3} ${surf} Q ${LX+LW/2} ${surf+15} ${LX+LW-3} ${surf}"/>`;
-    b+=`<line class="lire" x1="${LX-8}" x2="${LX+LW+8}" y1="${surf+14}" y2="${surf+14}"/>`;
-    b+=`<text class="axlab" x="${LX+LW/2}" y="${LY+LH+18}" text-anchor="middle">on lit ici</text>`;
+    if(o.lire){
+      b+=`<line class="lire" x1="${LX-8}" x2="${LX+LW+8}" y1="${surf+14}" y2="${surf+14}"/>`;
+      b+=`<text class="axlab" x="${LX+LW/2}" y="${LY+LH+18}" text-anchor="middle">on lit ici</text>`;
+    }
   }
   return `<svg viewBox="0 0 320 212" role="img" aria-label="Éprouvette graduée">${b}</svg>`;
 }
@@ -353,9 +357,9 @@ const FORMULE=[
 ];
 
 const MESURER=[
-  {kind:"qcm",fig:{tubes:[{v:60,label:"éprouvette graduée"}]},q:"Avec quel instrument mesure-t-on précisément le volume d'un liquide ?",ch:["Un thermomètre","Une balance","Une éprouvette graduée"],good:2,rep:"Une éprouvette graduée.",
+  {kind:"qcm",fig:{tubes:[{v:60,label:"un liquide à mesurer"}]},q:"Avec quel instrument mesure-t-on précisément le volume d'un liquide ?",ch:["Un thermomètre","Une balance","Une éprouvette graduée"],good:2,rep:"Une éprouvette graduée.",
    w:"Le thermomètre mesure une température, la balance une masse. Pour un volume, c'est l'éprouvette graduée : ses traits sont gradués en mL."},
-  {kind:"qcm",fig:{tubes:[{v:60,label:"la surface est incurvée"}],loupe:true},q:"La surface du liquide est incurvée. Où lit-on le volume ?",ch:["En haut, là où le liquide touche le verre","Au milieu, à vue d'œil","Au bas de la courbe, l'œil bien en face"],good:2,rep:"Au bas du ménisque, l'œil en face.",
+  {kind:"qcm",fig:{tubes:[{v:60,label:"la surface est incurvée"}],loupe:true},figApres:{tubes:[{v:60,label:"la surface est incurvée"}],loupe:true,lire:true},q:"La surface du liquide est incurvée. Où lit-on le volume ?",ch:["En haut, là où le liquide touche le verre","Au milieu, à vue d'œil","Au bas de la courbe, l'œil bien en face"],good:2,rep:"Au bas du ménisque, l'œil en face.",
    w:"Cette courbe s'appelle le <em>ménisque</em>. On lit toujours le trait au bas du ménisque, en plaçant l'œil à sa hauteur : de biais, on lit faux."},
   {kind:"qcm",fig:null,q:"Avant de peser un liquide, on pose l'éprouvette vide sur la balance et on appuie sur « tare ». Pourquoi ?",ch:["Pour que la balance oublie la masse de l'éprouvette","Pour régler la balance en grammes","Pour vérifier le volume"],good:0,rep:"Pour ne peser que le liquide.",
    w:"La tare remet l'affichage à zéro avec l'éprouvette vide dessus. Ce qu'on lit ensuite est la masse du liquide seul, sans le verre."},
@@ -565,7 +569,8 @@ const MANCHES={
     titre:"Mesurer pour de vrai.",
     texte:"L'éprouvette, le ménisque, la tare, et le grand classique : trouver le volume d'un solide en le plongeant dans l'eau.",
     bravo:"Rien à revoir. Direction les unités, là où les erreurs coûtent le plus cher.",
-    prep:q=>({...q,annot:q.kind==="num"?"À toi de calculer":"Mesurer un volume",fig:q.fig?eprouvette(q.fig):null,hyp:q.q})}),
+    prep:q=>({...q,annot:q.kind==="num"?"À toi de calculer":"Mesurer un volume",
+      fig:q.fig?eprouvette(q.fig):null,figApres:q.figApres?eprouvette(q.figApres):null,hyp:q.q})}),
   unites:creeManche({panel:"#unites",game:"unites",donnees:UNITES,
     titre:"Les unités, sans se tromper.",
     texte:"mL et cm³, L et dm³, g/cm³ et kg/m³. Huit questions pour ne plus perdre de points sur un facteur 1000.",
