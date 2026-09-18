@@ -8,17 +8,14 @@ Exercices interactifs de grammaire française pour une élève de 3e. Tout le co
 
 Site statique sans build, sans dépendances, sans tests : chaque page est un fichier HTML autonome (CSS et JS inline). Pour vérifier une modification, ouvrir le fichier dans un navigateur (`open classes-grammaticales.html`).
 
+Les carnets de maths et de physique-chimie ont été extraits, avec leur historique, dans le dépôt privé `sciences` (https://github.com/hayssams/sciences). Les deux dépôts partagent la charte graphique et les helpers JS (gamification, `logResult`, `appareil()`) : **toute modification d'un comportement partagé doit être reportée à la main dans les carnets des deux dépôts.**
+
 ## Structure
 
-- `index.html` : page chapeau, cinq cartes (Français, Maths, Histoire, Géographie, Physique-Chimie).
+- `index.html` : page chapeau, trois cartes (Français, Histoire, Géographie).
 - `francais.html` : rubrique Français, cartes vers les deux carnets et la boîte à astuces.
-- `maths.html` : rubrique Maths, carte vers le carnet Thalès.
 - `histoire.html` : rubrique Histoire (accent terre de Sienne `--histoire: #8C4A2F`), cartes vers les deux carnets et le mémo, plus le lien externe vers l'appli recommandée par la professeure.
 - `geographie.html` : rubrique Géographie (accent bleu canard `--geo: #17697B`), cartes vers les deux carnets et le mémo.
-- `physique-chimie.html` : rubrique Physique-Chimie (accent violet encre `--pc: #5F4B8B`), cartes vers les deux carnets et le mémo.
-- `etats-matiere.html` : carnet de physique-chimie couvrant le chapitre « Les états de la matière » (programme SchoolMouv 3e) en cinq manches : Les états (QCM solide/liquide/gaz), Nommer (schéma des changements d'état, flèche interrogée en rouge), Situations (vie courante, le schéma s'allume à la révélation), La courbe (lecture de la courbe de chauffe ou de refroidissement de l'eau), Mélanges (corps purs, solutions, composition de l'air). Deux moteurs SVG : `schemaEtats(chg)` (trois boîtes, six flèches) et `courbeEau(c)` (repère gradué, paliers, segment marqué). Contrairement aux autres carnets, les cinq manches partagent un constructeur `creeManche(o)` (intro, déroulé QCM ou saisie, bilan) : chaque manche fournit ses données et sa fonction `prep(q)`. Les éléments sont interrogés à l'intérieur du panel (pas d'ids globaux, les panels masqués gardent leur HTML). La barre passe en deux rangées d'onglets.
-- `masse-volumique.html` : deuxième carnet de physique-chimie, cinq manches sur la masse volumique (La formule, Mesurer, Les unités, Identifier, Flotter ou couler). Jumeau d'`etats-matiere.html` : même CSS, même constructeur `creeManche`, mêmes helpers. Deux moteurs de figures lui sont propres : `eprouvette(o)` (une ou deux éprouvettes graduées, solide immergé, loupe sur le ménisque) et `verre(o)` (bécher à couches de liquides). Dans `verre`, **l'objet n'est jamais positionné à la main** : le moteur le pose au-dessus de la première couche plus dense que lui, ce qui rend une figure physiquement fausse impossible à produire. Les tables `METAUX` et `LIQUIDES` sont la source unique des valeurs, pour les figures comme pour le contrôle de cohérence.
-- `thales.html` : carnet de maths sur le théorème de Thalès (accent vert `--maths: #1B6F55`). Reprend la mécanique des carnets de grammaire (onglets, `showVerdict`, confettis, série, `logResult` avec `page:"thales"`), avec en plus un moteur de figures `figSVG(f)` qui dessine les configurations de Thalès (triangle ou papillon) en SVG inline à partir des données de chaque exercice (`REPERER`, `RAPPORTS`, `CALCULER`, `RECIP`, `SEMBLABLES`), un second moteur `figDuoSVG(d)` qui dessine deux triangles indépendants avec arcs d'angles colorés par paires et longueurs de côtés (manche Semblables), et des manches à saisie numérique (virgule ou point acceptés, tolérance ±0,01). La manche Semblables mélange questions oui/non et calculs dans une même liste (`kind:"reco"` ou `"calc"`).
 - `histoire-dates.html` et `histoire-personnages.html` : les deux carnets d'histoire, tirés du programme de révision de rentrée (`docs/3eme revisions histoire geographie FR_compressed (1).pdf`). Ils partagent un moteur de frise `friseSVG(opts)` qui découpe 1914-2002 en cinq tranches cliquables (`TRANCHES`, ids `t1` à `t5`), avec une largeur minimale par tranche pour rester utilisable au doigt. Le premier porte les 23 dates, le second les 21 personnages, chacun avec son rôle rédigé et le fait daté qui permet de le situer.
 - `geo-france.html` et `geo-europe.html` : les deux carnets de géo. Les tracés sont les **vraies frontières**, simplifiées puis figées en clair dans les fichiers : régions de l'IGN sous Licence Ouverte Etalab, ce qui **oblige à porter la mention de la source sur `geo-france.html`** ; pays, fleuves et planisphère de Natural Earth, domaine public. La fabrication est documentée dans `docs/superpowers/outils/geo/`, qui n'est pas servi.
 
@@ -35,7 +32,7 @@ Site statique sans build, sans dépendances, sans tests : chaque page est un fic
   - Les zones `inerte` sont du décor et ne réagissent jamais au clic.
 
   **La loupe** existe parce que viser au doigt est physiquement impossible sur une carte dense : 8 px pour le Luxembourg, 1 px pour la Guadeloupe. Un premier appui resserre le cadre, un second désigne. Le facteur de zoom se calcule pour que les deux zones les plus proches atteignent 44 px : 6 pour l'Europe. Là où même cela ne suffirait pas, le fond déclare des **cadres nommés** : le planisphère demanderait un zoom de 33, il porte donc trois cadres géographiques.
-- `histoire-memo.html`, `geo-memo.html` et `pc-memo.html` : fiches mémo statiques sur le modèle d'`astuces.html` (deux onglets pour les deux premières, trois pour `pc-memo.html` depuis l'ajout du carnet Masse volumique ; pas de score, pas d'appel Google Sheets). Elles recopient les données des carnets, qui font foi. **Toute modification d'une donnée dans un carnet doit être reportée dans la fiche**, et le contrôle se fait par script plutôt qu'à l'œil :
+- `histoire-memo.html` et `geo-memo.html` : fiches mémo statiques sur le modèle d'`astuces.html` (deux onglets ; pas de score, pas d'appel Google Sheets). Elles recopient les données des carnets, qui font foi. **Toute modification d'une donnée dans un carnet doit être reportée dans la fiche**, et le contrôle se fait par script plutôt qu'à l'œil :
 
   ```bash
   node outils/coherence.mjs histoire-dates.html DATES d,label histoire-memo.html
@@ -46,14 +43,10 @@ Site statique sans build, sans dépendances, sans tests : chaque page est un fic
   node outils/coherence.mjs geo-france.html MERS nom geo-memo.html
   node outils/coherence.mjs geo-france.html DROM nom,chef geo-memo.html
   node outils/coherence.mjs geo-europe.html PAYS nom geo-memo.html
-  node outils/coherence.mjs etats-matiere.html CHG label pc-memo.html
-  node outils/coherence.mjs masse-volumique.html METAUX nom,rho pc-memo.html
-  node outils/coherence.mjs masse-volumique.html LIQUIDES nom,rho pc-memo.html
   node outils/verifie-banque.mjs
-  node outils/verifie-masse.mjs
   ```
 
-  Le script charge le tableau du carnet (ou les valeurs d'un objet map, comme `CHG`) et vérifie que chaque valeur figure dans la fiche, en tenant compte des entités HTML et des apostrophes typographiques. Chaque appel doit se terminer par `la fiche est à jour.` Le script `outils/verifie-banque.mjs` contrôle quant à lui la banque de `classes-grammaticales.html` (effectifs 54/13/9, cibles `[[...]]`, classes valides, caméléons cohérents) et doit se terminer par `La banque est conforme`. Le script `outils/verifie-masse.mjs` contrôle `masse-volumique.html` : compilation du script, forme de chaque question, tables triées, présence des quatre ancres de montage (`moteurs`, `donnees`, `les manches`, `fin des manches`), et câblage des manches (chaque onglet, son panneau et sa clé de `MANCHES` doivent se répondre). La règle de câblage est asymétrique : une manche de `MANCHES` sans onglet ni panneau est toujours une erreur (du code mort), mais un onglet sans manche est toléré tant que les cinq manches ne sont pas toutes écrites (le carnet se construit onglet par onglet) et ne redevient une erreur qu'une fois les cinq tableaux de questions présents. Le script doit se terminer par `5 manche(s) contrôlée(s) : le carnet est conforme.`
+  Le script charge le tableau du carnet et vérifie que chaque valeur figure dans la fiche, en tenant compte des entités HTML et des apostrophes typographiques. Chaque appel doit se terminer par `la fiche est à jour.` Le script `outils/verifie-banque.mjs` contrôle quant à lui la banque de `classes-grammaticales.html` (effectifs 54/13/9, cibles `[[...]]`, classes valides, caméléons cohérents) et doit se terminer par `La banque est conforme`.
 - `astuces.html` : fiche mémo statique (astuce de reconnaissance + 3 à 5 exemples par classe et par fonction, sections « Ne confonds pas ») ; deux onglets, pas de score ni d'appel Google Sheets, contenu écrit directement dans le HTML.
 - `docs/superpowers/` : specs et plans d'implémentation.
 
@@ -78,16 +71,15 @@ En tête du `<script>` de chaque carnet :
 ### Gamification et suivi
 
 - Confettis, série (streak), messages `CHEERS`/`OOPS` tirés au hasard à chaque réponse.
-- Les résultats de chaque manche sont envoyés à Google Sheets via `logResult()` : POST `no-cors` vers `SHEET_URL` (Google Apps Script), avec `page` valant `"classes"`, `"fonctions"`, `"thales"`, `"histoire-dates"`, `"histoire-personnages"`, `"geo-france"`, `"geo-europe"`, `"etats-matiere"` ou `"masse-volumique"`. Chaque envoi porte en plus la signature de l’appareil, produite par le helper `appareil()` (identique dans les neuf carnets, à reporter à la main comme les autres helpers partagés) : `appareil` (mobile / tablette / ordinateur), `os`, `navigateur` (nom + version majeure), `ecran`, `fenetre`, `dpr`, `tactile`, `langue` et `ua` brut. Rien n’est stocké côté navigateur, tout est recalculé à l’envoi, donc `fenetre` reflète l’orientation du moment. Ces champs n’apparaîtront dans la feuille que si le script Apps Script ajoute les colonnes correspondantes. Toute nouvelle activité doit appeler `logResult` en fin de manche. **Défaut connu :** la manche Caméléons/Déplacements des deux carnets de grammaire (`camEnd`) ne l'appelle pas encore.
+- Les résultats de chaque manche sont envoyés à Google Sheets via `logResult()` : POST `no-cors` vers `SHEET_URL` (Google Apps Script), avec `page` valant `"classes"`, `"fonctions"`, `"histoire-dates"`, `"histoire-personnages"`, `"geo-france"` ou `"geo-europe"`. Chaque envoi porte en plus la signature de l’appareil, produite par le helper `appareil()` (identique dans les six carnets de ce dépôt et les trois du dépôt `sciences`, à reporter à la main comme les autres helpers partagés) : `appareil` (mobile / tablette / ordinateur), `os`, `navigateur` (nom + version majeure), `ecran`, `fenetre`, `dpr`, `tactile`, `langue` et `ua` brut. Rien n’est stocké côté navigateur, tout est recalculé à l’envoi, donc `fenetre` reflète l’orientation du moment. Ces champs n’apparaîtront dans la feuille que si le script Apps Script ajoute les colonnes correspondantes. Toute nouvelle activité doit appeler `logResult` en fin de manche. **Défaut connu :** la manche Caméléons/Déplacements des deux carnets de grammaire (`camEnd`) ne l'appelle pas encore.
 
-Il y a maintenant quatre familles de jumeaux, et la règle vaut pour chacune : **toute modification de comportement partagé doit être reportée à la main dans tous les fichiers de la famille.**
+Il y a trois familles de jumeaux dans ce dépôt, et la règle vaut pour chacune : **toute modification de comportement partagé doit être reportée à la main dans tous les fichiers de la famille.**
 
 - Grammaire : `classes-grammaticales.html` et `fonctions-grammaticales.html` (quatre manches : En contexte, Caméléons/Déplacements, Mémo, Cartes).
 - Histoire : `histoire-dates.html` et `histoire-personnages.html` (moteur `friseSVG` commun).
 - Géographie : `geo-france.html` et `geo-europe.html` (moteur `mapSVG` commun).
-- Physique-Chimie : `etats-matiere.html` et `masse-volumique.html` (constructeur `creeManche` et helpers communs).
 
-`thales.html` (moteurs `figSVG` et `figDuoSVG`) reste seul de son espèce.
+La famille Physique-Chimie (`etats-matiere.html` et `masse-volumique.html`) et le carnet `thales.html` vivent dans le dépôt `sciences`.
 
 ## Charte graphique
 
