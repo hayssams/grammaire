@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Thalès, niveau brevet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F5F6F1;
+  --paper-2:#FCFCFA;
+  --rule:#BFD3E4;
+  --rule-soft:#DDE7F0;
+  --marge:#DE5B4A;
+  --ink:#16233B;
+  --ink-soft:#5E6E85;
+  --maths:#1B6F55;
+  --serif:"Instrument Serif", Georgia, "Times New Roman", serif;
+  --sans:"Karla", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:16px;
+  line-height:1.5;
+  min-height:100vh;
+  padding:0 0 40px;
+}
+.wrap{max-width:560px;margin:0 auto;padding:0 14px}
+
+/* ---------- en-tete ---------- */
+header{padding:26px 0 14px}
+.topbar{display:flex;align-items:center;gap:14px;margin:0 0 6px}
+.topbar .eyebrow{margin:0}
+.home{
+  font-family:var(--sans);font-size:13px;font-weight:700;text-decoration:none;color:var(--ink);
+  border:1px solid var(--rule);border-radius:999px;padding:6px 12px;background:var(--paper,transparent);
+  transition:background .2s,transform .2s
+}
+.home:hover{background:var(--rule-soft);transform:translateY(-1px)}
+.eyebrow{
+  font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-soft);font-weight:700;margin:0 0 6px
+}
+h1{
+  font-family:var(--serif);font-weight:400;font-size:34px;line-height:1.05;
+  margin:0 0 4px;letter-spacing:-.01em
+}
+h1 em{font-style:italic;color:var(--maths)}
+.sub{margin:0;color:var(--ink-soft);font-size:14px}
+
+/* ---------- onglets ---------- */
+nav{display:flex;gap:6px;margin:18px 0 0;align-items:flex-end}
+.tab{
+  flex:1;border:1px solid var(--rule);border-bottom:none;
+  background:#EDEFE9;color:var(--ink-soft);
+  font-family:var(--sans);font-size:12.5px;font-weight:700;
+  padding:11px 3px 10px;border-radius:9px 9px 0 0;cursor:pointer;
+  letter-spacing:.01em;transition:background .15s,color .15s,transform .15s
+}
+.tab:hover{color:var(--ink)}
+.tab[aria-selected="true"]{background:var(--paper-2);color:var(--ink);transform:translateY(1px);box-shadow:0 -2px 0 var(--maths) inset}
+
+/* ---------- feuille ---------- */
+.sheet{
+  position:relative;background:var(--paper-2);
+  border:1px solid var(--rule);border-radius:0 0 10px 10px;
+  padding:22px 16px 20px 30px;overflow:hidden;
+  background-image:repeating-linear-gradient(to bottom,transparent 0 31px,var(--rule-soft) 31px 32px);
+  background-position:0 8px;
+}
+.sheet::before{
+  content:"";position:absolute;top:0;bottom:0;left:20px;width:1px;background:var(--marge);opacity:.5
+}
+.panel{display:none}
+.panel.on{display:block}
+
+/* ---------- barre d'etat ---------- */
+.status{
+  display:flex;align-items:center;gap:12px;
+  font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--ink-soft);margin-bottom:14px
+}
+.status .grow{flex:1}
+.status b{color:var(--ink);font-size:14px;letter-spacing:0}
+
+/* ---------- figure ---------- */
+.fig{margin:0 0 4px}
+.fig svg{width:100%;height:auto;display:block}
+.fig .tr{stroke:var(--ink);stroke-width:1.6;stroke-linecap:round}
+.fig .par{stroke:var(--maths);stroke-width:2.2;stroke-linecap:round}
+.fig .par.dash{stroke-dasharray:6 5}
+.fig .chev{stroke:var(--maths);stroke-width:1.8;fill:none;stroke-linecap:round}
+.fig .pt{fill:var(--ink)}
+.fig .ptn{font:italic 15px var(--serif);fill:var(--ink);paint-order:stroke;stroke:var(--paper-2);stroke-width:4}
+.fig .len{font:700 12px var(--sans);fill:var(--ink-soft);paint-order:stroke;stroke:var(--paper-2);stroke-width:4}
+.fig .len.unknown{fill:var(--marge);font-size:14px}
+.fig .arc{fill:none;stroke-width:2}
+.fig .ang{font:700 11.5px var(--sans);paint-order:stroke;stroke:var(--paper-2);stroke-width:4}
+.echelle{font-size:11px;color:var(--ink-soft);text-align:right;margin:0 0 8px}
+.hyp{font-size:14.5px;margin:0 0 6px}
+.hyp em{font-style:normal;font-weight:700}
+.annot{
+  font-family:var(--sans);font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-soft);transition:color .3s ease;margin:0 0 4px
+}
+.revealed .annot{color:var(--maths)}
+
+/* ---------- enonces longs (manche Brevet) ---------- */
+.contexte{font-size:14.5px;margin:0 0 8px;color:var(--ink)}
+.rappel{
+  display:block;font-size:13px;font-weight:700;color:var(--maths);
+  border-left:3px solid var(--maths);padding:4px 0 4px 9px;margin:0 0 8px
+}
+
+/* ---------- fractions ---------- */
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 3px;font-family:var(--serif);font-style:italic;line-height:1.2}
+.frac .fn{border-bottom:1.5px solid currentColor;padding:0 5px}
+.frac .fd{padding:0 5px}
+.egal{font-family:var(--serif);margin:0 5px}
+
+/* ---------- reactions ---------- */
+.react{text-align:center;min-height:78px;margin:0 0 8px;position:relative}
+.react .emo{display:inline-block;font-size:48px;line-height:52px;animation:pop .45s cubic-bezier(.2,1.6,.4,1)}
+.react .msg{display:block;font-family:var(--sans);font-weight:800;font-size:16px;line-height:22px;letter-spacing:.02em;animation:pop .45s .1s both cubic-bezier(.2,1.6,.4,1)}
+.react.yes .msg{color:var(--maths)}
+.react.no .msg{color:var(--marge)}
+.react.no .emo{animation:shake .5s ease}
+.react .streak{display:block;font-family:var(--sans);font-size:12px;font-weight:700;color:var(--ink-soft);margin-top:2px;animation:pop .4s .25s both}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-8px) rotate(-8deg)}40%,80%{transform:translateX(8px) rotate(8deg)}}
+.confetti{position:absolute;left:50%;top:26px;width:9px;height:9px;border-radius:2px;pointer-events:none;animation:fly .9s ease-out forwards}
+@keyframes fly{0%{transform:translate(0,0) rotate(0);opacity:1}100%{transform:translate(var(--dx),var(--dy)) rotate(540deg);opacity:0}}
+@keyframes pop{from{transform:scale(.3);opacity:0}to{transform:scale(1);opacity:1}}
+.why{font-size:14px;color:var(--ink-soft);margin:8px 0 0;opacity:0;transition:opacity .3s .3s}
+.revealed .why{opacity:1}
+.why em{font-style:normal;color:var(--ink);font-weight:700}
+.why .frac{font-size:15px}
+.demo{margin:8px 0 0;padding:0 0 0 20px;font-size:13.5px;color:var(--ink)}
+.demo li{margin:0 0 3px}
+
+/* ---------- choix ---------- */
+.choices-eq{display:grid;gap:8px;margin-top:16px}
+.choice{
+  border:1px solid var(--rule);background:var(--paper-2);color:var(--ink);
+  font-family:var(--serif);font-size:18px;
+  padding:12px 6px;border-radius:7px;cursor:pointer;text-align:center;
+  transition:background .12s,border-color .12s,color .12s,opacity .2s
+}
+.choice.txt{font-family:var(--sans);font-size:14.5px;text-align:left;padding:11px 12px;line-height:1.35}
+.choice:hover:not(:disabled){border-color:var(--ink);background:#F1F3EE}
+.choice:disabled{cursor:default}
+.choice.dim{opacity:.32}
+.choice.good{background:var(--maths);border-color:var(--maths);color:#fff;opacity:1}
+.choice.bad{background:transparent;border-color:var(--marge);color:var(--marge);opacity:1;text-decoration:line-through}
+
+/* ---------- remise en ordre ---------- */
+.bande{list-style:none;counter-reset:etape;margin:14px 0 0;padding:0;min-height:8px}
+.bande li{
+  counter-increment:etape;position:relative;
+  border:1px solid var(--maths);border-radius:7px;background:#EEF4F0;
+  font-size:13.5px;line-height:1.35;padding:9px 10px 9px 34px;margin:0 0 6px;cursor:pointer
+}
+.bande li::before{
+  content:counter(etape);position:absolute;left:10px;top:9px;
+  font-weight:700;font-size:12px;color:var(--maths)
+}
+.bande li.bad{border-color:var(--marge);background:#FBEFED}
+.bande li.bad::before{color:var(--marge)}
+.bande li.fige{cursor:default}
+.vide{font-size:13px;color:var(--ink-soft);margin:12px 0 0;font-style:italic}
+.tas{margin:14px 0 0;display:grid;gap:6px}
+.etiq{
+  border:1px solid var(--rule);background:var(--paper-2);color:var(--ink);
+  font-family:var(--sans);font-size:13.5px;line-height:1.35;text-align:left;
+  padding:10px 12px;border-radius:7px;cursor:pointer;
+  transition:border-color .12s,opacity .2s
+}
+.etiq:hover:not(:disabled){border-color:var(--ink)}
+.etiq.used{opacity:.28;cursor:default}
+.etiq:disabled{cursor:default}
+
+/* ---------- saisie ---------- */
+.answer{display:flex;gap:8px;align-items:center;margin-top:16px}
+.answer input{
+  flex:1;min-width:0;border:1px solid var(--rule);border-radius:8px;padding:12px;
+  font-family:var(--sans);font-size:18px;background:var(--paper-2);color:var(--ink)
+}
+.answer input:disabled{opacity:.6}
+.answer .unit{font-weight:700;color:var(--ink-soft)}
+
+/* ---------- boutons ---------- */
+.btn{
+  display:inline-block;border:1px solid var(--ink);background:var(--ink);color:var(--paper-2);
+  font-family:var(--sans);font-size:15px;font-weight:700;padding:12px 22px;border-radius:8px;cursor:pointer;
+  transition:opacity .15s
+}
+.btn:hover{opacity:.86}
+.btn:disabled{cursor:default;opacity:.45}
+.btn.ghost{background:transparent;color:var(--ink)}
+.row-end{display:flex;justify-content:flex-end;gap:8px;margin-top:18px;min-height:46px;align-items:center}
+.hidden{display:none !important}
+
+/* ---------- accueil de manche ---------- */
+.intro{padding:6px 0 4px}
+.intro h2{font-family:var(--serif);font-weight:400;font-size:27px;margin:0 0 8px;line-height:1.15}
+.intro p{margin:0 0 18px;color:var(--ink-soft);font-size:15px;max-width:44ch}
+
+/* ---------- bilan ---------- */
+.bilan h2{font-family:var(--serif);font-weight:400;font-size:30px;margin:0 0 2px}
+.bigscore{font-family:var(--serif);font-size:56px;line-height:1;margin:10px 0 2px}
+.bilan .meta{color:var(--ink-soft);font-size:14px;margin:0 0 18px}
+.errlist{border-top:1px solid var(--rule-soft);margin:14px 0 0;padding:0;list-style:none}
+.errlist li{border-bottom:1px solid var(--rule-soft);padding:11px 0;font-size:14px;color:var(--ink-soft)}
+.errlist .rep{font-weight:700;color:var(--maths)}
+.section-title{
+  font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);
+  margin:22px 0 0
+}
+
+@media (max-width:420px){
+  .tab{font-size:11px;letter-spacing:0;padding:10px 2px 9px}
+}
+@media (max-width:360px){
+  .choice{font-size:16px}
+  .choice.txt{font-size:13.5px}
+  .tab{font-size:10px}
+  .etiq,.bande li{font-size:12.5px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition-duration:.01ms !important;animation-duration:.01ms !important}
+}
+:focus-visible{outline:2px solid var(--maths);outline-offset:2px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="topbar"><a class="home" href="maths.html">🏠 Maths</a><p class="eyebrow">Maths, 3<sup>e</sup></p></div>
+    <h1>Thalès, <em>niveau brevet</em></h1>
+    <p class="sub">Quatre entraînements : les calculs à étapes, la démonstration rédigée, l'agrandissement, les sujets complets.</p>
+    <nav role="tablist">
+      <button class="tab" role="tab" aria-selected="true" data-panel="etapes">À étapes</button>
+      <button class="tab" role="tab" aria-selected="false" data-panel="rediger">Rédiger</button>
+      <button class="tab" role="tab" aria-selected="false" data-panel="agrandir">Agrandir</button>
+      <button class="tab" role="tab" aria-selected="false" data-panel="brevet">Brevet</button>
+    </nav>
+  </header>
+
+  <div class="sheet">
+    <section class="panel on" id="etapes"></section>
+    <section class="panel" id="rediger"></section>
+    <section class="panel" id="agrandir"></section>
+    <section class="panel" id="brevet"></section>
+  </div>
+</div>
+
+<script>
+/* ============ outils ============ */
+const $ = (sel,root=document)=>root.querySelector(sel);
+const shuffle = a => {const c=[...a];for(let i=c.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[c[i],c[j]]=[c[j],c[i]];}return c;};
+const pick = (a,n) => shuffle(a).slice(0,n);
+const esc = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;");
+function chrono(sec){return sec<60?sec+" s":Math.floor(sec/60)+" min "+String(sec%60).padStart(2,"0");}
+const rnd=a=>a[Math.floor(Math.random()*a.length)];
+function frac(a,b){return `<span class="frac"><span class="fn">${a}</span><span class="fd">${b}</span></span>`;}
+function eq3(p){return p.map(([a,b])=>frac(a,b)).join(`<span class="egal">=</span>`);}
+
+/* ============ moteurs ============ */
+function figSVG(f){
+  const lerp=(p,q,k)=>({x:p.x+(q.x-p.x)*k,y:p.y+(q.y-p.y)*k});
+  const s=f.type==="papillon"?-1:1;
+  const P={A:f.A,B:f.B,C:f.C};
+  P.M=f.M||lerp(f.A,f.B,s*(f.t??.5));
+  P.N=f.N||lerp(f.A,f.C,s*(f.tN??f.t??.5));
+  const ks=["A","B","C","M","N"];
+  const G={x:ks.reduce((v,k)=>v+P[k].x,0)/5,y:ks.reduce((v,k)=>v+P[k].y,0)/5};
+  const nm=r=>(f.names&&f.names[r])||r;
+  const seg=(p,q,cls)=>`<line x1="${p.x}" y1="${p.y}" x2="${q.x}" y2="${q.y}" class="${cls}"/>`;
+  const norm=v=>{const d=Math.hypot(v.x,v.y)||1;return{x:v.x/d,y:v.y/d};};
+  function chev(p,q){
+    const u=norm({x:q.x-p.x,y:q.y-p.y}),n={x:-u.y,y:u.x},c=lerp(p,q,.5);
+    let out="";
+    [-3,4].forEach(o=>{
+      const tip={x:c.x+u.x*o,y:c.y+u.y*o};
+      out+=`<path class="chev" d="M ${tip.x-u.x*6+n.x*4.5} ${tip.y-u.y*6+n.y*4.5} L ${tip.x} ${tip.y} L ${tip.x-u.x*6-n.x*4.5} ${tip.y-u.y*6-n.y*4.5}"/>`;
+    });
+    return out;
+  }
+  let b="";
+  if(f.type==="papillon"){b+=seg(P.M,P.B,"tr")+seg(P.N,P.C,"tr");}
+  else{b+=seg(P.A,P.B,"tr")+seg(P.A,P.C,"tr");}
+  b+=seg(P.B,P.C,"par"+(f.dash?" dash":""))+seg(P.M,P.N,"par"+(f.dash?" dash":""));
+  if(f.par)b+=chev(P.M,P.N)+chev(P.B,P.C);
+  (f.lens||[]).forEach(L=>{
+    const p=P[L.a],q=P[L.b],mid=lerp(p,q,.5);
+    const u=norm({x:q.x-p.x,y:q.y-p.y});
+    let n={x:-u.y,y:u.x};
+    if((mid.x+n.x*15-G.x)**2+(mid.y+n.y*15-G.y)**2 < (mid.x-n.x*15-G.x)**2+(mid.y-n.y*15-G.y)**2)n={x:-n.x,y:-n.y};
+    const pos={x:mid.x+n.x*(L.d??15),y:mid.y+n.y*(L.d??15)};
+    const unknown=L.v==="?";
+    const txt=unknown?`${nm(L.a)}${nm(L.b)} = ?`:`${nm(L.a)}${nm(L.b)} = ${L.v}`;
+    b+=`<text class="len${unknown?" unknown":""}" x="${pos.x}" y="${pos.y}" text-anchor="middle" dominant-baseline="middle">${txt}</text>`;
+  });
+  ks.forEach(k=>{
+    const p=P[k], d=norm({x:p.x-G.x,y:p.y-G.y});
+    b+=`<circle class="pt" cx="${p.x}" cy="${p.y}" r="2.6"/>`+
+       `<text class="ptn" x="${p.x+d.x*13}" y="${p.y+d.y*13}" text-anchor="middle" dominant-baseline="middle">${nm(k)}</text>`;
+  });
+  return `<svg viewBox="0 0 320 212" role="img" aria-label="Figure de Thalès">${b}</svg>`;
+}
+function figDuoSVG(d){
+  const norm=v=>{const l=Math.hypot(v.x,v.y)||1;return{x:v.x/l,y:v.y/l};};
+  const COL=["#1B6F55","#DE5B4A","#457b9d"];
+  let b="";
+  d.tris.forEach(t=>{
+    const P=t.P;
+    const G={x:(P[0].x+P[1].x+P[2].x)/3,y:(P[0].y+P[1].y+P[2].y)/3};
+    for(let i=0;i<3;i++){
+      const p=P[i],q=P[(i+1)%3];
+      b+=`<line x1="${p.x}" y1="${p.y}" x2="${q.x}" y2="${q.y}" class="tr"/>`;
+    }
+    (t.angs||[]).forEach(a=>{
+      const p=P[a.at],u1=norm({x:P[(a.at+1)%3].x-p.x,y:P[(a.at+1)%3].y-p.y}),u2=norm({x:P[(a.at+2)%3].x-p.x,y:P[(a.at+2)%3].y-p.y});
+      const r=13,s1={x:p.x+u1.x*r,y:p.y+u1.y*r},s2={x:p.x+u2.x*r,y:p.y+u2.y*r};
+      const sweep=(u1.x*u2.y-u1.y*u2.x)>0?1:0;
+      b+=`<path class="arc" stroke="${COL[a.c]}" d="M ${s1.x} ${s1.y} A ${r} ${r} 0 0 ${sweep} ${s2.x} ${s2.y}"/>`;
+      if(a.v){
+        const m=norm({x:u1.x+u2.x,y:u1.y+u2.y});
+        b+=`<text class="ang" fill="${COL[a.c]}" x="${p.x+m.x*27}" y="${p.y+m.y*27}" text-anchor="middle" dominant-baseline="middle">${a.v}</text>`;
+      }
+    });
+    (t.lens||[]).forEach(L=>{
+      const p=P[L.a],q=P[L.b],mid={x:(p.x+q.x)/2,y:(p.y+q.y)/2};
+      const u=norm({x:q.x-p.x,y:q.y-p.y});
+      let n={x:-u.y,y:u.x};
+      if((mid.x+n.x*13-G.x)**2+(mid.y+n.y*13-G.y)**2 < (mid.x-n.x*13-G.x)**2+(mid.y-n.y*13-G.y)**2)n={x:-n.x,y:-n.y};
+      const pos={x:mid.x+n.x*(L.d??13),y:mid.y+n.y*(L.d??13)};
+      const unknown=L.v==="?";
+      const txt=`${P[L.a].n}${P[L.b].n} = ${unknown?"?":L.v}`;
+      b+=`<text class="len${unknown?" unknown":""}" x="${pos.x}" y="${pos.y}" text-anchor="middle" dominant-baseline="middle">${txt}</text>`;
+    });
+    P.forEach(p=>{
+      const dr=norm({x:p.x-G.x,y:p.y-G.y});
+      b+=`<circle class="pt" cx="${p.x}" cy="${p.y}" r="2.6"/>`+
+         `<text class="ptn" x="${p.x+dr.x*13}" y="${p.y+dr.y*13}" text-anchor="middle" dominant-baseline="middle">${p.n}</text>`;
+    });
+  });
+  return `<svg viewBox="0 0 320 212" role="img" aria-label="Deux triangles">${b}</svg>`;
+}
+
+/* ============ donnees ============ */
+const TRI={type:"triangle",A:{x:165,y:26},B:{x:38,y:188},C:{x:295,y:188}};
+const TRI2={type:"triangle",A:{x:120,y:30},B:{x:30,y:190},C:{x:300,y:170}};
+const PAP={type:"papillon",A:{x:165,y:100},B:{x:35,y:192},C:{x:300,y:178}};
+/* Deux configurations propres à ce carnet : un objet vertical et son ombre (MUR), et une pente
+   douce (RAMPE). Elles ne reprennent pas l'OMB de thales.html, dont les points touchent le bord
+   droit du cadre : mesuré, il ne reste alors pas la place d'écrire l'étiquette du côté vertical,
+   qui se fait couper. Les marges ci-dessous sont dimensionnées pour la plus longue (« BC = 2,4 m »). */
+const MUR={type:"triangle",A:{x:34,y:170},B:{x:238,y:170},C:{x:238,y:40}};
+const RAMPE={type:"triangle",A:{x:30,y:176},B:{x:250,y:176},C:{x:250,y:112}};
+
+/* 1. les calculs a etapes : aucune question ne se regle en une operation */
+const ETAPES=[
+  {f:{...TRI,t:.375,par:true,lens:[{a:"A",b:"M",v:"3",d:15},{a:"M",b:"B",v:"5",d:15},{a:"A",b:"N",v:"4,5",d:15},{a:"A",b:"C",v:"?",d:26}]},
+   q:"M ∈ [AB], N ∈ [AC], (MN) // (BC). Longueurs en cm. <em>Calcule AC.</em>",
+   ans:12,unit:"cm",rep:"AC = 12 cm",
+   w:`AB n'est pas donné : il faut le reconstituer. <em>AB = AM + MB = 3 + 5 = 8 cm.</em> D'après le théorème de Thalès : ${eq3([["AM","AB"],["AN","AC"]])}, donc ${eq3([["3","8"],["4,5","AC"]])}. Produit en croix : AC = (8 × 4,5) ÷ 3 = <em>12 cm</em>.`},
+
+  {f:{...PAP,t:.5,tN:.5,par:true,lens:[{a:"A",b:"M",v:"2",d:15},{a:"M",b:"B",v:"6",d:22},{a:"A",b:"N",v:"3",d:15},{a:"A",b:"C",v:"?",d:15}]},
+   q:"(MB) et (NC) se coupent en A, (MN) // (BC). Longueurs en cm. <em>Calcule AC.</em>",
+   ans:6,unit:"cm",rep:"AC = 6 cm",
+   w:`Attention au sens : ici A est <em>entre</em> M et B, donc <em>AB = MB − AM = 6 − 2 = 4 cm</em> (et non 8). D'après le théorème de Thalès : ${eq3([["AM","AB"],["AN","AC"]])}, donc ${eq3([["2","4"],["3","AC"]])}. Produit en croix : AC = (4 × 3) ÷ 2 = <em>6 cm</em>.`},
+
+  {f:{...TRI2,t:.4,tN:.4,par:true,lens:[{a:"A",b:"M",v:"4",d:23},{a:"A",b:"B",v:"10",d:8},{a:"A",b:"N",v:"6",d:23},{a:"N",b:"C",v:"?",d:32}]},
+   q:"M ∈ [AB], N ∈ [AC], (MN) // (BC). Longueurs en cm. <em>Calcule NC.</em>",
+   ans:9,unit:"cm",rep:"NC = 9 cm",
+   w:`Thalès ne donne pas NC directement : il donne AC. ${eq3([["AM","AB"],["AN","AC"]])}, donc ${eq3([["4","10"],["6","AC"]])} et AC = (10 × 6) ÷ 4 = 15 cm. <em>NC = AC − AN = 15 − 6 = 9 cm.</em> Le piège serait d'écrire AM/MB = AN/NC : MB et NC ne sont pas des côtés du grand triangle.`},
+
+  {f:{...TRI,t:.3333,tN:.3333,par:true,lens:[{a:"A",b:"M",v:"40 cm",d:15},{a:"A",b:"B",v:"1,2 m",d:26},{a:"M",b:"N",v:"25 cm",d:18},{a:"B",b:"C",v:"?",d:8}]},
+   q:"M ∈ [AB], N ∈ [AC], (MN) // (BC). <em>Calcule BC, en mètres.</em>",
+   ans:.75,unit:"m",rep:"BC = 0,75 m",
+   w:`Les unités ne se mélangent pas dans un rapport : <em>1,2 m = 120 cm</em>. D'après le théorème de Thalès : ${eq3([["AM","AB"],["MN","BC"]])}, donc ${eq3([["40","120"],["25","BC"]])}. Produit en croix : BC = (120 × 25) ÷ 40 = 75 cm, soit <em>0,75 m</em>.`},
+
+  {f:{...TRI2,t:.4,tN:.4,par:true,lens:[{a:"A",b:"M",v:"3",d:27},{a:"A",b:"B",v:"7,5",d:8},{a:"A",b:"N",v:"4",d:27},{a:"M",b:"N",v:"5",d:30},{a:"B",b:"C",v:"?",d:8}]},
+   q:"M ∈ [AB], N ∈ [AC], (MN) // (BC). Longueurs en cm. <em>Calcule BC.</em>",
+   ans:12.5,unit:"cm",rep:"BC = 12,5 cm",
+   w:`Quatre longueurs sont écrites, trois suffisent : <em>AN ne sert à rien ici</em>. Pour atteindre BC, on prend le rapport qui contient MN : ${eq3([["AM","AB"],["MN","BC"]])}, donc ${eq3([["3","7,5"],["5","BC"]])}. Produit en croix : BC = (7,5 × 5) ÷ 3 = <em>12,5 cm</em>.`},
+
+  {f:{...TRI,t:.4286,tN:.4286,par:true,lens:[{a:"A",b:"M",v:"3",d:23},{a:"A",b:"B",v:"7",d:34},{a:"M",b:"N",v:"5",d:26},{a:"B",b:"C",v:"?",d:8}]},
+   q:"M ∈ [AB], N ∈ [AC], (MN) // (BC). Longueurs en cm. <em>Calcule BC, arrondi au dixième.</em>",
+   ans:11.7,unit:"cm",rep:"BC ≈ 11,7 cm",arrondi:.1,
+   w:`${eq3([["AM","AB"],["MN","BC"]])}, donc ${eq3([["3","7"],["5","BC"]])}. Produit en croix : BC = (7 × 5) ÷ 3 = 35 ÷ 3 = 11,666… Le résultat ne tombe pas juste : on arrondit comme l'énoncé le demande, <em>BC ≈ 11,7 cm</em>.`},
+
+  {f:{...PAP,t:.6667,tN:.6667,par:true,lens:[{a:"A",b:"M",v:"4",d:15},{a:"M",b:"B",v:"10",d:22},{a:"A",b:"N",v:"3",d:15},{a:"M",b:"N",v:"9",d:20},{a:"B",b:"C",v:"?",d:8}]},
+   q:"(MB) et (NC) se coupent en A, (MN) // (BC). Longueurs en cm. <em>Calcule BC.</em>",
+   ans:13.5,unit:"cm",rep:"BC = 13,5 cm",
+   w:`Deux pièges d'un coup. D'abord <em>AB = MB − AM = 10 − 4 = 6 cm</em>, puisque A est entre M et B. Ensuite AN ne sert pas : c'est le rapport avec MN qu'il faut. ${eq3([["AM","AB"],["MN","BC"]])}, donc ${eq3([["4","6"],["9","BC"]])} et BC = (6 × 9) ÷ 4 = <em>13,5 cm</em>.`},
+
+  {f:{...TRI2,t:.4,tN:.4,par:true,lens:[{a:"B",b:"C",v:"15",d:15},{a:"M",b:"N",v:"?",d:18}]},
+   q:"M ∈ [AB], N ∈ [AC], (MN) // (BC), et on sait que AM/AB = 2/5. BC = 15 cm. <em>Calcule MN.</em>",
+   ans:6,unit:"cm",rep:"MN = 6 cm",rapport:.4,
+   w:`Le rapport est donné tout fait, pas besoin des longueurs de [AB]. D'après le théorème de Thalès, ${eq3([["AM","AB"],["MN","BC"]])} = ${frac("2","5")}, donc ${eq3([["MN","15"]])} = ${frac("2","5")}. Produit en croix : MN = (15 × 2) ÷ 5 = <em>6 cm</em>.`},
+
+  {f:{...MUR,t:.2,tN:.2,par:true,lens:[{a:"A",b:"M",v:"90 cm",d:20},{a:"A",b:"B",v:"4,5 m",d:26},{a:"M",b:"N",v:"1,2 m",d:-18},{a:"B",b:"C",v:"?",d:28}]},
+   q:"Un bâton et un arbre, tous deux verticaux, ont leur ombre qui finit au même point A : (MN) // (BC). <em>Calcule la hauteur BC de l'arbre, en mètres.</em>",
+   ans:6,unit:"m",rep:"BC = 6 m",
+   w:`Tout en centimètres d'abord : <em>90 cm, 450 cm, 120 cm</em>. D'après le théorème de Thalès : ${eq3([["AM","AB"],["MN","BC"]])}, donc ${eq3([["90","450"],["120","BC"]])}. Produit en croix : BC = (450 × 120) ÷ 90 = 600 cm, soit <em>6 m</em>. L'arbre mesure 6 mètres.`},
+
+  {f:{...TRI,t:.4,tN:.4,par:true,lens:[{a:"A",b:"M",v:"3",d:23},{a:"M",b:"B",v:"?",d:23},{a:"A",b:"N",v:"4",d:23},{a:"A",b:"C",v:"10",d:34}]},
+   q:"M ∈ [AB], N ∈ [AC], (MN) // (BC). Longueurs en cm. <em>Calcule MB.</em>",
+   ans:4.5,unit:"cm",rep:"MB = 4,5 cm",
+   w:`MB n'apparaît dans aucun rapport de Thalès : on passe par AB. ${eq3([["AM","AB"],["AN","AC"]])}, donc ${eq3([["3","AB"],["4","10"]])} et AB = (3 × 10) ÷ 4 = 7,5 cm. <em>MB = AB − AM = 7,5 − 3 = 4,5 cm.</em>`}
+];
+
+/* 2. la demonstration a remettre dans l'ordre. etapes = l'ordre attendu, intrus = l'etiquette de trop.
+   Ce tableau est aussi la source des redactions types de maths-memo.html : verifie-thales.mjs
+   controle que la fiche n'a pas derive. */
+const REDACTIONS=[
+  {cas:"Calculer une longueur, en triangle",
+   f:{...TRI,t:.5,tN:.5,par:true,lens:[{a:"A",b:"M",v:"3",d:19},{a:"A",b:"B",v:"6",d:30},{a:"A",b:"N",v:"4",d:19},{a:"A",b:"C",v:"?",d:30}]},
+   q:"M ∈ [AB], N ∈ [AC], (MN) // (BC). Longueurs en cm. <em>On cherche AC.</em>",
+   etapes:[
+     "Les points A, M, B sont alignés, ainsi que les points A, N, C.",
+     "Les droites (MN) et (BC) sont parallèles.",
+     "D'après le théorème de Thalès : AM/AB = AN/AC = MN/BC.",
+     "On remplace par les longueurs : 3/6 = 4/AC.",
+     "Produit en croix : AC = 6 × 4 ÷ 3.",
+     "Conclusion : AC = 8 cm."],
+   intrus:"D'après le théorème de Pythagore : AC² = AM² + AN².",
+   pourquoi:"Pythagore parle de triangle rectangle, et rien n'en donne un ici."},
+
+  {cas:"Calculer une longueur, en papillon",
+   f:{...PAP,t:.3333,tN:.3333,par:true,names:{A:"O",B:"B",C:"C",M:"M",N:"N"},lens:[{a:"A",b:"M",v:"3",d:28},{a:"A",b:"B",v:"9",d:15},{a:"A",b:"N",v:"2,5",d:-18},{a:"A",b:"C",v:"?",d:15}]},
+   q:"(MB) et (NC) se coupent en O, (MN) // (BC). Longueurs en cm. <em>On cherche OC.</em>",
+   etapes:[
+     "Les points M, O, B sont alignés, ainsi que les points N, O, C.",
+     "Les droites (MN) et (BC) sont parallèles.",
+     "D'après le théorème de Thalès : OM/OB = ON/OC = MN/BC.",
+     "On remplace par les longueurs : 3/9 = 2,5/OC.",
+     "Produit en croix : OC = 9 × 2,5 ÷ 3.",
+     "Conclusion : OC = 7,5 cm."],
+   intrus:"Les triangles OMN et OBC sont isocèles.",
+   pourquoi:"Rien ne dit qu'ils le sont, et le théorème n'en a pas besoin."},
+
+  {cas:"Prouver que deux droites sont parallèles",paralleles:true,
+   f:{...TRI,t:.75,tN:.75,dash:true,lens:[{a:"A",b:"M",v:"3",d:15},{a:"A",b:"B",v:"4",d:26},{a:"A",b:"N",v:"4,5",d:15},{a:"A",b:"C",v:"6",d:26}]},
+   q:"M ∈ [AB], N ∈ [AC]. Longueurs en cm. <em>Les droites (MN) et (BC) sont-elles parallèles ?</em>",
+   etapes:[
+     "Les points A, M, B sont alignés, ainsi que les points A, N, C, et dans le même ordre.",
+     "On calcule le premier rapport : AM/AB = 3/4 = 0,75.",
+     "On calcule le second rapport : AN/AC = 4,5/6 = 0,75.",
+     "Les deux rapports sont égaux.",
+     "D'après la réciproque du théorème de Thalès, les droites (MN) et (BC) sont parallèles."],
+   intrus:"D'après le théorème de Thalès, les droites (MN) et (BC) sont parallèles.",
+   pourquoi:"Le théorème part du parallélisme pour donner des rapports ; ici on fait le chemin inverse, c'est donc la réciproque."},
+
+  {cas:"Prouver que deux droites ne sont pas parallèles",paralleles:false,
+   f:{...TRI2,t:.4,tN:.375,dash:true,lens:[{a:"A",b:"M",v:"2",d:19},{a:"A",b:"B",v:"5",d:8},{a:"A",b:"N",v:"3",d:19},{a:"A",b:"C",v:"8",d:30}]},
+   q:"M ∈ [AB], N ∈ [AC]. Longueurs en cm. <em>Les droites (MN) et (BC) sont-elles parallèles ?</em>",
+   etapes:[
+     "Les points A, M, B sont alignés, ainsi que les points A, N, C.",
+     "On calcule le premier rapport : AM/AB = 2/5 = 0,4.",
+     "On calcule le second rapport : AN/AC = 3/8 = 0,375.",
+     "Les deux rapports sont différents : 0,4 ≠ 0,375.",
+     "Si les droites étaient parallèles, le théorème de Thalès imposerait des rapports égaux.",
+     "Les droites (MN) et (BC) ne sont donc pas parallèles."],
+   intrus:"Les deux rapports sont égaux, donc les droites sont parallèles.",
+   pourquoi:"C'est la conclusion inverse, celle qu'on écrirait sans avoir comparé les deux nombres."},
+
+  {cas:"Prouver que deux triangles sont semblables",
+   duo:{tris:[
+     {P:[{x:28,y:170,n:"A"},{x:125,y:170,n:"B"},{x:95,y:84,n:"C"}],angs:[{at:0,v:"52°",c:0},{at:1,v:"71°",c:1}]},
+     {P:[{x:162,y:195,n:"D"},{x:300,y:195,n:"E"},{x:258,y:72,n:"F"}],angs:[{at:0,v:"52°",c:0},{at:1,v:"71°",c:1}]}]},
+   q:"Deux angles sont donnés dans chaque triangle. <em>Les triangles ABC et DEF sont-ils semblables ?</em>",
+   etapes:[
+     "Dans le triangle ABC : l'angle en A mesure 52° et l'angle en B mesure 71°.",
+     "Dans le triangle DEF : l'angle en D mesure 52° et l'angle en E mesure 71°.",
+     "Les angles A et D sont égaux, les angles B et E aussi.",
+     "Le troisième angle vaut alors 180° − 52° − 71° = 57° dans les deux triangles.",
+     "Deux angles égaux deux à deux suffisent : les triangles ABC et DEF sont semblables."],
+   intrus:"Les côtés AB et DE ont la même longueur.",
+   pourquoi:"Semblables ne veut pas dire égaux : les longueurs peuvent être multipliées par n'importe quel coefficient."},
+
+  {cas:"Calculer une aire après agrandissement",
+   f:{...TRI,t:.3333,tN:.3333,par:true,lens:[{a:"A",b:"M",v:"1 part",d:15},{a:"A",b:"B",v:"3 parts",d:26}]},
+   q:"M ∈ [AB], N ∈ [AC], (MN) // (BC), avec AM/AB = 1/3. L'aire de ABC vaut 45 cm². <em>On cherche l'aire de AMN.</em>",
+   etapes:[
+     "Les droites (MN) et (BC) sont parallèles, donc les triangles AMN et ABC sont semblables.",
+     "Le coefficient de réduction vaut k = AM/AB = 1/3.",
+     "Les longueurs sont multipliées par k, mais les aires par k².",
+     "L'aire de AMN vaut donc 45 × (1/3)² = 45 × 1/9.",
+     "Conclusion : l'aire de AMN vaut 5 cm²."],
+   intrus:"Les aires sont dans le même rapport que les longueurs.",
+   pourquoi:"C'est l'erreur classique : une réduction de rapport 1/3 divise les aires par 9, pas par 3."}
+];
+
+/* 3. agrandissement et reduction : ce qui suit k, ce qui suit k carre, ce qui suit k cube */
+const AGRANDIR=[
+  {kind:"qcm",q:"Un triangle est agrandi avec un coefficient <em>k = 3</em>. Par combien son aire est-elle multipliée ?",
+   ch:["3","9","27"],good:1,rep:"Par 9",
+   w:"Les longueurs sont multipliées par k, les aires par <em>k²</em>. Ici k² = 3² = 9."},
+  {kind:"qcm",q:"Un solide est agrandi avec un coefficient <em>k = 2</em>. Par combien son volume est-il multiplié ?",
+   ch:["2","4","8"],good:2,rep:"Par 8",
+   w:"Les volumes suivent <em>k³</em>. Ici k³ = 2³ = 8. Une maquette deux fois plus grande contient huit fois plus de matière."},
+  {kind:"qcm",q:"Une figure est agrandie avec un coefficient <em>k = 4</em>. Par combien son périmètre est-il multiplié ?",
+   ch:["4","16","64"],good:0,rep:"Par 4",
+   w:"Le périmètre est une <em>longueur</em> : il suit k, comme tous les côtés. Seules les aires suivent k², et les volumes k³."},
+  {kind:"num",q:"Le triangle AMN a pour aire 12 cm². Le triangle ABC en est un agrandissement de coefficient <em>k = 2</em>. Quelle est l'aire de ABC ?",
+   ans:48,unit:"cm²",rep:"48 cm²",
+   w:"L'aire est multipliée par k² = 4, donc <em>12 × 4 = 48 cm²</em>."},
+  {kind:"num",q:"Deux triangles semblables ont pour aires 9 cm² et 36 cm². Quel est le coefficient d'agrandissement k ?",
+   ans:2,unit:"",rep:"k = 2",
+   w:"Le rapport des aires vaut 36 ÷ 9 = 4, et ce rapport est k². Donc <em>k = √4 = 2</em> : on remonte des aires aux longueurs par une racine carrée."},
+  {kind:"num",q:"Une maquette est réalisée à l'échelle 1/50. Un bâtiment mesure 12 m de long. Quelle est sa longueur sur la maquette, en cm ?",
+   ans:24,unit:"cm",rep:"24 cm",
+   w:"12 m = 1200 cm, et l'échelle 1/50 divise les longueurs par 50 : <em>1200 ÷ 50 = 24 cm</em>."},
+  {kind:"num",q:"M ∈ [AB], N ∈ [AC], (MN) // (BC), avec AM/AB = 1/3. L'aire du triangle ABC vaut 45 cm². Quelle est l'aire du triangle AMN ?",
+   ans:5,unit:"cm²",rep:"5 cm²",
+   w:"Les deux triangles sont semblables, de coefficient k = 1/3. Les aires suivent k² = 1/9, donc <em>45 ÷ 9 = 5 cm²</em>."},
+  {kind:"num",q:"Une pyramide de volume 250 cm³ est réduite avec un coefficient <em>k = 0,2</em>. Quel est le volume de la réduction ?",
+   ans:2,unit:"cm³",rep:"2 cm³",
+   w:"Le volume suit k³ = 0,2³ = 0,008, donc <em>250 × 0,008 = 2 cm³</em>. Une réduction au cinquième divise le volume par 125."}
+];
+
+/* 4. les sujets de brevet : un enonce, une figure, trois questions enchainees.
+   rappel : la phrase affichee en tete de la question suivante, toujours avec la bonne valeur. */
+const SUJETS=[
+  {titre:"L'arbre et son ombre",
+   contexte:"En fin d'après-midi, un arbre et un bâton planté verticalement ont leur ombre qui se termine au même point A. Le bâton [MN] mesure 1,5 m et son ombre [AM] mesure 2 m. L'ombre de l'arbre, [AB], mesure 8 m.",
+   fig:{...MUR,t:.25,tN:.25,par:true,lens:[{a:"A",b:"M",v:"2 m",d:20},{a:"A",b:"B",v:"8 m",d:26},{a:"M",b:"N",v:"1,5 m",d:26},{a:"B",b:"C",v:"?",d:28}]},
+   questions:[
+     {kind:"num",q:"<em>Calcule la hauteur BC de l'arbre, en mètres.</em>",ans:6,unit:"m",rep:"BC = 6 m",
+      w:"Les points A, M, B sont alignés, A, N, C aussi, et (MN) // (BC). D'après le théorème de Thalès : AM/AB = MN/BC, donc 2/8 = 1,5/BC et BC = (8 × 1,5) ÷ 2 = <em>6 m</em>.",
+      rappel:"Tu as trouvé que l'arbre mesure 6 m."},
+     {kind:"num",q:"Au même moment, on plante au même endroit un panneau vertical de 3 m. <em>Quelle est la longueur de son ombre, en mètres ?</em>",ans:4,unit:"m",rep:"L'ombre mesure 4 m",
+      w:"Au même moment, le rapport ombre ÷ hauteur est le même pour tous les objets verticaux : pour le bâton, 2 ÷ 1,5 = 4/3. Pour le panneau : <em>3 × 4/3 = 4 m</em>.",
+      rappel:"L'ombre du panneau de 3 m mesure 4 m."},
+     {kind:"qcm",q:"<em>Pourquoi a-t-on le droit d'appliquer le théorème de Thalès dans cette situation ?</em>",
+      ch:["Parce que le bâton et l'arbre sont verticaux, donc parallèles, et que les deux ombres partent du même point A.",
+          "Parce que l'arbre est plus grand que le bâton.",
+          "Parce que le triangle ABC est rectangle en B."],
+      good:0,rep:"Verticaux donc parallèles, et un sommet commun",
+      w:"Thalès demande deux choses, et seulement deux : des points alignés (le sommet commun A et les deux ombres sur le sol) et des droites parallèles (les deux objets verticaux). Que le triangle soit rectangle ne sert à rien ici."}]},
+
+  {titre:"L'échelle contre le mur",
+   contexte:"Une échelle [AC] est appuyée contre un mur vertical. Son pied A est à 1,8 m du mur, et elle touche le mur en C, à 2,4 m du sol. Un poteau vertical [MN] est planté entre le pied de l'échelle et le mur, à 0,6 m du pied.",
+   fig:{...MUR,t:.3333,tN:.3333,par:true,lens:[{a:"A",b:"M",v:"0,6 m",d:22},{a:"A",b:"B",v:"1,8 m",d:22},{a:"M",b:"N",v:"?",d:20},{a:"B",b:"C",v:"2,4 m",d:24}]},
+   questions:[
+     {kind:"num",q:"Le poteau touche l'échelle en N. <em>Calcule la hauteur MN du poteau, en mètres.</em>",ans:.8,unit:"m",rep:"MN = 0,8 m",
+      w:"Le poteau et le mur sont tous deux verticaux, donc (MN) // (BC). D'après le théorème de Thalès : AM/AB = MN/BC, donc 0,6/1,8 = MN/2,4 et MN = (2,4 × 0,6) ÷ 1,8 = <em>0,8 m</em>.",
+      rappel:"Tu as trouvé MN = 0,8 m."},
+     {kind:"num",q:"Le triangle ABC est rectangle en B. <em>Calcule la longueur AC de l'échelle, en mètres.</em>",ans:3,unit:"m",rep:"AC = 3 m",
+      w:"Ici Thalès ne sert plus, c'est Pythagore : AC² = AB² + BC² = 1,8² + 2,4² = 3,24 + 5,76 = 9, donc <em>AC = √9 = 3 m</em>.",
+      rappel:"L'échelle mesure 3 m."},
+     {kind:"qcm",q:"Une règle de sécurité veut que le pied de l'échelle soit écarté du mur d'environ le quart de sa longueur. <em>Cette échelle est-elle bien placée ?</em>",
+      ch:["Non : le quart de 3 m vaut 0,75 m, et le pied est à 1,8 m du mur, bien trop loin.",
+          "Oui : 1,8 m, c'est à peu près le quart de 3 m.",
+          "On ne peut pas savoir sans connaître la hauteur du mur."],
+      good:0,rep:"Non, elle est beaucoup trop écartée",
+      w:"Le quart de 3 m vaut 0,75 m. Le pied est à 1,8 m, soit plus du double : l'échelle est trop couchée et risque de glisser."}]},
+
+  {titre:"La maquette de la maison",
+   contexte:"Une maquette de maison est réalisée à l'échelle 1/40. Le pignon (le mur triangulaire sous le toit) est représenté par le triangle DEF sur la maquette, et par le triangle ABC en vrai.",
+   duo:{tris:[
+     {P:[{x:22,y:180,n:"D"},{x:120,y:180,n:"E"},{x:71,y:112,n:"F"}],lens:[{a:0,b:1,v:"25 cm"}]},
+     {P:[{x:170,y:192,n:"A"},{x:300,y:192,n:"B"},{x:235,y:102,n:"C"}],lens:[{a:0,b:1,v:"?"}]}]},
+   questions:[
+     {kind:"num",q:"Sur la maquette, la base [DE] du pignon mesure 25 cm. <em>Combien mesure la base [AB] en vrai, en mètres ?</em>",ans:10,unit:"m",rep:"AB = 10 m",
+      w:"L'échelle 1/40 veut dire que le vrai est 40 fois plus grand que la maquette : 25 × 40 = 1000 cm, soit <em>10 m</em>.",
+      rappel:"En vrai, la base mesure 10 m."},
+     {kind:"num",q:"La hauteur réelle du pignon est de 4 m. <em>Combien mesure-t-elle sur la maquette, en cm ?</em>",ans:10,unit:"cm",rep:"10 cm",
+      w:"Cette fois on divise par 40 : 4 m = 400 cm, et <em>400 ÷ 40 = 10 cm</em>.",
+      rappel:"Sur la maquette, la hauteur du pignon est de 10 cm."},
+     {kind:"num",q:"Le pignon réel a une aire de 20 m². <em>Quelle est son aire sur la maquette, en cm² ?</em>",ans:125,unit:"cm²",rep:"125 cm²",
+      w:"Les aires ne suivent pas k mais k². 20 m² = 200 000 cm², et il faut diviser par 40² = 1600 : <em>200 000 ÷ 1600 = 125 cm²</em>. Diviser par 40 seulement aurait donné 5000 cm², quarante fois trop."}]},
+
+  {titre:"Le terrain à partager",
+   contexte:"Un terrain triangulaire ABC doit être partagé par un chemin rectiligne [MN] parallèle au côté [BC]. Le point M est sur [AB], le point N sur [AC]. On sait que AB = 60 m, AM = 24 m et BC = 45 m.",
+   fig:{...TRI2,t:.4,tN:.4,par:true,lens:[{a:"A",b:"M",v:"24 m",d:31},{a:"A",b:"B",v:"60 m",d:8},{a:"M",b:"N",v:"?",d:34},{a:"B",b:"C",v:"45 m",d:8}]},
+   questions:[
+     {kind:"num",q:"<em>Calcule la longueur MN du chemin, en mètres.</em>",ans:18,unit:"m",rep:"MN = 18 m",
+      w:"D'après le théorème de Thalès : AM/AB = MN/BC, donc 24/60 = MN/45 et MN = (45 × 24) ÷ 60 = <em>18 m</em>.",
+      rappel:"Tu as trouvé MN = 18 m."},
+     {kind:"num",q:"<em>Calcule la longueur MB, en mètres.</em>",ans:36,unit:"m",rep:"MB = 36 m",
+      w:"MB ne se lit dans aucun rapport de Thalès, mais M est sur [AB] : <em>MB = AB − AM = 60 − 24 = 36 m</em>.",
+      rappel:"MB mesure 36 m."},
+     {kind:"num",q:"L'aire du terrain ABC vaut 900 m². <em>Quelle est l'aire de la parcelle AMN, en m² ?</em>",ans:144,unit:"m²",rep:"144 m²",
+      w:"Les triangles AMN et ABC sont semblables, de coefficient k = 24/60 = 0,4. Les aires suivent k² = 0,16 : <em>900 × 0,16 = 144 m²</em>."}]},
+
+  {titre:"La rampe d'accès",
+   contexte:"Une rampe droite [AC] mène du sol jusqu'à une porte surélevée. Le pied de la rampe est en A, la porte est en C, au-dessus du point B. La rampe couvre AB = 4,8 m au sol et monte de BC = 1,4 m. Un poteau vertical [MN] la soutient à 2,4 m du pied.",
+   fig:{...RAMPE,t:.5,tN:.5,par:true,lens:[{a:"A",b:"M",v:"2,4 m",d:14},{a:"A",b:"B",v:"4,8 m",d:24},{a:"M",b:"N",v:"?",d:16},{a:"B",b:"C",v:"1,4 m",d:22}]},
+   questions:[
+     {kind:"num",q:"<em>Calcule la hauteur MN du poteau, en mètres.</em>",ans:.7,unit:"m",rep:"MN = 0,7 m",
+      w:"Le poteau et la façade sont verticaux, donc (MN) // (BC). D'après le théorème de Thalès : AM/AB = MN/BC, donc 2,4/4,8 = MN/1,4 et MN = (1,4 × 2,4) ÷ 4,8 = <em>0,7 m</em>. Le poteau est à mi-chemin, il fait la moitié de la hauteur.",
+      rappel:"Tu as trouvé MN = 0,7 m."},
+     {kind:"num",q:"Le triangle ABC est rectangle en B. <em>Calcule la longueur AC de la rampe, en mètres.</em>",ans:5,unit:"m",rep:"AC = 5 m",
+      w:"Pythagore : AC² = AB² + BC² = 4,8² + 1,4² = 23,04 + 1,96 = 25, donc <em>AC = √25 = 5 m</em>.",
+      rappel:"La rampe mesure 5 m de long."},
+     {kind:"qcm",q:"La pente vaut la hauteur divisée par la longueur au sol. La réglementation impose au plus 5 % pour un fauteuil roulant. <em>Cette rampe est-elle conforme ?</em>",
+      ch:["Non : 1,4 ÷ 4,8 ≈ 0,29, soit environ 29 %, très au-dessus de 5 %.",
+          "Oui : 1,4 ÷ 4,8 ≈ 0,29, soit environ 3 %.",
+          "Oui, puisque la rampe mesure 5 m, ce qui est assez long."],
+      good:0,rep:"Non, la pente est d'environ 29 %",
+      w:"1,4 ÷ 4,8 ≈ 0,2917, soit <em>29 %</em> environ : presque six fois la pente autorisée. Pour 5 %, il faudrait étaler la rampe sur 28 m."}]}
+];
+
+/* ============ gamification ============ */
+const SHEET_URL="https://script.google.com/macros/s/AKfycbwB53nfh6Xk_z1Gn4ck_WL8aX0gPxDzQ2MpxWVnpsdunmWR_IKj-tHPHOEVkP614jQJ/exec";
+function appareil(){
+  const ua=navigator.userAgent, n=navigator, e=screen;
+  const tactile=(n.maxTouchPoints||0)>0, cote=Math.max(e.width,e.height);
+  const os=/iPhone|iPod/.test(ua)?"iOS":/iPad/.test(ua)?"iPadOS":/Android/.test(ua)?"Android":/Windows/.test(ua)?"Windows":/Mac OS X/.test(ua)?(tactile?"iPadOS":"macOS"):/Linux/.test(ua)?"Linux":"autre";
+  let nom="autre";
+  for(const [cle,val] of [["Edg","Edge"],["OPR","Opera"],["CriOS","Chrome"],["FxiOS","Firefox"],["Firefox","Firefox"],["Chrome","Chrome"],["Version","Safari"]]){
+    const m=ua.match(new RegExp(cle+"\\/(\\d+)")); if(m){nom=val+" "+m[1];break;}
+  }
+  const type=!tactile?"ordinateur":(os==="iPadOS"||(os==="Android"&&!/Mobile/.test(ua))||cote>=1000)?"tablette":"mobile";
+  return {appareil:type,os,navigateur:nom,ecran:e.width+"x"+e.height,fenetre:innerWidth+"x"+innerHeight,dpr:devicePixelRatio||1,tactile,langue:n.language||"",ua};
+}
+function logResult(game,score,good,total,secs){
+  try{fetch(SHEET_URL,{method:"POST",mode:"no-cors",body:JSON.stringify(Object.assign({page:"thales-brevet",game,score,good,total,secs},appareil()))});}catch(e){}
+}
+const CHEERS=[["🎉","Bravo !"],["⭐","Super !"],["🚀","Excellent !"],["🏆","Champion !"],["📐","Thalès applaudit !"],["🔥","Trop fort !"],["🌟","Génial !"],["🧮","Compte rond, bien joué !"]];
+const OOPS=[["😅","Oups, presque !"],["🙈","Pas cette fois !"],["🤔","Hmm, relis l'énoncé..."],["🐢","On y va doucement !"],["🧐","Presque ! Lis la correction."]];
+function confetti(host){
+  const cols=["#e63946","#f4a261","#2a9d8f","#457b9d","#ffd166","#9b5de5","#06d6a0"];
+  for(let i=0;i<22;i++){
+    const p=document.createElement("i");p.className="confetti";
+    const ang=Math.random()*Math.PI*2, d=60+Math.random()*90;
+    p.style.setProperty("--dx",Math.cos(ang)*d+"px");
+    p.style.setProperty("--dy",(Math.sin(ang)*d-40)+"px");
+    p.style.background=rnd(cols);
+    p.style.animationDelay=(Math.random()*.15)+"s";
+    host.appendChild(p);
+  }
+}
+function bilanHTML(st,titreOk){
+  const good=st.list.length-st.errs.length;
+  return `<div class="bilan">
+    <h2>${good===st.list.length?"🏆 Sans faute, incroyable !":good>=st.list.length*.8?"🌟 Bravo, belle manche !":good>=st.list.length/2?"👍 Pas mal du tout !":"💪 Continue, tu progresses !"}</h2>
+    <p class="bigscore">${st.score}</p>
+    <p class="meta">${good} bonnes réponses sur ${st.list.length}, en ${chrono(st.secs)}.</p>
+    ${st.errs.length?`<p class="section-title">À revoir</p><ul class="errlist">${st.errs.map(e=>`
+      <li><span class="rep">${e.rep}</span> ${e.w}</li>`).join("")}</ul>`
+    :`<p class="section-title">Sans faute</p><p style="margin-top:8px">${titreOk}</p>`}
+    <div class="row-end"><button class="btn ghost" id="again">Nouvelle manche</button></div>
+  </div>`;
+}
+
+/* ============ le constructeur de manche ============ */
+/* Reprend celui des carnets de physique-chimie, avec deux ajouts :
+   - kind "ordre" : remettre des etiquettes dans le bon ordre, une intruse dans le tas ;
+   - o.deplier : une entree de donnees peut produire plusieurs questions consecutives, qui
+     restent groupees et dans leur ordre (manche Brevet). */
+function creeManche(o){
+  const st={list:[],i:0,score:0,errs:[],t0:0,streak:0,secs:0};
+  const hote=$(o.panel);
+  function verdict(ok){
+    const v=hote.querySelector(".react");
+    const [emo,msg]=ok?rnd(CHEERS):rnd(OOPS);
+    st.streak=ok?st.streak+1:0;
+    v.className="react "+(ok?"yes":"no");
+    v.innerHTML=`<span class="emo" role="img" aria-label="${ok?"Bonne réponse":"Mauvaise réponse"}">${emo}</span><span class="msg">${msg}</span>`+
+      (st.streak>=3?`<span class="streak">🔥 ${st.streak} d'affilée !</span>`:"");
+    if(ok)confetti(v);
+  }
+  function intro(){
+    hote.innerHTML=`<div class="intro"><h2>${o.titre}</h2><p>${o.texte}</p><button class="btn">Commencer la manche</button></div>`;
+    hote.querySelector(".btn").onclick=lance;
+  }
+  function lance(){
+    const base=o.tirage?o.tirage(o.donnees):shuffle(o.donnees);
+    st.list=o.deplier?base.flatMap(o.deplier):base;
+    st.i=0;st.score=0;st.errs=[];st.streak=0;st.t0=Date.now();etape();
+  }
+  function etape(){
+    if(st.i>=st.list.length)return fin();
+    const q=(o.prep||(x=>x))(st.list[st.i]);
+    hote.innerHTML=`
+      <div class="status"><span>Question <b>${st.i+1}</b>/${st.list.length}</span><span class="grow"></span><span>Points <b class="pts">${st.score}</b></span></div>
+      <div class="carte">
+        <div class="react"></div>
+        <p class="annot">${q.annot}</p>
+        ${q.contexte?`<p class="contexte">${q.contexte}</p>`:""}
+        ${q.fig?`<div class="fig">${q.fig}</div><p class="echelle">Figure pas à l'échelle</p>`:""}
+        ${q.rappel?`<span class="rappel">${q.rappel}</span>`:""}
+        <p class="hyp">${q.q}</p>
+        <p class="why"></p>
+      </div>
+      ${zoneReponse(q)}
+      <div class="row-end"><button class="btn hidden suiv">Suivante</button></div>`;
+    function revele(ok,saisie){
+      verdict(ok);
+      hote.querySelector(".carte").classList.add("revealed");
+      hote.querySelector(".annot").textContent=q.rep;
+      hote.querySelector(".why").innerHTML=(ok?"":`<em>Non${saisie?", tu as répondu "+saisie:""}. </em>`)+q.w;
+      hote.querySelector(".pts").textContent=st.score;
+      const n=hote.querySelector(".suiv");n.classList.remove("hidden");
+      n.textContent=st.i===st.list.length-1?"Voir le bilan":"Suivante";
+      n.onclick=()=>{st.i++;etape();};
+      n.focus({preventScroll:true});
+    }
+    function compte(ok){
+      if(ok)st.score+=10;else st.errs.push({rep:q.rep,w:q.w});
+    }
+    if(q.kind==="num")brancheSaisie(q,compte,revele);
+    else if(q.kind==="ordre")brancheOrdre(q,compte,revele);
+    else brancheQcm(q,compte,revele);
+  }
+  function zoneReponse(q){
+    if(q.kind==="num")
+      return `<div class="answer"><input inputmode="decimal" autocomplete="off" placeholder="Ta réponse"><span class="unit">${q.unit}</span><button class="btn ok">Valider</button></div>`;
+    if(q.kind==="ordre")
+      return `<ol class="bande"></ol><p class="vide">Tape les étapes dans l'ordre. Une étiquette de trop s'est glissée dans la liste.</p>
+        <div class="tas">${q.melange.map((t,k)=>`<button class="etiq" data-k="${k}">${t}</button>`).join("")}</div>
+        <div class="row-end"><button class="btn valider" disabled>Valider</button></div>`;
+    return `<div class="choices-eq">${q.ch.map((c,k)=>`<button class="choice${q.txt?" txt":""}" data-k="${k}">${c}</button>`).join("")}</div>`;
+  }
+  function brancheSaisie(q,compte,revele){
+    const input=hote.querySelector(".answer input");input.focus({preventScroll:true});
+    function valider(){
+      const v=parseFloat(input.value.replace(",",".").trim());
+      if(!isFinite(v)){input.value="";input.placeholder="Écris un nombre";return;}
+      const ok=Math.abs(v-q.ans)<=0.011;
+      compte(ok);
+      input.disabled=true;hote.querySelector(".answer .btn").disabled=true;
+      revele(ok,esc(input.value));
+    }
+    hote.querySelector(".answer .btn").onclick=valider;
+    input.addEventListener("keydown",e=>{if(e.key==="Enter")valider();});
+  }
+  function brancheQcm(q,compte,revele){
+    hote.querySelectorAll(".choice").forEach(b=>{
+      b.onclick=()=>{
+        const ok=+b.dataset.k===q.good;
+        compte(ok);
+        hote.querySelectorAll(".choice").forEach(x=>{
+          x.disabled=true;
+          if(+x.dataset.k===q.good)x.classList.add("good");
+          else if(x===b)x.classList.add("bad");
+          else x.classList.add("dim");
+        });
+        revele(ok,"");
+      };
+    });
+  }
+  function brancheOrdre(q,compte,revele){
+    const bande=hote.querySelector(".bande"), tas=hote.querySelector(".tas"),
+          vide=hote.querySelector(".vide"), valider=hote.querySelector(".valider");
+    const choisi=[];
+    function dessine(){
+      bande.innerHTML=choisi.map((k,rang)=>`<li data-rang="${rang}">${q.melange[k]}</li>`).join("");
+      vide.classList.toggle("hidden",choisi.length>0);
+      tas.querySelectorAll(".etiq").forEach(b=>b.classList.toggle("used",choisi.includes(+b.dataset.k)));
+      valider.disabled=choisi.length===0;
+      bande.querySelectorAll("li").forEach(li=>{
+        li.onclick=()=>{choisi.splice(+li.dataset.rang,1);dessine();};
+      });
+    }
+    tas.querySelectorAll(".etiq").forEach(b=>{
+      b.onclick=()=>{const k=+b.dataset.k;if(!choisi.includes(k)){choisi.push(k);dessine();}};
+    });
+    dessine();
+    valider.onclick=()=>{
+      const rendu=choisi.map(k=>q.melange[k]);
+      const ok=rendu.length===q.etapes.length && rendu.every((t,i)=>t===q.etapes[i]);
+      compte(ok);
+      tas.querySelectorAll(".etiq").forEach(b=>b.disabled=true);
+      valider.disabled=true;
+      bande.querySelectorAll("li").forEach((li,rang)=>{
+        li.onclick=null;li.classList.add("fige");
+        if(rendu[rang]!==q.etapes[rang])li.classList.add("bad");
+      });
+      revele(ok,"");
+    };
+  }
+  function fin(){
+    st.secs=Math.round((Date.now()-st.t0)/1000);
+    logResult(o.game,st.score,st.list.length-st.errs.length,st.list.length,st.secs);
+    hote.innerHTML=bilanHTML(st,o.bravo);
+    hote.querySelector("#again").onclick=lance;
+  }
+  return {intro};
+}
+
+/* ============ les manches ============ */
+const MANCHES={
+  etapes:creeManche({panel:"#etapes",game:"etapes",donnees:ETAPES,
+    titre:"Deux opérations, pas une.",
+    texte:"Dix calculs où Thalès ne suffit pas tout seul : une longueur à reconstituer, des unités à convertir, une donnée en trop. Lis la figure avant de te lancer.",
+    bravo:"Rien à revoir. Passe à Rédiger : au contrôle, le résultat seul ne rapporte presque rien.",
+    prep:q=>({...q,kind:"num",annot:"À toi de calculer",fig:figSVG(q.f)})}),
+
+  rediger:creeManche({panel:"#rediger",game:"rediger",donnees:REDACTIONS,
+    titre:"La démonstration, dans l'ordre.",
+    texte:"Six démonstrations mises en pièces. Remets les étapes dans l'ordre, et laisse de côté l'étiquette qui n'a rien à faire là. C'est exactement ce qu'on attend de toi sur une copie.",
+    bravo:"Rien à revoir. Tu sais rédiger : direction les agrandissements.",
+    prep:q=>({...q,kind:"ordre",annot:"Remets la démonstration dans l'ordre",
+      fig:q.f?figSVG(q.f):(q.duo?figDuoSVG(q.duo):null),
+      melange:shuffle([...q.etapes,q.intrus]),
+      rep:"La démonstration, dans l'ordre :",
+      w:`<ol class="demo">${q.etapes.map(e=>`<li>${e}</li>`).join("")}</ol><p style="margin:8px 0 0"><em>L'intruse :</em> « ${q.intrus} » ${q.pourquoi}</p>`})}),
+
+  agrandir:creeManche({panel:"#agrandir",game:"agrandir",donnees:AGRANDIR,
+    titre:"k, k² et k³.",
+    texte:"Huit questions sur l'agrandissement et la réduction. Les longueurs suivent k, les aires k², les volumes k³ : tout l'enjeu est de savoir lequel des trois s'applique.",
+    bravo:"Rien à revoir. Dernière manche : des sujets entiers, comme au brevet.",
+    prep:q=>({...q,annot:q.kind==="num"?"À toi de calculer":"Agrandir ou réduire",fig:null})}),
+
+  brevet:creeManche({panel:"#brevet",game:"brevet",donnees:SUJETS,
+    titre:"Des sujets entiers.",
+    texte:"Trois sujets tirés au sort, trois questions chacun sur la même figure. La réponse d'une question sert à la suivante : si tu te trompes, la bonne valeur t'est rappelée pour continuer.",
+    bravo:"Rien à revoir. Thalès, sa réciproque, les agrandissements, les sujets complets : le chapitre est à toi.",
+    tirage:d=>pick(d,3),
+    deplier:s=>s.questions.map((q,i)=>({...q,
+      annot:s.titre,
+      contexte:i===0?s.contexte:null,
+      fig:s.fig?figSVG(s.fig):(s.duo?figDuoSVG(s.duo):null),
+      rappel:i===0?null:s.questions[i-1].rappel,
+      txt:true})),
+  }),
+  /* fin des manches */
+};
+
+/* onglets */
+document.querySelectorAll(".tab").forEach(t=>{
+  t.addEventListener("click",()=>{
+    document.querySelectorAll(".tab").forEach(x=>x.setAttribute("aria-selected",x===t));
+    document.querySelectorAll(".panel").forEach(p=>p.classList.toggle("on",p.id===t.dataset.panel));
+    MANCHES[t.dataset.panel].intro();
+    window.scrollTo({top:0,behavior:"smooth"});
+  });
+});
+
+MANCHES.etapes.intro();
+</script>
+</body>
+</html>

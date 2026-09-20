@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Le mémo de maths</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F5F6F1;
+  --paper-2:#FCFCFA;
+  --rule:#BFD3E4;
+  --rule-soft:#DDE7F0;
+  --marge:#DE5B4A;
+  --ink:#16233B;
+  --ink-soft:#5E6E85;
+  --maths:#1B6F55;
+  --serif:"Instrument Serif", Georgia, "Times New Roman", serif;
+  --sans:"Karla", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:16px;
+  line-height:1.5;
+  min-height:100vh;
+  padding:0 0 40px;
+}
+.wrap{max-width:560px;margin:0 auto;padding:0 14px}
+
+/* ---------- en-tete ---------- */
+header{padding:26px 0 14px}
+.topbar{display:flex;align-items:center;gap:14px;margin:0 0 6px}
+.topbar .eyebrow{margin:0}
+.home{
+  font-family:var(--sans);font-size:13px;font-weight:700;text-decoration:none;color:var(--ink);
+  border:1px solid var(--rule);border-radius:999px;padding:6px 12px;background:var(--paper,transparent);
+  transition:background .2s,transform .2s
+}
+.home:hover{background:var(--rule-soft);transform:translateY(-1px)}
+.eyebrow{
+  font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-soft);font-weight:700;margin:0 0 6px
+}
+h1{
+  font-family:var(--serif);font-weight:400;font-size:34px;line-height:1.05;
+  margin:0 0 4px;letter-spacing:-.01em
+}
+h1 em{font-style:italic;color:var(--maths)}
+.sub{margin:0;color:var(--ink-soft);font-size:14px}
+
+/* ---------- onglets ---------- */
+nav{display:flex;gap:6px;margin:18px 0 0;align-items:flex-end}
+.tab{
+  flex:1;border:1px solid var(--rule);border-bottom:none;
+  background:#EDEFE9;color:var(--ink-soft);
+  font-family:var(--sans);font-size:12.5px;font-weight:700;
+  padding:11px 3px 10px;border-radius:9px 9px 0 0;cursor:pointer;
+  letter-spacing:.01em;transition:background .15s,color .15s,transform .15s
+}
+.tab:hover{color:var(--ink)}
+.tab[aria-selected="true"]{background:var(--paper-2);color:var(--ink);transform:translateY(1px);box-shadow:0 -2px 0 var(--maths) inset}
+
+/* ---------- feuille ---------- */
+.sheet{
+  position:relative;background:var(--paper-2);
+  border:1px solid var(--rule);border-radius:0 0 10px 10px;
+  padding:22px 16px 20px 30px;overflow:hidden;
+  background-image:repeating-linear-gradient(to bottom,transparent 0 31px,var(--rule-soft) 31px 32px);
+  background-position:0 8px;
+}
+.sheet::before{
+  content:"";position:absolute;top:0;bottom:0;left:20px;width:1px;background:var(--marge);opacity:.5
+}
+.panel{display:none}
+.panel.on{display:block}
+
+/* ---------- aiguillage ---------- */
+.aiguillage{width:100%;border-collapse:collapse;margin:0 0 16px}
+.aiguillage caption{
+  font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ink-soft);text-align:left;margin:0 0 8px
+}
+.aiguillage td{padding:7px 4px;border-bottom:1px solid var(--rule-soft);font-size:14px;line-height:1.3;vertical-align:top}
+.aiguillage tr:last-child td{border-bottom:none}
+.aiguillage td:last-child{text-align:right;font-weight:700;color:var(--maths);white-space:nowrap;padding-left:10px}
+
+/* ---------- un cas ---------- */
+.cas{border:1px solid var(--rule);border-left:3px solid var(--maths);background:var(--paper-2);
+  border-radius:8px;padding:14px 14px 12px;margin:0 0 14px}
+.cas h2{font-family:var(--serif);font-weight:400;font-size:20px;margin:0 0 10px;color:var(--maths)}
+.bloc{margin:0 0 11px;font-size:14.5px}
+.bloc:last-child{margin-bottom:0}
+.label{
+  display:block;font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-soft);margin:0 0 3px
+}
+.meth,.redac{margin:0;padding:0 0 0 20px}
+.meth li{margin:0 0 3px;font-size:14px}
+.redac{font-size:13.5px;color:var(--ink);background:#F1F4F0;border-radius:7px;padding:9px 9px 9px 28px;margin:0}
+.redac li{margin:0 0 4px}
+.redac li:last-child{margin-bottom:0}
+.piege{border-top:1px dashed var(--rule);padding-top:10px}
+.piege .txt{color:var(--marge);font-weight:700}
+b.q{font-weight:700;color:var(--ink)}
+
+/* ---------- figures ---------- */
+.fig{margin:2px 0 10px}
+.fig svg{width:100%;max-width:280px;height:auto;display:block;margin:0 auto}
+.fig .tr{stroke:var(--ink);stroke-width:1.6;stroke-linecap:round;fill:none}
+.fig .par{stroke:var(--maths);stroke-width:2.2;stroke-linecap:round;fill:none}
+.fig .par.dash{stroke-dasharray:6 5}
+.fig .pt{fill:var(--ink)}
+.fig .ptn{font:italic 14px var(--serif);fill:var(--ink);paint-order:stroke;stroke:var(--paper-2);stroke-width:4}
+.fig .len{font:700 11px var(--sans);fill:var(--ink-soft);paint-order:stroke;stroke:var(--paper-2);stroke-width:4}
+.fig .len.unknown{fill:var(--marge);font-size:13px}
+.fig .chev{stroke:var(--maths);stroke-width:1.8;fill:none;stroke-linecap:round}
+.fig .arc{fill:none;stroke-width:2}
+.fig .ang{font:700 10.5px var(--sans);paint-order:stroke;stroke:var(--paper-2);stroke-width:4}
+
+@media (max-width:420px){
+  h1{font-size:29px}
+  .sheet{padding-left:26px}
+  .tab{font-size:11.5px;letter-spacing:0}
+}
+@media (max-width:360px){
+  .tab{font-size:10.5px}
+  .redac{font-size:12.5px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition-duration:.01ms !important;animation-duration:.01ms !important}
+}
+:focus-visible{outline:2px solid var(--maths);outline-offset:2px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="topbar"><a class="home" href="maths.html">🏠 Maths</a><p class="eyebrow">Maths, 3<sup>e</sup></p></div>
+    <h1>Les méthodes de <em>Thalès</em></h1>
+    <p class="sub">Pour chaque cas : à quoi on le reconnaît, la méthode, la rédaction à recopier, et le piège.</p>
+    <nav role="tablist">
+      <button class="tab" role="tab" aria-selected="true" data-panel="thales">Thalès</button>
+      <button class="tab" role="tab" aria-selected="false" data-panel="paralleles">Parallèles ?</button>
+      <button class="tab" role="tab" aria-selected="false" data-panel="agrandir">Agrandir</button>
+      <button class="tab" role="tab" aria-selected="false" data-panel="semblables">Semblables</button>
+    </nav>
+  </header>
+
+  <div class="sheet">
+
+    <!-- ================= onglet 1 : Thales ================= -->
+    <section class="panel on" id="thales">
+
+      <table class="aiguillage">
+        <caption>Ce que l'énoncé demande</caption>
+        <tr><td>Une longueur, et deux droites sont parallèles</td><td>Thalès</td></tr>
+        <tr><td>Prouver que deux droites sont parallèles</td><td>Réciproque</td></tr>
+        <tr><td>Montrer que deux droites ne le sont pas</td><td>Contraposée</td></tr>
+        <tr><td>Une aire ou un volume après agrandissement</td><td>k² et k³</td></tr>
+        <tr><td>Comparer deux triangles séparés</td><td>Semblables</td></tr>
+      </table>
+
+      <div class="cas">
+        <h2>Calculer une longueur, en triangle</h2>
+        <div class="fig"><svg viewBox="0 0 320 212" role="img" aria-label="Figure de Thalès"><line x1="165" y1="26" x2="38" y2="188" class="tr"/><line x1="165" y1="26" x2="295" y2="188" class="tr"/><line x1="38" y1="188" x2="295" y2="188" class="par"/><line x1="101.5" y1="107" x2="230" y2="107" class="par"/><path class="chev" d="M 156.75 111.5 L 162.75 107 L 156.75 102.5"/><path class="chev" d="M 163.75 111.5 L 169.75 107 L 163.75 102.5"/><path class="chev" d="M 157.5 192.5 L 163.5 188 L 157.5 183.5"/><path class="chev" d="M 164.5 192.5 L 170.5 188 L 164.5 183.5"/><text class="len" x="118.29714888878104" y="54.77770314120489" text-anchor="middle" dominant-baseline="middle">AM = 3</text><text class="len" x="77.890235087549" y="88.49111022295509" text-anchor="middle" dominant-baseline="middle">AB = 6</text><text class="len" x="212.31864219485595" y="54.608497004127926" text-anchor="middle" dominant-baseline="middle">AN = 4</text><text class="len unknown" x="253.397856097141" y="88.22394263809673" text-anchor="middle" dominant-baseline="middle">AC = ?</text><circle class="pt" cx="165" cy="26" r="2.6"/><text class="ptn" x="164.87963478920744" y="13.00055723440305" text-anchor="middle" dominant-baseline="middle">A</text><circle class="pt" cx="38" cy="188" r="2.6"/><text class="ptn" x="26.403437433467104" y="193.87534991642949" text-anchor="middle" dominant-baseline="middle">B</text><circle class="pt" cx="295" cy="188" r="2.6"/><text class="ptn" x="306.6185399080545" y="193.83176906306687" text-anchor="middle" dominant-baseline="middle">C</text><circle class="pt" cx="101.5" cy="107" r="2.6"/><text class="ptn" x="88.8927671799255" y="103.828615346503" text-anchor="middle" dominant-baseline="middle">M</text><circle class="pt" cx="230" cy="107" r="2.6"/><text class="ptn" x="242.60371456428" y="103.81466184178883" text-anchor="middle" dominant-baseline="middle">N</text></svg></div>
+        <p class="bloc"><span class="label">Ça se reconnaît à</span>
+          Une longueur marquée <b class="q">?</b> sur la figure, deux droites données parallèles, et un sommet commun
+          d'où partent les deux autres droites. Le petit triangle est « posé dans » le grand.</p>
+        <div class="bloc"><span class="label">La méthode</span>
+          <ol class="meth">
+            <li>Vérifier les deux hypothèses : les points alignés, et le parallélisme.</li>
+            <li>Si une longueur manque, la reconstituer : AB = AM + MB.</li>
+            <li>Écrire les trois rapports dans le bon sens : du sommet commun vers le petit point, sur le sommet commun vers le grand point.</li>
+            <li>Ne garder que les deux rapports qui contiennent l'inconnue et des longueurs connues.</li>
+            <li>Produit en croix, puis conclure avec l'unité.</li>
+          </ol></div>
+        <div class="bloc"><span class="label">La rédaction type</span>
+          <ol class="redac">
+            <li>Les points A, M, B sont alignés, ainsi que les points A, N, C.</li>
+            <li>Les droites (MN) et (BC) sont parallèles.</li>
+            <li>D'après le théorème de Thalès : AM/AB = AN/AC = MN/BC.</li>
+            <li>On remplace par les longueurs : 3/6 = 4/AC.</li>
+            <li>Produit en croix : AC = 6 × 4 ÷ 3.</li>
+            <li>Conclusion : AC = 8 cm.</li>
+          </ol></div>
+        <p class="bloc piege"><span class="label">Le piège</span>
+          <span class="txt">AM/MB n'est pas un rapport de Thalès.</span> MB n'est pas un côté du triangle ABC :
+          les rapports partent toujours du sommet commun, jamais d'un morceau de côté.</p>
+      </div>
+
+      <div class="cas">
+        <h2>Calculer une longueur, en papillon</h2>
+        <div class="fig"><svg viewBox="0 0 320 212" role="img" aria-label="Figure de Thalès"><line x1="208.329" y1="69.3364" x2="35" y2="192" class="tr"/><line x1="120.00450000000001" y1="74.0026" x2="300" y2="178" class="tr"/><line x1="35" y1="192" x2="300" y2="178" class="par"/><line x1="208.329" y1="69.3364" x2="120.00450000000001" y2="74.0026" class="par"/><path class="chev" d="M 172.91681182184362 66.7009571437981 L 167.16257219998522 71.5112301479253 L 173.39162137806767 75.68842374375375"/><path class="chev" d="M 165.92656002187812 67.07025346530573 L 160.17232040001971 71.88052646943292 L 166.40136957810216 76.05772006526136"/><path class="chev" d="M 158.74993817815638 189.9685428562019 L 164.5041778000148 185.15826985207468 L 158.27512862193234 180.98107625624624"/><path class="chev" d="M 165.7401899781219 189.59924653469432 L 171.4944295999803 184.7889735305671 L 165.26538042189785 180.61177993473865"/><text class="len" x="170.48977198960128" y="61.81260607226268" text-anchor="middle" dominant-baseline="middle">OM = 3</text><text class="len" x="91.3349671372864" y="133.75593182442643" text-anchor="middle" dominant-baseline="middle">OB = 9</text><text class="len" x="133.4972532382567" y="102.5868713184019" text-anchor="middle" dominant-baseline="middle">ON = 2,5</text><text class="len unknown" x="240.00416396811943" y="126.01202390133174" text-anchor="middle" dominant-baseline="middle">OC = ?</text><circle class="pt" cx="165" cy="100" r="2.6"/><text class="ptn" x="164.6178123291754" y="87.0056191919634" text-anchor="middle" dominant-baseline="middle">O</text><circle class="pt" cx="35" cy="192" r="2.6"/><text class="ptn" x="23.516420848283584" y="198.0932265562889" text-anchor="middle" dominant-baseline="middle">B</text><circle class="pt" cx="300" cy="178" r="2.6"/><text class="ptn" x="312.0202327519571" y="182.95116194329955" text-anchor="middle" dominant-baseline="middle">C</text><circle class="pt" cx="208.329" cy="69.3364" r="2.6"/><text class="ptn" x="216.44970830727823" y="59.18484363715088" text-anchor="middle" dominant-baseline="middle">M</text><circle class="pt" cx="120.00450000000001" cy="74.0026" r="2.6"/><text class="ptn" x="111.1092666553262" y="64.52236668305031" text-anchor="middle" dominant-baseline="middle">N</text></svg></div>
+        <p class="bloc"><span class="label">Ça se reconnaît à</span>
+          Deux droites qui se croisent en un point, et deux droites parallèles de part et d'autre du croisement.
+          Le petit triangle n'est plus dans le grand : il est retourné.</p>
+        <div class="bloc"><span class="label">La méthode</span>
+          <ol class="meth">
+            <li>Repérer le point de croisement : c'est lui qui ouvre chaque rapport, exactement comme le sommet commun du triangle.</li>
+            <li>Vérifier que les points sont alignés trois par trois, et que les deux droites sont parallèles.</li>
+            <li>Écrire la même égalité qu'en triangle : OM/OB = ON/OC = MN/BC.</li>
+            <li>Attention aux longueurs à reconstituer : ici O est <b class="q">entre</b> M et B, donc OB = MB − OM.</li>
+            <li>Produit en croix, puis conclure avec l'unité.</li>
+          </ol></div>
+        <div class="bloc"><span class="label">La rédaction type</span>
+          <ol class="redac">
+            <li>Les points M, O, B sont alignés, ainsi que les points N, O, C.</li>
+            <li>Les droites (MN) et (BC) sont parallèles.</li>
+            <li>D'après le théorème de Thalès : OM/OB = ON/OC = MN/BC.</li>
+            <li>On remplace par les longueurs : 3/9 = 2,5/OC.</li>
+            <li>Produit en croix : OC = 9 × 2,5 ÷ 3.</li>
+            <li>Conclusion : OC = 7,5 cm.</li>
+          </ol></div>
+        <p class="bloc piege"><span class="label">Le piège</span>
+          <span class="txt">Additionner au lieu de soustraire.</span> En triangle, AB = AM + MB. En papillon, le point de
+          croisement est au milieu, donc AB = MB − AM. Une figure faite à main levée suffit à voir lequel des deux.</p>
+      </div>
+
+      <div class="cas">
+        <h2>Vérifier qu'on a le droit d'appliquer Thalès</h2>
+        <p class="bloc"><span class="label">Ça se reconnaît à</span>
+          L'énoncé demande si le théorème s'applique, ou bien la question arrive avant tout calcul.
+          C'est aussi la première ligne de toute rédaction.</p>
+        <div class="bloc"><span class="label">La méthode</span>
+          <ol class="meth">
+            <li>Première condition : les points sont alignés trois par trois, A, M, B d'un côté, A, N, C de l'autre.</li>
+            <li>Deuxième condition : les droites (MN) et (BC) sont parallèles.</li>
+            <li>Ces deux conditions doivent venir de l'énoncé ou d'un codage sur la figure, jamais de l'allure du dessin.</li>
+            <li>Si l'une des deux manque, le théorème ne dit rien : aucun rapport à écrire.</li>
+          </ol></div>
+        <div class="bloc"><span class="label">La rédaction type</span>
+          <ol class="redac">
+            <li>Les points A, M, B sont alignés, ainsi que les points A, N, C.</li>
+            <li>Les droites (MN) et (BC) sont parallèles.</li>
+            <li>Les deux conditions du théorème de Thalès sont réunies : je peux l'appliquer.</li>
+          </ol></div>
+        <p class="bloc piege"><span class="label">Le piège</span>
+          <span class="txt">Croire la figure.</span> Deux droites peuvent sembler parallèles sans l'être.
+          Tant que l'énoncé ne le dit pas, ou qu'un codage ne le montre pas, on n'a pas le droit d'écrire l'égalité.</p>
+      </div>
+
+    </section>
+
+    <!-- ================= onglet 2 : Paralleles ? ================= -->
+    <section class="panel" id="paralleles">
+
+      <div class="cas">
+        <h2>Prouver que deux droites sont parallèles</h2>
+        <div class="fig"><svg viewBox="0 0 320 212" role="img" aria-label="Figure de Thalès"><line x1="165" y1="26" x2="38" y2="188" class="tr"/><line x1="165" y1="26" x2="295" y2="188" class="tr"/><line x1="38" y1="188" x2="295" y2="188" class="par dash"/><line x1="69.75" y1="147.5" x2="262.5" y2="147.5" class="par dash"/><text class="len" x="105.5701175437745" y="77.49555511147754" text-anchor="middle" dominant-baseline="middle">AM = 3</text><text class="len" x="81.03820374254246" y="90.95896219322773" text-anchor="middle" dominant-baseline="middle">AB = 4</text><text class="len" x="225.4489280485705" y="77.36197131904837" text-anchor="middle" dominant-baseline="middle">AN = 4,5</text><text class="len" x="250.27814195085554" y="90.72741695301717" text-anchor="middle" dominant-baseline="middle">AC = 6</text><circle class="pt" cx="165" cy="26" r="2.6"/><text class="ptn" x="164.87963478920744" y="13.000557234403052" text-anchor="middle" dominant-baseline="middle">A</text><circle class="pt" cx="38" cy="188" r="2.6"/><text class="ptn" x="25.84595492545749" y="192.61293706070103" text-anchor="middle" dominant-baseline="middle">B</text><circle class="pt" cx="295" cy="188" r="2.6"/><text class="ptn" x="307.16470276462957" y="192.58475807957345" text-anchor="middle" dominant-baseline="middle">C</text><circle class="pt" cx="69.75" cy="147.5" r="2.6"/><text class="ptn" x="56.79574396773312" y="148.58961032047105" text-anchor="middle" dominant-baseline="middle">M</text><circle class="pt" cx="262.5" cy="147.5" r="2.6"/><text class="ptn" x="275.4543974573641" y="148.58792762472422" text-anchor="middle" dominant-baseline="middle">N</text></svg></div>
+        <p class="bloc"><span class="label">Ça se reconnaît à</span>
+          L'énoncé donne quatre longueurs et demande si les droites sont parallèles, ou de le démontrer.
+          Le parallélisme est la <b class="q">conclusion</b>, jamais une donnée : c'est la réciproque.</p>
+        <div class="bloc"><span class="label">La méthode</span>
+          <ol class="meth">
+            <li>Vérifier que les points sont alignés, et dans le même ordre sur les deux droites.</li>
+            <li>Calculer le premier rapport, en écriture décimale.</li>
+            <li>Calculer le second rapport, de la même façon.</li>
+            <li>Comparer les deux nombres.</li>
+            <li>S'ils sont égaux, conclure par la <b class="q">réciproque</b> du théorème de Thalès.</li>
+          </ol></div>
+        <div class="bloc"><span class="label">La rédaction type</span>
+          <ol class="redac">
+            <li>Les points A, M, B sont alignés, ainsi que les points A, N, C, et dans le même ordre.</li>
+            <li>On calcule le premier rapport : AM/AB = 3/4 = 0,75.</li>
+            <li>On calcule le second rapport : AN/AC = 4,5/6 = 0,75.</li>
+            <li>Les deux rapports sont égaux.</li>
+            <li>D'après la réciproque du théorème de Thalès, les droites (MN) et (BC) sont parallèles.</li>
+          </ol></div>
+        <p class="bloc piege"><span class="label">Le piège</span>
+          <span class="txt">Écrire « d'après le théorème de Thalès ».</span> Le théorème part du parallélisme pour donner
+          des rapports égaux. Ici on part des rapports pour obtenir le parallélisme : c'est la réciproque, et le correcteur
+          compte le mot.</p>
+      </div>
+
+      <div class="cas">
+        <h2>Prouver que deux droites ne sont pas parallèles</h2>
+        <p class="bloc"><span class="label">Ça se reconnaît à</span>
+          Même énoncé que le cas précédent, mais les deux rapports ne tombent pas sur le même nombre.
+          On démontre alors le contraire : c'est la contraposée.</p>
+        <div class="bloc"><span class="label">La méthode</span>
+          <ol class="meth">
+            <li>Calculer les deux rapports, en écriture décimale, avec assez de chiffres pour les distinguer.</li>
+            <li>Constater qu'ils sont différents, et l'écrire noir sur blanc.</li>
+            <li>Rappeler que le parallélisme imposerait des rapports égaux.</li>
+            <li>Conclure que les droites ne sont pas parallèles.</li>
+          </ol></div>
+        <div class="bloc"><span class="label">La rédaction type</span>
+          <ol class="redac">
+            <li>Les points A, M, B sont alignés, ainsi que les points A, N, C.</li>
+            <li>On calcule le premier rapport : AM/AB = 2/5 = 0,4.</li>
+            <li>On calcule le second rapport : AN/AC = 3/8 = 0,375.</li>
+            <li>Les deux rapports sont différents : 0,4 ≠ 0,375.</li>
+            <li>Si les droites étaient parallèles, le théorème de Thalès imposerait des rapports égaux.</li>
+            <li>Les droites (MN) et (BC) ne sont donc pas parallèles.</li>
+          </ol></div>
+        <p class="bloc piege"><span class="label">Le piège</span>
+          <span class="txt">Arrondir trop tôt.</span> 0,4 et 0,375 se ressemblent si on arrondit au dixième.
+          On garde tous les chiffres, ou on compare les fractions par produit en croix : 2 × 8 = 16 et 5 × 3 = 15, donc c'est différent.</p>
+      </div>
+
+    </section>
+
+    <!-- ================= onglet 3 : Agrandir ================= -->
+    <section class="panel" id="agrandir">
+
+      <div class="cas">
+        <h2>Le coefficient k, sur les longueurs</h2>
+        <p class="bloc"><span class="label">Ça se reconnaît à</span>
+          Une figure agrandie ou réduite, une maquette, une échelle, ou deux triangles semblables.
+          Toutes les longueurs sont multipliées par le même nombre k.</p>
+        <div class="bloc"><span class="label">La méthode</span>
+          <ol class="meth">
+            <li>Repérer deux longueurs qui se correspondent, une dans chaque figure.</li>
+            <li>Calculer k = longueur de l'image ÷ longueur du modèle.</li>
+            <li>k &gt; 1 : c'est un agrandissement. k &lt; 1 : c'est une réduction.</li>
+            <li>Multiplier par k toutes les autres longueurs : côtés, périmètre, hauteurs, diagonales.</li>
+          </ol></div>
+        <div class="bloc"><span class="label">La rédaction type</span>
+          <ol class="redac">
+            <li>Les triangles ABC et DEF sont semblables, leurs sommets se correspondant dans cet ordre.</li>
+            <li>Le coefficient vaut k = DE ÷ AB = 6 ÷ 3 = 2.</li>
+            <li>EF correspond à BC, donc EF = 2 × BC.</li>
+            <li>Conclusion : EF = 8 cm.</li>
+          </ol></div>
+        <p class="bloc piege"><span class="label">Le piège</span>
+          <span class="txt">Prendre k à l'envers.</span> k = image ÷ modèle. Si on cherche une longueur du modèle à partir
+          de l'image, on divise par k au lieu de multiplier. Un contrôle de bon sens : l'agrandissement doit être plus grand.</p>
+      </div>
+
+      <div class="cas">
+        <h2>Les aires en k², les volumes en k³</h2>
+        <div class="fig"><svg viewBox="0 0 320 212" role="img" aria-label="Figure de Thalès"><line x1="165" y1="26" x2="38" y2="188" class="tr"/><line x1="165" y1="26" x2="295" y2="188" class="tr"/><line x1="38" y1="188" x2="295" y2="188" class="par"/><line x1="122.6709" y1="79.99459999999999" x2="208.329" y2="79.99459999999999" class="par"/><path class="chev" d="M 156.49995 84.49459999999999 L 162.49995 79.99459999999999 L 156.49995 75.49459999999999"/><path class="chev" d="M 163.49995 84.49459999999999 L 169.49995 79.99459999999999 L 163.49995 75.49459999999999"/><path class="chev" d="M 157.5 192.5 L 163.5 188 L 157.5 183.5"/><path class="chev" d="M 164.5 192.5 L 170.5 188 L 164.5 183.5"/><text class="len" x="132.0305675437745" y="43.74285511147754" text-anchor="middle" dominant-baseline="middle">AM = 1 part</text><text class="len" x="81.03820374254246" y="90.95896219322773" text-anchor="middle" dominant-baseline="middle">AB = 3 parts</text><circle class="pt" cx="165" cy="26" r="2.6"/><text class="ptn" x="164.87963478920744" y="13.00055723440305" text-anchor="middle" dominant-baseline="middle">A</text><circle class="pt" cx="38" cy="188" r="2.6"/><text class="ptn" x="26.811177039950692" y="194.61893048525766" text-anchor="middle" dominant-baseline="middle">B</text><circle class="pt" cx="295" cy="188" r="2.6"/><text class="ptn" x="306.2202147784556" y="194.5655753994091" text-anchor="middle" dominant-baseline="middle">C</text><circle class="pt" cx="122.6709" cy="79.99459999999999" r="2.6"/><text class="ptn" x="112.27743106251673" y="72.18589950340197" text-anchor="middle" dominant-baseline="middle">M</text><circle class="pt" cx="208.329" cy="79.99459999999999" r="2.6"/><text class="ptn" x="218.66959159738414" y="72.11601095016951" text-anchor="middle" dominant-baseline="middle">N</text></svg></div>
+        <p class="bloc"><span class="label">Ça se reconnaît à</span>
+          L'énoncé parle d'aire, de surface, de volume ou de contenance après un agrandissement ou une réduction.
+          Le mot « aire » doit déclencher le réflexe k².</p>
+        <div class="bloc"><span class="label">La méthode</span>
+          <ol class="meth">
+            <li>Trouver k avec deux longueurs qui se correspondent.</li>
+            <li>Longueurs et périmètres : multiplier par k.</li>
+            <li>Aires : multiplier par k².</li>
+            <li>Volumes : multiplier par k³.</li>
+            <li>Pour remonter des aires vers k, prendre la racine carrée du rapport des aires.</li>
+          </ol></div>
+        <div class="bloc"><span class="label">La rédaction type</span>
+          <ol class="redac">
+            <li>Les droites (MN) et (BC) sont parallèles, donc les triangles AMN et ABC sont semblables.</li>
+            <li>Le coefficient de réduction vaut k = AM/AB = 1/3.</li>
+            <li>Les longueurs sont multipliées par k, mais les aires par k².</li>
+            <li>L'aire de AMN vaut donc 45 × (1/3)² = 45 × 1/9.</li>
+            <li>Conclusion : l'aire de AMN vaut 5 cm².</li>
+          </ol></div>
+        <p class="bloc piege"><span class="label">Le piège</span>
+          <span class="txt">Multiplier l'aire par k.</span> Avec k = 3, l'aire est multipliée par 9 et le volume par 27.
+          Une maquette deux fois plus haute pèse huit fois plus lourd : c'est la même règle.</p>
+      </div>
+
+    </section>
+
+    <!-- ================= onglet 4 : Semblables ================= -->
+    <section class="panel" id="semblables">
+
+      <div class="cas">
+        <h2>Prouver que deux triangles sont semblables</h2>
+        <div class="fig"><svg viewBox="0 0 320 212" role="img" aria-label="Deux triangles"><line x1="28" y1="170" x2="125" y2="170" class="tr"/><line x1="125" y1="170" x2="95" y2="84" class="tr"/><line x1="95" y1="84" x2="28" y2="170" class="tr"/><path class="arc" stroke="#1B6F55" d="M 41 170 A 13 13 0 0 0 35.98948088401001 159.74484543246479"/><text class="ang" fill="#1B6F55" x="52.259281779941226" y="158.1472683519194" text-anchor="middle" dominant-baseline="middle">52°</text><path class="arc" stroke="#DE5B4A" d="M 120.71816196786217 157.7253976412049 A 13 13 0 0 0 112 170"/><text class="ang" fill="#DE5B4A" x="102.98736383396985" y="154.3652998422745" text-anchor="middle" dominant-baseline="middle">71°</text><circle class="pt" cx="28" cy="170" r="2.6"/><text class="ptn" x="16.486939341356" y="176.0373366868499" text-anchor="middle" dominant-baseline="middle">A</text><circle class="pt" cx="125" cy="170" r="2.6"/><text class="ptn" x="135.76421236320672" y="177.28915167902187" text-anchor="middle" dominant-baseline="middle">B</text><circle class="pt" cx="95" cy="84" r="2.6"/><text class="ptn" x="97.7339697343222" y="71.29073528909677" text-anchor="middle" dominant-baseline="middle">C</text><line x1="162" y1="195" x2="300" y2="195" class="tr"/><line x1="300" y1="195" x2="258" y2="72" class="tr"/><line x1="258" y1="72" x2="162" y2="195" class="tr"/><path class="arc" stroke="#1B6F55" d="M 175 195 A 13 13 0 0 0 169.99852112023876 184.75189481469408"/><text class="ang" fill="#1B6F55" x="186.2645054924758" y="183.15796583328637" text-anchor="middle" dominant-baseline="middle">52°</text><path class="arc" stroke="#DE5B4A" d="M 295.7991299072104 182.69745187111607 A 13 13 0 0 0 287 195"/><text class="ang" fill="#DE5B4A" x="278.0389905850219" y="179.29286577776696" text-anchor="middle" dominant-baseline="middle">71°</text><circle class="pt" cx="162" cy="195" r="2.6"/><text class="ptn" x="150.4928645558475" y="201.04862247705452" text-anchor="middle" dominant-baseline="middle">D</text><circle class="pt" cx="300" cy="195" r="2.6"/><text class="ptn" x="310.7333803395106" y="202.33447656533224" text-anchor="middle" dominant-baseline="middle">E</text><circle class="pt" cx="258" cy="72" r="2.6"/><text class="ptn" x="260.78729483295393" y="59.302323538765506" text-anchor="middle" dominant-baseline="middle">F</text></svg></div>
+        <p class="bloc"><span class="label">Ça se reconnaît à</span>
+          Deux triangles dessinés séparément, avec des angles marqués ou les six côtés donnés.
+          Il n'y a ni sommet commun ni droites parallèles : Thalès ne s'applique pas directement.</p>
+        <div class="bloc"><span class="label">La méthode</span>
+          <ol class="meth">
+            <li>Si les angles sont donnés : deux angles égaux deux à deux suffisent.</li>
+            <li>Au besoin, calculer le troisième angle : 180° moins les deux autres.</li>
+            <li>Si les côtés sont donnés : calculer les trois quotients côté ÷ côté correspondant, et vérifier qu'ils sont égaux.</li>
+            <li>Dans une configuration de Thalès, les deux triangles sont toujours semblables : l'angle au sommet est commun, et les parallèles donnent les autres.</li>
+          </ol></div>
+        <div class="bloc"><span class="label">La rédaction type</span>
+          <ol class="redac">
+            <li>Dans le triangle ABC : l'angle en A mesure 52° et l'angle en B mesure 71°.</li>
+            <li>Dans le triangle DEF : l'angle en D mesure 52° et l'angle en E mesure 71°.</li>
+            <li>Les angles A et D sont égaux, les angles B et E aussi.</li>
+            <li>Le troisième angle vaut alors 180° − 52° − 71° = 57° dans les deux triangles.</li>
+            <li>Deux angles égaux deux à deux suffisent : les triangles ABC et DEF sont semblables.</li>
+          </ol></div>
+        <p class="bloc piege"><span class="label">Le piège</span>
+          <span class="txt">Comparer des côtés qui ne se correspondent pas.</span> L'ordre des lettres dit tout :
+          si ABC et DEF sont semblables dans cet ordre, AB va avec DE, BC avec EF, AC avec DF. Jamais dans le désordre.</p>
+      </div>
+
+      <div class="cas">
+        <h2>Calculer une longueur dans deux triangles semblables</h2>
+        <p class="bloc"><span class="label">Ça se reconnaît à</span>
+          L'énoncé affirme que les triangles sont semblables, donne l'ordre des sommets, et marque une longueur
+          <b class="q">?</b> dans l'un des deux.</p>
+        <div class="bloc"><span class="label">La méthode</span>
+          <ol class="meth">
+            <li>Écrire les paires de côtés qui se correspondent, en suivant l'ordre des lettres.</li>
+            <li>Trouver la paire dont les deux longueurs sont connues : elle donne k.</li>
+            <li>Multiplier par k la longueur qui correspond à l'inconnue.</li>
+            <li>Conclure avec l'unité.</li>
+          </ol></div>
+        <div class="bloc"><span class="label">La rédaction type</span>
+          <ol class="redac">
+            <li>Les triangles ABC et DEF sont semblables, leurs sommets se correspondant dans cet ordre.</li>
+            <li>Donc AB/DE = BC/EF = AC/DF.</li>
+            <li>On remplace par les longueurs : 3/6 = 4/EF.</li>
+            <li>Produit en croix : EF = 6 × 4 ÷ 3.</li>
+            <li>Conclusion : EF = 8 cm.</li>
+          </ol></div>
+        <p class="bloc piege"><span class="label">Le piège</span>
+          <span class="txt">Confondre semblables et égaux.</span> Deux triangles semblables ont les mêmes angles,
+          pas les mêmes longueurs. Ils ne sont égaux que si k vaut 1.</p>
+      </div>
+
+    </section>
+
+  </div>
+</div>
+
+<script>
+document.querySelectorAll(".tab").forEach(t=>{
+  t.addEventListener("click",()=>{
+    document.querySelectorAll(".tab").forEach(x=>x.setAttribute("aria-selected",x===t));
+    document.querySelectorAll(".panel").forEach(p=>p.classList.toggle("on",p.id===t.dataset.panel));
+    window.scrollTo({top:0,behavior:"smooth"});
+  });
+});
+</script>
+</body>
+</html>

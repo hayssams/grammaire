@@ -12,6 +12,8 @@ Aucune dépendance, aucun build : il suffit d'ouvrir le fichier dans un navigate
 | [astuces.html](astuces.html) | La boîte à astuces : reconnaître classes et fonctions |
 | [maths.html](maths.html) | Rubrique Maths, vers les carnets de maths |
 | [thales.html](thales.html) | Le théorème de Thalès, sur la figure |
+| [thales-brevet.html](thales-brevet.html) | Thalès niveau brevet : calculs à étapes, démonstration à rédiger, agrandissements, sujets complets |
+| [maths-memo.html](maths-memo.html) | Le mémo de maths : les méthodes, cas par cas |
 | [histoire.html](histoire.html) | Rubrique Histoire, vers les carnets et le mémo |
 | [histoire-dates.html](histoire-dates.html) | Les dates clés, sur une frise chronologique |
 | [histoire-personnages.html](histoire-personnages.html) | Les personnages historiques, sur la même frise |
